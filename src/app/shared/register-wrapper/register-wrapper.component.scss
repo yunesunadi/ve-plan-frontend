@@ -1,0 +1,11 @@
+section {
+  width: 100%;
+
+  @media (min-width: 768px) {
+    width: 50%;
+  }
+}
+
+.info {
+  width: 65%;
+}

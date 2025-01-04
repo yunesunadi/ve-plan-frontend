@@ -1,1 +1,43 @@
 /* You can add global styles to this file, and also import other style files */
+
+@use '@angular/material' as mat;
+
+@import url("../node_modules/bootstrap/dist/css/bootstrap.min.css");
+
+:root {
+  --primary-clr: #432E54;
+  --secondary-clr: #E8BCB9;
+}
+
+html, body {
+  height: 100%;
+
+  @include mat.theme((
+    typography: "Ubuntu",
+  ));
+}
+
+body {
+  margin: 0;
+  font-family: "Ubuntu", sans-serif;
+}
+
+.bg {
+  &-primary-clr {
+    background-color: var(--primary-clr) !important;
+  }
+  
+  &-secondary-clr {
+    background-color: var(--secondary-clr) !important;
+  }
+}
+
+.text {
+  &-primary-clr {
+    color: var(--primary-clr) !important;
+  }
+
+  &-secondary-clr {
+    color: var(--secondary-clr) !important;
+  }
+}
