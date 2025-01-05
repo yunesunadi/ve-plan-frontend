@@ -1,5 +1,65 @@
 <app-register-wrapper>
   <ng-container form>
-    <p>signup works!</p>
+    <h1 class="text-primary-clr mb-3 d-md-none">VE-Plan</h1>
+    <h3 class="text-primary-clr mb-4">Sign Up</h3>
+    <form [formGroup]="signup_form" (ngSubmit)="submit()" class="d-flex flex-column signup-form">
+      <input type="file" accept="image/*" formControlName="profile" name="profile" (change)="changeProfile($event)">
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input type="email" matInput formControlName="email" placeholder="Enter email">
+        @if (emailControl.hasError('email') && !emailControl.hasError('required')) {
+          <mat-error>Please enter a valid email address.</mat-error>
+        }
+        @if (emailControl.hasError('required')) {
+          <mat-error>Email is required.</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Password</mat-label>
+        <input matInput [type]="isPassword() ? 'password' : 'text'" formControlName="password" placeholder="Enter password" />
+        <button
+          type="button"
+          mat-icon-button
+          matSuffix
+          (click)="togglePasswordVisibility($event)"
+        >
+          <mat-icon>{{ isPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        @if (passwordControl.hasError('required')) {
+          <mat-error>Password is required.</mat-error>
+        }
+        @else if (passwordControl.hasError('minlength')) {
+          <mat-error>Password must be more than {{ passwordControl.errors && passwordControl.errors['minlength'].requiredLength }} characters.</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Confrim Password</mat-label>
+        <input matInput [type]="isConfirmPassword() ? 'password' : 'text'" formControlName="confirm_password" placeholder="Enter confirm password" />
+        <button
+          type="button"
+          mat-icon-button
+          matSuffix
+          (click)="toggleConfirmPasswordVisibility($event)"
+        >
+          <mat-icon>{{ isConfirmPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        @if (confirmPasswordControl.hasError('required')) {
+          <mat-error>Confirm password is required.</mat-error>
+        }
+        @else if (confirmPasswordControl.hasError('minlength')) {
+          <mat-error>Confirm password must be more than {{ confirmPasswordControl.errors && confirmPasswordControl.errors['minlength'].requiredLength }} characters.</mat-error>
+        }
+        @else if (signup_form.hasError('passwordsNotMatched')) {
+          <mat-hint class="text-danger">Two passwords do not match.</mat-hint>
+        }
+      </mat-form-field>
+      <button
+        mat-raised-button
+        type="submit"
+        class="bg-primary-clr text-white"
+      >
+        Sign Up
+      </button>
+    </form>
   </ng-container>
 </app-register-wrapper>
