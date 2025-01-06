@@ -1,9 +1,22 @@
 <app-register-wrapper>
   <ng-container form>
-    <h1 class="text-primary-clr mb-3 d-md-none">VE-Plan</h1>
-    <h3 class="text-primary-clr mb-4">Sign Up</h3>
+    <h1 class="text-primary-clr mb-3 d-md-none text-center">VE-Plan</h1>
+    <h3 class="text-primary-clr mb-4 text-center">Sign Up</h3>
     <form [formGroup]="signup_form" (ngSubmit)="submit()" class="d-flex flex-column signup-form">
-      <input type="file" accept="image/*" formControlName="profile" name="profile" (change)="changeProfile($event)">
+      <div class="align-self-center mb-3">
+        <p class="mb-1">Profile</p>
+        <label for="profile" class="profile-img-container">
+          <input id="profile" type="file" accept="image/*" (change)="changeProfile($event)" class="d-none">
+          <img src="assets/images/placeholder.jpg" #imgView alt="Profile image" class="profile-img rounded">
+        </label>
+      </div>
+      <mat-form-field appearance="outline">
+        <mat-label>Name</mat-label>
+        <input matInput type="text" formControlName="name" placeholder="Enter name">
+        @if (nameControl.hasError('required')) {
+          <mat-error>Name is required.</mat-error>
+        }
+      </mat-form-field>
       <mat-form-field appearance="outline">
         <mat-label>Email</mat-label>
         <input type="email" matInput formControlName="email" placeholder="Enter email">
@@ -33,7 +46,7 @@
         }
       </mat-form-field>
       <mat-form-field appearance="outline">
-        <mat-label>Confrim Password</mat-label>
+        <mat-label>Confirm Password</mat-label>
         <input matInput [type]="isConfirmPassword() ? 'password' : 'text'" formControlName="confirm_password" placeholder="Enter confirm password" />
         <button
           type="button"

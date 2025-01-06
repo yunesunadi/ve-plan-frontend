@@ -1,5 +1,8 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
+import { map } from 'rxjs';
 
 const MIN_LENGTH = 6;
 @Component({
@@ -9,16 +12,20 @@ const MIN_LENGTH = 6;
   styleUrl: './signup.component.scss',
 })
 export class SignupComponent {
+  @ViewChild("imgView") imgView: any;
   isPassword = signal(true);
   isConfirmPassword = signal(true);
   signup_form: FormGroup;
 
   private form_builder = inject(FormBuilder);
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
   constructor() {
      this.signup_form = this.form_builder.group(
       {
         profile: [''],
+        name: ['', Validators.required],
         email: ['', [Validators.required, Validators.email]],
         password: ['', [Validators.required, Validators.minLength(MIN_LENGTH)]],
         confirm_password: ['', [Validators.required, Validators.minLength(MIN_LENGTH)]]
@@ -34,6 +41,10 @@ export class SignupComponent {
       const isNotMatched = control.value['password'] !== control.value['confirm_password'];
       return  isNotMatched ? { passwordsNotMatched: true } : null;
     };
+  }
+
+  get nameControl() {
+    return this.signup_form.controls["name"];
   }
 
   get emailControl() {
@@ -60,13 +71,35 @@ export class SignupComponent {
 
   changeProfile(event: any) {
     const file = event.target?.files[0];
-    if (!file.type.startsWith("image")) return;
     
+    if (file) {
+      if (!file.type.startsWith("image")) return;
 
+      const fileReader = new FileReader();
+      fileReader.onload = (event) => {
+        this.imgView.nativeElement.src = event.target?.result;
+      }
+      fileReader.readAsDataURL(file);
+
+      // const url = URL.createObjectURL(file);
+      this.signup_form.get("profile")?.patchValue(file);
+    }
   }
 
   submit() {
     if (this.signup_form.invalid) return;
+    delete this.signup_form.value['confirm_password'];
     
+    this.authService.register(this.signup_form.value).pipe(
+      map(res => res.token)
+    ).subscribe({
+      next: (token) => {
+        localStorage.setItem("token", token);
+        this.router.navigateByUrl("role");
+      },
+      error: (err) => {
+        console.log("err", err);
+      }
+    });
   }
 }
