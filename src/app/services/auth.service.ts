@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Response } from '../models/Utils';
+import { GeneralResponse, Response } from '../models/Utils';
 
 interface SignUpData {
   profile: File;
@@ -25,5 +25,25 @@ export class AuthService {
     formData.append("password", data.password);
 
     return this.http.post<Response<"token", string>>(url, formData);
+  }
+
+  setRole(role: string) {
+    const url = `${environment.apiUrl}/auth/role`;
+    const token = localStorage.getItem("token") || "";
+    return this.http.post<GeneralResponse>(
+      url,
+      { role },
+      {
+        headers: new HttpHeaders({
+          Authorization: `Bearer ${token}`
+        })
+      }
+    );
+  }
+
+  isLoggedIn() {
+    const token = localStorage.getItem("token");
+    if (!token) return false;
+    return true;
   }
 }

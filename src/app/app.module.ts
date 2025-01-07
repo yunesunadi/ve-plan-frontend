@@ -13,12 +13,19 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { RoleComponent } from './pages/role/role.component';
+import { MatSelectModule } from '@angular/material/select';
+import { HomeComponent } from './pages/home/home.component';
+import { PrivateComponent } from './layouts/private/private.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
-    SignupComponent
+    SignupComponent,
+    RoleComponent,
+    HomeComponent,
+    PrivateComponent,
   ],
   imports: [
     RouterModule,
@@ -32,6 +39,7 @@ import { MatIconModule } from '@angular/material/icon';
     MatFormFieldModule,
     MatButtonModule,
     MatIconModule,
+    MatSelectModule
   ],
   providers: [appConfig.providers],
   bootstrap: [AppComponent],

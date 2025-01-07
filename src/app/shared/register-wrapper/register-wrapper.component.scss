@@ -9,3 +9,11 @@ section {
 .info {
   width: 65%;
 }
+
+main {
+  border-top: 5px solid var(--primary-clr);
+
+  @media (min-width: 768px) {
+    border-top: none;
+  }
+}
