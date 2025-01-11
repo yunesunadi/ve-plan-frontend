@@ -1,0 +1,67 @@
+.sidenav {
+  width: 55px;
+  border-right: 1px solid var(--primary-clr);
+
+  @media (min-width: 599px) {
+    width: 200px;
+  }
+
+  &-container {
+    width: 100%;
+    height: calc(100% - 56px);
+
+    @media (min-width: 599px) {
+      height: calc(100% - 64px);
+    }
+  }
+
+  &-content {
+    height: inherit;
+  }
+
+  &-list {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin: .8rem 0;
+  }
+
+  &-item {
+    background-color: var(--secondary-clr);
+    padding: .8rem .9rem;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+
+    span {
+      color: var(--primary-clr);
+      display: none;
+
+      @media (min-width: 599px) {
+        display: block;
+        margin-left: .7rem;
+      }
+    }
+
+    &:hover {
+      border-right: 3px solid var(--primary-clr);
+      cursor: pointer;
+
+      @media (min-width: 599px) {
+        border-right: 5px solid var(--primary-clr);
+      }
+    }
+
+    @media (min-width: 599px) {
+      padding: .8rem 1.5rem;
+    }
+  }
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+::ng-deep .sidenav.mat-drawer {
+  border-radius: 0;
+}

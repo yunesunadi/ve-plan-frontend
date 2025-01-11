@@ -26,7 +26,7 @@ const publicRoutes: Routes = [
     path: "role",
     component: RoleComponent,
     canActivate: [authGuard, hasRoleGuard]
-  }
+  },
 ];
 
 const privateRoutes: Routes = [
@@ -34,7 +34,11 @@ const privateRoutes: Routes = [
     path: "home",
     component: HomeComponent,
     canActivate: [authGuard, hasRoleGuard]
-  }
+  },
+  {
+    path: "**",
+    component: NotFoundComponent,
+  },
 ];
 
 export const routes: Routes = [
@@ -49,6 +53,6 @@ export const routes: Routes = [
   },
   {
     path: "**",
-    component: NotFoundComponent,
+    redirectTo: "login",
   }
 ];

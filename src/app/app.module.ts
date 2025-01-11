@@ -20,6 +20,8 @@ import { PrivateComponent } from './layouts/private/private.component';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { notFoundInterceptor } from './interceptors/not-found.interceptor';
 import { unauthenticatedInterceptor } from './interceptors/unauthenticated.interceptor';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatToolbarModule } from '@angular/material/toolbar';
 
 @NgModule({
   declarations: [
@@ -42,7 +44,9 @@ import { unauthenticatedInterceptor } from './interceptors/unauthenticated.inter
     MatFormFieldModule,
     MatButtonModule,
     MatIconModule,
-    MatSelectModule
+    MatSelectModule,
+    MatSidenavModule,
+    MatToolbarModule,
   ],
   providers: [
     appConfig.providers,

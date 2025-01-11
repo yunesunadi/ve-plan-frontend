@@ -1,1 +1,24 @@
-<p>private works!</p>
+<mat-toolbar class="bg-primary-clr">
+  <button mat-icon-button class="text-secondary-clr" (click)="drawer.toggle()">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <p class="text-secondary-clr mb-0 ms-3">VE-Plan</p>
+  <span class="spacer"></span>
+  <button mat-icon-button class="text-secondary-clr" (click)="logout()">
+    <mat-icon>logout</mat-icon>
+  </button>
+</mat-toolbar>
+
+<mat-drawer-container class="sidenav-container" autosize>
+  <mat-drawer #drawer class="sidenav" mode="side" opened>
+    <div class="sidenav-list">
+      <a class="sidenav-item">
+        <mat-icon class="text-primary-clr" >calendar_today</mat-icon>
+        <span>Calendar</span>
+      </a>
+    </div>
+  </mat-drawer>
+  <div class="sidenav-content">
+    <router-outlet />
+  </div>
+</mat-drawer-container>
