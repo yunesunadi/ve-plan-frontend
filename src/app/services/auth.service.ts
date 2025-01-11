@@ -46,4 +46,9 @@ export class AuthService {
     if (!token) return false;
     return true;
   }
+
+  login(data: { email: string; password: string; }) {
+    const url = `${environment.apiUrl}/auth/login`;
+    return this.http.post<Response<"token", string>>(url, data);
+  }
 }

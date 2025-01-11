@@ -6,6 +6,7 @@ import { authGuard } from './guards/auth.guard';
 import { HomeComponent } from './pages/home/home.component';
 import { hasRoleGuard } from './guards/has-role.guard';
 import { PrivateComponent } from './layouts/private/private.component';
+import { NotFoundComponent } from './pages/not-found/not-found.component';
 
 const publicRoutes: Routes = [
   {
@@ -32,7 +33,7 @@ const privateRoutes: Routes = [
   {
     path: "home",
     component: HomeComponent,
-    canActivate: [authGuard]
+    canActivate: [authGuard, hasRoleGuard]
   }
 ];
 
@@ -46,4 +47,8 @@ export const routes: Routes = [
     component: PrivateComponent,
     children: privateRoutes
   },
+  {
+    path: "**",
+    component: NotFoundComponent,
+  }
 ];

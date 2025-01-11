@@ -34,7 +34,7 @@
           type="button"
           mat-icon-button
           matSuffix
-          (click)="togglePasswordVisibility($event)"
+          (click)="togglePasswordVisibility()"
         >
           <mat-icon>{{ isPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
         </button>
@@ -52,7 +52,7 @@
           type="button"
           mat-icon-button
           matSuffix
-          (click)="toggleConfirmPasswordVisibility($event)"
+          (click)="toggleConfirmPasswordVisibility()"
         >
           <mat-icon>{{ isConfirmPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
         </button>

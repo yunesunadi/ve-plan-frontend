@@ -17,6 +17,9 @@ import { RoleComponent } from './pages/role/role.component';
 import { MatSelectModule } from '@angular/material/select';
 import { HomeComponent } from './pages/home/home.component';
 import { PrivateComponent } from './layouts/private/private.component';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { notFoundInterceptor } from './interceptors/not-found.interceptor';
+import { unauthenticatedInterceptor } from './interceptors/unauthenticated.interceptor';
 
 @NgModule({
   declarations: [
@@ -41,7 +44,13 @@ import { PrivateComponent } from './layouts/private/private.component';
     MatIconModule,
     MatSelectModule
   ],
-  providers: [appConfig.providers],
+  providers: [
+    appConfig.providers,
+    provideHttpClient(withInterceptors([
+      notFoundInterceptor,
+      unauthenticatedInterceptor
+    ])),
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule { }

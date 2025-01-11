@@ -59,14 +59,12 @@ export class SignupComponent {
     return this.signup_form.controls["confirm_password"];
   }
 
-  togglePasswordVisibility(event: MouseEvent) {
+  togglePasswordVisibility() {
     this.isPassword.set(!this.isPassword());
-    event.stopPropagation();
   }
 
-  toggleConfirmPasswordVisibility(event: MouseEvent) {
+  toggleConfirmPasswordVisibility() {
     this.isConfirmPassword.set(!this.isConfirmPassword());
-    event.stopPropagation();
   }
 
   changeProfile(event: any) {
