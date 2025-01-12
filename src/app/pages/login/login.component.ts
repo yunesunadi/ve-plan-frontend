@@ -2,7 +2,9 @@ import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
-import { map } from 'rxjs';
+import { concatMap, delay, map } from 'rxjs';
+import { jwtDecode } from "jwt-decode";
+import { UserPayload } from '../../models/User';
 
 @Component({
   standalone: false,
@@ -45,7 +47,16 @@ export class LoginComponent {
     ).subscribe({
       next: (token) => {
         localStorage.setItem("token", token);
-        this.router.navigateByUrl("dashboard/home");
+
+        const decoded: UserPayload = jwtDecode(token);
+
+        if (decoded.role === "organizer") {
+          this.router.navigateByUrl("organizer/dashboard/home");
+        }
+
+        if (decoded.role === "attendee") {
+          this.router.navigateByUrl("attendee/dashboard/home");
+        }
       },
       error: (err) => {
         console.log("err", err);

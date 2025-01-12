@@ -4,7 +4,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { GeneralResponse, Response } from '../models/Utils';
 
 interface SignUpData {
-  profile: File;
+  profile?: File;
   name: string;
   email: string;
   password: string;
@@ -19,7 +19,7 @@ export class AuthService {
   register(data: SignUpData) {
     const url = `${environment.apiUrl}/auth/register`;
     const formData = new FormData();
-    formData.append("profile", data.profile);
+    formData.append("profile", data.profile || "");
     formData.append("name", data.name);
     formData.append("email", data.email);
     formData.append("password", data.password);

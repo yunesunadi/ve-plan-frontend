@@ -3,10 +3,11 @@ import { LoginComponent } from './pages/login/login.component';
 import { SignupComponent } from './pages/signup/signup.component';
 import { RoleComponent } from './pages/role/role.component';
 import { authGuard } from './guards/auth.guard';
-import { HomeComponent } from './pages/home/home.component';
 import { hasRoleGuard } from './guards/has-role.guard';
 import { PrivateComponent } from './layouts/private/private.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
+import { HomeComponent as OrganizerHomeComponent } from './pages/organizer/home/home.component';
+import { HomeComponent as AttendeeHomeComponent } from './pages/attendee/home/home.component';
 
 const publicRoutes: Routes = [
   {
@@ -29,10 +30,22 @@ const publicRoutes: Routes = [
   },
 ];
 
-const privateRoutes: Routes = [
+const organizerRoutes: Routes = [
   {
     path: "home",
-    component: HomeComponent,
+    component: OrganizerHomeComponent,
+    canActivate: [authGuard, hasRoleGuard]
+  },
+  {
+    path: "**",
+    component: NotFoundComponent,
+  },
+]
+
+const attendeeRoutes: Routes = [
+  {
+    path: "home",
+    component: AttendeeHomeComponent,
     canActivate: [authGuard, hasRoleGuard]
   },
   {
@@ -47,9 +60,14 @@ export const routes: Routes = [
     children: publicRoutes
   },
   {
-    path: "dashboard",
+    path: "organizer/dashboard",
     component: PrivateComponent,
-    children: privateRoutes
+    children: organizerRoutes
+  },
+  {
+    path: "attendee/dashboard",
+    component: PrivateComponent,
+    children: attendeeRoutes
   },
   {
     path: "**",

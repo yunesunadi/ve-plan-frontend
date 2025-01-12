@@ -9,7 +9,12 @@ export const hasRoleGuard: CanActivateFn = (route, state) => {
   userService.hasRole().subscribe({
     next: (res) => {
       if (res.has_role) {
-        router.navigateByUrl("dashboard/home");
+        if (res.role === "organizer") {
+          router.navigateByUrl("organizer/dashboard/home");
+        }
+        if (res.role === "attendee") {
+          router.navigateByUrl("attendee/dashboard/home");
+        }
         return true;
       }
 

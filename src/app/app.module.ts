@@ -15,13 +15,14 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RoleComponent } from './pages/role/role.component';
 import { MatSelectModule } from '@angular/material/select';
-import { HomeComponent } from './pages/home/home.component';
 import { PrivateComponent } from './layouts/private/private.component';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { notFoundInterceptor } from './interceptors/not-found.interceptor';
 import { unauthenticatedInterceptor } from './interceptors/unauthenticated.interceptor';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { HomeComponent as OrganizerHomeComponent } from './pages/organizer/home/home.component';
+import { HomeComponent as AttendeeHomeComponent } from './pages/attendee/home/home.component';
 
 @NgModule({
   declarations: [
@@ -29,8 +30,9 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     LoginComponent,
     SignupComponent,
     RoleComponent,
-    HomeComponent,
     PrivateComponent,
+    OrganizerHomeComponent,
+    AttendeeHomeComponent,
   ],
   imports: [
     RouterModule,
