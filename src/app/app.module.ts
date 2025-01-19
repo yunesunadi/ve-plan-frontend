@@ -23,6 +23,11 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { HomeComponent as OrganizerHomeComponent } from './pages/organizer/home/home.component';
 import { HomeComponent as AttendeeHomeComponent } from './pages/attendee/home/home.component';
+import { FullCalendarModule } from '@fullcalendar/angular';
+import { MatDialogModule } from '@angular/material/dialog';
+import { EventDialogComponent } from './components/event-dialog/event-dialog.component';
+import { MatTimepickerModule } from '@angular/material/timepicker';
+import { provideNativeDateAdapter } from '@angular/material/core';
 
 @NgModule({
   declarations: [
@@ -33,6 +38,7 @@ import { HomeComponent as AttendeeHomeComponent } from './pages/attendee/home/ho
     PrivateComponent,
     OrganizerHomeComponent,
     AttendeeHomeComponent,
+    EventDialogComponent,
   ],
   imports: [
     RouterModule,
@@ -49,6 +55,9 @@ import { HomeComponent as AttendeeHomeComponent } from './pages/attendee/home/ho
     MatSelectModule,
     MatSidenavModule,
     MatToolbarModule,
+    FullCalendarModule,
+    MatDialogModule,
+    MatTimepickerModule,
   ],
   providers: [
     appConfig.providers,
@@ -56,6 +65,7 @@ import { HomeComponent as AttendeeHomeComponent } from './pages/attendee/home/ho
       notFoundInterceptor,
       unauthenticatedInterceptor
     ])),
+    provideNativeDateAdapter()
   ],
   bootstrap: [AppComponent],
 })

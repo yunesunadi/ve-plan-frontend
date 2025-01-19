@@ -1,0 +1,99 @@
+<h6 mat-dialog-title class="text-primary-clr">
+  Create Event ({{ create_form.value.date }})
+</h6>
+<mat-dialog-content>
+  <form id="create_form" [formGroup]="create_form" class="d-flex flex-column create-form">
+    <div class="align-self-center mb-3">
+      <p class="mb-1">Cover</p>
+      <label for="cover" class="cover-img-container">
+        <input id="cover" type="file" accept="image/*" (change)="changeCover($event)" class="d-none">
+        <img src="assets/images/placeholder.jpg" #imgView alt="Cover image" class="cover-img rounded">
+      </label>
+    </div>
+    <mat-form-field appearance="outline">
+      <mat-label>Title</mat-label>
+      <input matInput type="text" formControlName="title" placeholder="Enter title">
+      @if (titleControl.hasError('required')) {
+        <mat-error>Title is required.</mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Description</mat-label>
+      <textarea 
+        matInput
+        cdkTextareaAutosize
+        cdkAutosizeMinRows="3"
+        formControlName="description"
+        placeholder="Enter description"
+      ></textarea>
+      @if (descriptionControl.hasError('required')) {
+        <mat-error>Description is required.</mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Start time</mat-label>
+      <input matInput [matTimepicker]="timepicker1" formControlName="start_time">
+      <mat-timepicker #timepicker1/>
+      <mat-timepicker-toggle [for]="timepicker1" matSuffix/>
+      @if (startTimeControl.hasError('required')) {
+        <mat-error>Start time is required.</mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>End time</mat-label>
+      <input matInput [matTimepicker]="timepicker2" formControlName="end_time">
+      <mat-timepicker #timepicker2/>
+      <mat-timepicker-toggle [for]="timepicker2" matSuffix/>
+      @if (endTimeControl.hasError('required')) {
+        <mat-error>End time is required.</mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Category</mat-label>
+      <mat-select formControlName="category">
+        @for (category of categories; track category) {
+          <mat-option [value]="category" class="text-capitalize">
+            {{ category }}
+          </mat-option>
+        }
+      </mat-select>
+      @if (categoryControl.hasError("required")) {
+        <mat-error>Category is required.</mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Type</mat-label>
+      <mat-select formControlName="type">
+        @for (type of types; track type) {
+          <mat-option [value]="type" class="text-capitalize">
+            {{ type }}
+          </mat-option>
+        }
+      </mat-select>
+      @if (typeControl.hasError("required")) {
+        <mat-error>Type is required.</mat-error>
+      }
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions [align]="'end'">
+  <button 
+    mat-button
+    type="button"  
+    mat-dialog-close
+  >
+    Cancel
+  </button>
+  <button 
+    form="#create_form"
+    mat-button 
+    mat-stroked-button 
+    type="button"
+    [mat-dialog-close]="true"
+    cdkFocusInitial
+    (click)="submit()"
+    class="bg-primary-clr text-white"
+  >
+    Create
+  </button>
+</mat-dialog-actions>
