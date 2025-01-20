@@ -2,13 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { GeneralResponse, Response } from '../models/Utils';
-
-interface SignUpData {
-  profile?: File;
-  name: string;
-  email: string;
-  password: string;
-}
+import { SignUpData } from '../models/User';
 
 @Injectable({
   providedIn: 'root'
@@ -29,7 +23,7 @@ export class AuthService {
 
   setRole(role: string) {
     const url = `${environment.apiUrl}/auth/role`;
-    const token = localStorage.getItem("token") || "";
+    const token = localStorage.getItem("token");
     return this.http.post<GeneralResponse>(
       url,
       { role },

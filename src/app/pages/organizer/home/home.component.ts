@@ -1,29 +1,11 @@
 import { Component, signal, ChangeDetectorRef, inject } from '@angular/core';
-import { CalendarOptions, EventClickArg, EventApi, EventInput } from '@fullcalendar/core';
+import { CalendarOptions, EventClickArg } from '@fullcalendar/core';
 import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import { MatDialog } from '@angular/material/dialog';
 import { EventDialogComponent } from '../../../components/event-dialog/event-dialog.component';
-
-export const INITIAL_EVENTS: EventInput[] = [
-  {
-    id: "1",
-    title: 'All-day event',
-    start:  new Date().toISOString()
-  },
-  {
-    id: "2",
-    title: 'Timed event',
-    start:  new Date().toISOString(),
-    end:  new Date().toISOString()
-  },
-  {
-    id: "3",
-    title: 'Timed event',
-    start:  new Date().toISOString(),
-    end:  new Date().toISOString()
-  }
-];
+import { EventService } from '../../../services/event.service';
+import { concatMap, map } from 'rxjs';
 
 @Component({
   standalone: false,
@@ -32,8 +14,6 @@ export const INITIAL_EVENTS: EventInput[] = [
   styleUrl: './home.component.scss'
 })
 export class HomeComponent {
-  currentEvents = signal<EventApi[]>([]);
-
   calendarOptions = signal<CalendarOptions>({
     plugins: [
       interactionPlugin,
@@ -45,31 +25,56 @@ export class HomeComponent {
       right: 'today'
     },
     initialView: 'dayGridMonth',
-    initialEvents: INITIAL_EVENTS,
+    initialEvents: (fetchInfo, successCallback, failureCallback) => {
+      this.eventService.getAll().pipe(
+        map(res => res.data),
+        map(events => events.map((event) => ({
+          id: event._id,
+          title: event.title,
+          start: event.date,
+        })))
+      ).subscribe({
+        next: (events) => successCallback(events),
+        error: (err) => failureCallback(err),
+      });
+    },
     weekends: true,
     dayMaxEvents: true,
     dateClick: this.handleDateClick.bind(this),
     eventClick: this.handleEventClick.bind(this),
-    eventsSet: this.handleEvents.bind(this)
-    /* you can update a remote database when these fire:
-    eventAdd:
-    eventChange:
-    eventRemove:
-    */
+    height: 650,
   });
-  readonly dialog = inject(MatDialog);
-
+  
+  private dialog = inject(MatDialog);
   private changeDetector = inject(ChangeDetectorRef);
+  private eventService = inject(EventService);
+
+  constructor() {}
 
   handleDateClick(arg: DateClickArg) {
     const dialogRef = this.dialog.open(EventDialogComponent, {
       data: {
         date: arg.date,
       },
+      disableClose: true,
     });
 
-    dialogRef.afterClosed().subscribe(result => {
-      console.log(`Dialog result: ${result}`);
+    dialogRef.afterClosed().pipe(
+      concatMap(() => this.eventService.getAll().pipe(
+        map(res => res.data),
+        map(events => events.map((event) => ({
+          id: event._id,
+          title: event.title,
+          start: event.date,
+        })))
+      ))
+    ).subscribe({
+      next: (events) => {
+        this.calendarOptions.update(prev => ({
+          ...prev,
+          events
+        }));
+      }
     });
   }
 
@@ -79,8 +84,7 @@ export class HomeComponent {
     }
   }
 
-  handleEvents(events: EventApi[]) {
-    this.currentEvents.set(events);
+  handleEvents() {
     this.changeDetector.detectChanges();
   }
 }

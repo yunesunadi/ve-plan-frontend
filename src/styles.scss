@@ -7,6 +7,12 @@
 :root {
   --primary-clr: #432E54;
   --secondary-clr: #E8BCB9;
+
+  @include mat.snack-bar-overrides((
+    container-color: var(--secondary-clr),
+    supporting-text-color: var(--primary-clr),
+    button-color: var(--primary-clr),
+  ));
 }
 
 html, body {

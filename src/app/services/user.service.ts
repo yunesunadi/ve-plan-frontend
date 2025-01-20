@@ -11,7 +11,7 @@ export class UserService {
 
   hasRole() {
     const url = `${environment.apiUrl}/user/has_role`;
-    const token = localStorage.getItem("token") || "";
+    const token = localStorage.getItem("token");
     return this.http.get<GeneralResponse & { has_role: boolean; role: "organizer" | "attendee"; }>(
       url,
       {

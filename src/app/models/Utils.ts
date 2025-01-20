@@ -12,3 +12,9 @@ export interface JWTPayload {
   iat: number;
   exp: number;
 }
+
+export interface Basic {
+  _id: string;
+  created_at: string;
+  updated_at: string;
+}

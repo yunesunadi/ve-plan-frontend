@@ -1,8 +1,8 @@
 <h6 mat-dialog-title class="text-primary-clr">
-  Create Event ({{ create_form.value.date }})
+  Create Event ({{ eventDate }})
 </h6>
 <mat-dialog-content>
-  <form id="create_form" [formGroup]="create_form" class="d-flex flex-column create-form">
+  <form id="createForm" [formGroup]="create_form" (ngSubmit)="submit()" class="d-flex flex-column create-form">
     <div class="align-self-center mb-3">
       <p class="mb-1">Cover</p>
       <label for="cover" class="cover-img-container">
@@ -52,7 +52,7 @@
       <mat-label>Category</mat-label>
       <mat-select formControlName="category">
         @for (category of categories; track category) {
-          <mat-option [value]="category" class="text-capitalize">
+          <mat-option [value]="category">
             {{ category }}
           </mat-option>
         }
@@ -65,7 +65,7 @@
       <mat-label>Type</mat-label>
       <mat-select formControlName="type">
         @for (type of types; track type) {
-          <mat-option [value]="type" class="text-capitalize">
+          <mat-option [value]="type">
             {{ type }}
           </mat-option>
         }
@@ -85,13 +85,11 @@
     Cancel
   </button>
   <button 
-    form="#create_form"
+    form="createForm"
     mat-button 
     mat-stroked-button 
-    type="button"
-    [mat-dialog-close]="true"
+    type="submit"
     cdkFocusInitial
-    (click)="submit()"
     class="bg-primary-clr text-white"
   >
     Create
