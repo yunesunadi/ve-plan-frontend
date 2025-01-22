@@ -8,8 +8,11 @@ export interface Event {
   end_time: string;
   category: "conference" | "meetup" | "webinar";
   type: "public" | "private";
+  organizer_id: string;
 }
 
 export type CreateEventResponse = GeneralResponse & Response<"data", Basic & Event>;
 
 export type GetEventsResponse = GeneralResponse & Response<"data", Array<Basic & Event>>;
+
+export type GetEventResponse = GeneralResponse & Response<"data", Basic & Event>;

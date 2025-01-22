@@ -1,0 +1,19 @@
+@let event = event$ | async;
+
+@if (event) {
+  @let detailUrl = 'organizer/dashboard/events/' + event._id + '/view';
+
+  <mat-dialog-actions class="d-flex justify-content-between">
+    <h3 class="text-primary-clr mb-0">{{ event.title }}</h3>
+    <a class="text-decoration-underline" [routerLink]="detailUrl">See Details</a>
+  </mat-dialog-actions>
+  <mat-dialog-content class="pt-2 pb-4">
+    <p>{{ event.description }}</p>
+    <p>Date: {{ formatDate(event.date) }}</p>
+    <p>From: {{ formatTime(event.start_time) }}</p>
+    <p>To: {{ formatTime(event.end_time) }}</p>
+    <p>Category: {{ event.category }}</p>
+    <p>Type: {{ event.type }}</p>
+    <p>Created by: {{ event.organizer_id }}</p>
+  </mat-dialog-content>
+}

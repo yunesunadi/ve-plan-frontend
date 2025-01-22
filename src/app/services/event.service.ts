@@ -1,6 +1,6 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Event, CreateEventResponse, GetEventsResponse } from '../models/Event';
+import { Event, CreateEventResponse, GetEventsResponse, GetEventResponse } from '../models/Event';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -8,26 +8,33 @@ import { environment } from '../../environments/environment';
 })
 export class EventService {
   private http = inject(HttpClient);
+  private token = localStorage.getItem("token");
 
   create(event: Event) {
     const url = `${environment.apiUrl}/events`;
-    const token = localStorage.getItem("token");
     return this.http.post<CreateEventResponse>(url, event, {
       headers: new HttpHeaders({
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${this.token}`,
       })
     });
   }
 
   getAll() {
     const url = `${environment.apiUrl}/events`;
-    const token = localStorage.getItem("token");
     return this.http.get<GetEventsResponse>(url, {
       headers: new HttpHeaders({
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${this.token}`,
       })
     });
   }
 
+  getOneById(id: string) {
+    const url = `${environment.apiUrl}/events/${id}`;
+    return this.http.get<GetEventResponse>(url, {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${this.token}`,
+      })
+    });
+  }
 
 }

@@ -9,6 +9,7 @@ import { SignUpData } from '../models/User';
 })
 export class AuthService {
   private http = inject(HttpClient);
+  private token = localStorage.getItem("token");
 
   register(data: SignUpData) {
     const url = `${environment.apiUrl}/auth/register`;
@@ -23,21 +24,19 @@ export class AuthService {
 
   setRole(role: string) {
     const url = `${environment.apiUrl}/auth/role`;
-    const token = localStorage.getItem("token");
     return this.http.post<GeneralResponse>(
       url,
       { role },
       {
         headers: new HttpHeaders({
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${this.token}`
         })
       }
     );
   }
 
   isLoggedIn() {
-    const token = localStorage.getItem("token");
-    if (!token) return false;
+    if (!this.token) return false;
     return true;
   }
 

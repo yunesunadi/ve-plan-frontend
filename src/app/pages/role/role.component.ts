@@ -18,7 +18,7 @@ export class RoleComponent {
   submit() {
     this.authService.setRole(this.chosen_role).subscribe({
       next: () => {
-        this.router.navigateByUrl("dashboard/home");
+        this.router.navigateByUrl(`${this.chosen_role}/dashboard/home`);
       },
       error: (err) => {
         console.log("err", err);

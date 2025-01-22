@@ -6,6 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { EventDialogComponent } from '../../../components/event-dialog/event-dialog.component';
 import { EventService } from '../../../services/event.service';
 import { concatMap, map } from 'rxjs';
+import { EventDetailsDialogComponent } from '../../../components/event-details-dialog/event-details-dialog.component';
 
 @Component({
   standalone: false,
@@ -79,9 +80,13 @@ export class HomeComponent {
   }
 
   handleEventClick(clickInfo: EventClickArg) {
-    if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
-      clickInfo.event.remove();
-    }
+    const dialogRef = this.dialog.open(EventDetailsDialogComponent, {
+      data: {
+        id: clickInfo.event.id,
+      },
+      autoFocus: false
+    });
+
   }
 
   handleEvents() {

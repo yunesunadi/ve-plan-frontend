@@ -8,15 +8,15 @@ import { GeneralResponse, Response } from '../models/Utils';
 })
 export class UserService {
   private http = inject(HttpClient);
+  private token = localStorage.getItem("token");
 
   hasRole() {
     const url = `${environment.apiUrl}/user/has_role`;
-    const token = localStorage.getItem("token");
     return this.http.get<GeneralResponse & { has_role: boolean; role: "organizer" | "attendee"; }>(
       url,
       {
         headers: new HttpHeaders({
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${this.token}`
         })
       }
     );

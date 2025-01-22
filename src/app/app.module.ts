@@ -28,6 +28,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { EventDialogComponent } from './components/event-dialog/event-dialog.component';
 import { MatTimepickerModule } from '@angular/material/timepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
+import { EventDetailsDialogComponent } from './components/event-details-dialog/event-details-dialog.component';
 
 @NgModule({
   declarations: [
@@ -39,6 +40,7 @@ import { provideNativeDateAdapter } from '@angular/material/core';
     OrganizerHomeComponent,
     AttendeeHomeComponent,
     EventDialogComponent,
+    EventDetailsDialogComponent,
   ],
   imports: [
     RouterModule,

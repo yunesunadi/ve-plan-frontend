@@ -12,7 +12,11 @@ export class PrivateComponent {
   private route = inject(Router);
 
   logout() {
-    localStorage.removeItem("token");
-    this.route.navigateByUrl("login");
+    const isConfirmed = confirm("Are you sure to logout?");
+
+    if (isConfirmed) {
+      localStorage.removeItem("token");
+      this.route.navigateByUrl("login");
+    }
   }
 }
