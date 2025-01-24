@@ -8,31 +8,33 @@ import { environment } from '../../environments/environment';
 })
 export class EventService {
   private http = inject(HttpClient);
-  private token = localStorage.getItem("token");
 
   create(event: Event) {
+    const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/events`;
     return this.http.post<CreateEventResponse>(url, event, {
       headers: new HttpHeaders({
-        Authorization: `Bearer ${this.token}`,
+        Authorization: `Bearer ${token}`,
       })
     });
   }
 
   getAll() {
+    const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/events`;
     return this.http.get<GetEventsResponse>(url, {
       headers: new HttpHeaders({
-        Authorization: `Bearer ${this.token}`,
+        Authorization: `Bearer ${token}`,
       })
     });
   }
 
   getOneById(id: string) {
+    const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/events/${id}`;
     return this.http.get<GetEventResponse>(url, {
       headers: new HttpHeaders({
-        Authorization: `Bearer ${this.token}`,
+        Authorization: `Bearer ${token}`,
       })
     });
   }

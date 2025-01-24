@@ -1,3 +1,4 @@
+import { User } from "./User";
 import { Basic, GeneralResponse, Response } from "./Utils";
 
 export interface Event {
@@ -8,7 +9,7 @@ export interface Event {
   end_time: string;
   category: "conference" | "meetup" | "webinar";
   type: "public" | "private";
-  organizer_id: string;
+  user: User;
 }
 
 export type CreateEventResponse = GeneralResponse & Response<"data", Basic & Event>;

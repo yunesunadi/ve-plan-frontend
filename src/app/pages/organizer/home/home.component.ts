@@ -15,6 +15,17 @@ import { EventDetailsDialogComponent } from '../../../components/event-details-d
   styleUrl: './home.component.scss'
 })
 export class HomeComponent {
+  private eventService = inject(EventService);
+
+  private events$ = this.eventService.getAll().pipe(
+    map(res => res.data),
+    map(events => events.map((event) => ({
+      id: event._id,
+      title: event.title,
+      start: event.date,
+    })))
+  );
+
   calendarOptions = signal<CalendarOptions>({
     plugins: [
       interactionPlugin,
@@ -27,14 +38,7 @@ export class HomeComponent {
     },
     initialView: 'dayGridMonth',
     initialEvents: (fetchInfo, successCallback, failureCallback) => {
-      this.eventService.getAll().pipe(
-        map(res => res.data),
-        map(events => events.map((event) => ({
-          id: event._id,
-          title: event.title,
-          start: event.date,
-        })))
-      ).subscribe({
+      this.events$.subscribe({
         next: (events) => successCallback(events),
         error: (err) => failureCallback(err),
       });
@@ -48,7 +52,6 @@ export class HomeComponent {
   
   private dialog = inject(MatDialog);
   private changeDetector = inject(ChangeDetectorRef);
-  private eventService = inject(EventService);
 
   constructor() {}
 
@@ -61,14 +64,7 @@ export class HomeComponent {
     });
 
     dialogRef.afterClosed().pipe(
-      concatMap(() => this.eventService.getAll().pipe(
-        map(res => res.data),
-        map(events => events.map((event) => ({
-          id: event._id,
-          title: event.title,
-          start: event.date,
-        })))
-      ))
+      concatMap(() => this.events$)
     ).subscribe({
       next: (events) => {
         this.calendarOptions.update(prev => ({

@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { EventService } from '../../services/event.service';
-import { map } from 'rxjs';
+import { map, shareReplay } from 'rxjs';
 import { format } from 'date-fns';
 
 @Component({
@@ -15,7 +15,8 @@ export class EventDetailsDialogComponent {
   private eventService = inject(EventService);
 
   event$ = this.eventService.getOneById(this.dialog_data.id).pipe(
-    map(res => res.data)
+    map(res => res.data),
+    shareReplay()
   );
 
   constructor() {}

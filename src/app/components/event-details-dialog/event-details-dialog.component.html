@@ -9,11 +9,34 @@
   </mat-dialog-actions>
   <mat-dialog-content class="pt-2 pb-4">
     <p>{{ event.description }}</p>
-    <p>Date: {{ formatDate(event.date) }}</p>
-    <p>From: {{ formatTime(event.start_time) }}</p>
-    <p>To: {{ formatTime(event.end_time) }}</p>
-    <p>Category: {{ event.category }}</p>
+    
+    <div class="d-flex" style="gap: .5rem;">
+      <mat-icon>calendar_today</mat-icon>
+      <span>{{ formatDate(event.date) }}</span>
+    </div>
+
+    <div class="d-flex" style="gap: .5rem;">
+      <mat-icon>category</mat-icon>
+      <span>{{ event.category }}</span>
+    </div>
+   
+    <div class="d-flex" style="gap: 2rem;">
+      <div>
+        <p class="mb-0">From:</p>
+        <div class="d-flex" style="gap: .5rem;">
+          <mat-icon>access_time</mat-icon>
+          <span>{{ formatTime(event.start_time) }}</span>
+        </div>
+      </div>
+      <div>
+        <p class="mb-0">To:</p>
+        <div class="d-flex" style="gap: .5rem;">
+          <mat-icon>access_time</mat-icon>
+          <span>{{ formatTime(event.end_time) }}</span>
+        </div>
+      </div>
+    </div>
     <p>Type: {{ event.type }}</p>
-    <p>Created by: {{ event.organizer_id }}</p>
+    <p>Created by: {{ event.user.name }}</p>
   </mat-dialog-content>
 }
