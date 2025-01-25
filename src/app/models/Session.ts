@@ -3,6 +3,7 @@ import { Basic, GeneralResponse, Response } from "./Utils";
 export interface Session {
   title: string;
   description: string;
+  speaker_info: string;
   start_time: string;
   end_time: string;
   event: Event;

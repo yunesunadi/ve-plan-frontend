@@ -33,6 +33,7 @@ import { EventViewComponent as OrganizerEventViewComponent } from './pages/organ
 import { FormatDatePipe } from './pipes/format-date.pipe';
 import { FormatTimePipe } from './pipes/format-time.pipe';
 import { SessionDialogComponent } from './components/session-dialog/session-dialog.component';
+import { MatCardModule } from '@angular/material/card';
 
 @NgModule({
   declarations: [
@@ -68,6 +69,7 @@ import { SessionDialogComponent } from './components/session-dialog/session-dial
     FullCalendarModule,
     MatDialogModule,
     MatTimepickerModule,
+    MatCardModule,
   ],
   providers: [
     appConfig.providers,

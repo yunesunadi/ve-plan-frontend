@@ -24,6 +24,19 @@
       }
     </mat-form-field>
     <mat-form-field appearance="outline">
+      <mat-label>Speaker information is required.</mat-label>
+      <textarea 
+        matInput
+        cdkTextareaAutosize
+        cdkAutosizeMinRows="3"
+        formControlName="description"
+        placeholder="Enter description"
+      ></textarea>
+      @if (descriptionControl.hasError('required')) {
+        <mat-error>Description is required.</mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field appearance="outline">
       <mat-label>Start time</mat-label>
       <input matInput [matTimepicker]="timepicker1" formControlName="start_time">
       <mat-timepicker #timepicker1/>

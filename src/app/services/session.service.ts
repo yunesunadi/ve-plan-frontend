@@ -21,12 +21,13 @@ export class SessionService {
     });
   }
 
-  getAll() {
+  getAll(event: string) {
     const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/sessions`;
     return this.http.get<GetSessionsResponse>(url, {
       headers: new HttpHeaders({
         Authorization: `Bearer ${token}`,
+        "event-id": event
       })
     });
   }

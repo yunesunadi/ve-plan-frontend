@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { catchError, concatMap, EMPTY, map, shareReplay } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { SessionDialogComponent } from '../../../components/session-dialog/session-dialog.component';
+import { SessionService } from '../../../services/session.service';
 
 @Component({
   standalone: false,
@@ -13,6 +14,7 @@ import { SessionDialogComponent } from '../../../components/session-dialog/sessi
 })
 export class EventViewComponent {
   private eventService = inject(EventService);
+  private sessionService = inject(SessionService);
   private aroute = inject(ActivatedRoute);
   private route = inject(Router);
   private dialog = inject(MatDialog);
@@ -24,6 +26,12 @@ export class EventViewComponent {
       this.route.navigateByUrl("organizer/dashboard/not-found");
       return EMPTY;
     }),
+    shareReplay()
+  );
+
+  sessions$ = this.aroute.params.pipe(
+    concatMap((params: any) => this.sessionService.getAll(params.id)),
+    map((res) => res.data),
     shareReplay()
   );
 

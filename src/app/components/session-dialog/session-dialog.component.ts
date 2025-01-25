@@ -23,7 +23,8 @@ export class SessionDialogComponent {
   constructor() {
     this.create_form = this.form_builder.group({
       title: ['', Validators.required],
-      description: ['', Validators.required],
+      description: [''],
+      speaker_info: [''],
       start_time: ['', Validators.required],
       end_time: ['', Validators.required],
       event: [this.dialog_data.event_id, Validators.required]
@@ -36,6 +37,10 @@ export class SessionDialogComponent {
 
     get descriptionControl() {
       return this.create_form.controls["description"];
+    }
+
+    get speakerInfoControl() {
+      return this.create_form.controls["speaker_info"];
     }
 
     get startTimeControl() {
