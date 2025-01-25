@@ -1,8 +1,9 @@
 import { Component, inject } from '@angular/core';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { EventService } from '../../services/event.service';
 import { map, shareReplay } from 'rxjs';
 import { format } from 'date-fns';
+import { Router } from '@angular/router';
 
 @Component({
   standalone: false,
@@ -13,6 +14,8 @@ import { format } from 'date-fns';
 export class EventDetailsDialogComponent {
   private dialog_data = inject(MAT_DIALOG_DATA);
   private eventService = inject(EventService);
+  private dialog = inject(MatDialogRef<this>);
+  private route = inject(Router);
 
   event$ = this.eventService.getOneById(this.dialog_data.id).pipe(
     map(res => res.data),
@@ -21,12 +24,9 @@ export class EventDetailsDialogComponent {
 
   constructor() {}
 
-  formatDate(value: string) {
-    return format(value, "dd/MM/yyyy");
-  }
-
-  formatTime(value: string) {
-    return format(value, "hh:mm a");
+  navigate(url: string) {
+    this.route.navigateByUrl(url);
+    this.dialog.close();
   }
 
 }

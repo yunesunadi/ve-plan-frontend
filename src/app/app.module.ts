@@ -29,6 +29,10 @@ import { EventDialogComponent } from './components/event-dialog/event-dialog.com
 import { MatTimepickerModule } from '@angular/material/timepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { EventDetailsDialogComponent } from './components/event-details-dialog/event-details-dialog.component';
+import { EventViewComponent as OrganizerEventViewComponent } from './pages/organizer/event-view/event-view.component';
+import { FormatDatePipe } from './pipes/format-date.pipe';
+import { FormatTimePipe } from './pipes/format-time.pipe';
+import { SessionDialogComponent } from './components/session-dialog/session-dialog.component';
 
 @NgModule({
   declarations: [
@@ -41,6 +45,10 @@ import { EventDetailsDialogComponent } from './components/event-details-dialog/e
     AttendeeHomeComponent,
     EventDialogComponent,
     EventDetailsDialogComponent,
+    OrganizerEventViewComponent,
+    FormatDatePipe,
+    FormatTimePipe,
+    SessionDialogComponent,
   ],
   imports: [
     RouterModule,

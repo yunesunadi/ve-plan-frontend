@@ -1,16 +1,19 @@
 @let event = event$ | async;
-
+<app-outlet-inner>
 @if (event) {
-  @let detailUrl = 'organizer/dashboard/events/' + event._id + '/view';
-
-  <mat-dialog-actions class="d-flex justify-content-between">
-    <h3 class="text-primary-clr mb-0">{{ event.title }}</h3>
-    <a class="text-decoration-underline cursor-pointer d-flex" style="gap: .3rem;"(click)="navigate(detailUrl)">
-      <span>See Details</span>
-      <mat-icon>arrow_forward</mat-icon>
-    </a>
-  </mat-dialog-actions>
-  <mat-dialog-content class="pt-2 pb-4">
+  <section>
+    <div class="d-flex justify-content-between mb-2">
+      <h3 class="text-primary-clr mb-0">Event's Details</h3>
+      <button
+        mat-raised-button
+        type="button"
+        class="bg-secondary-clr text-primary-clr"
+      >
+        <mat-icon>edit</mat-icon>
+        Edit
+      </button>
+    </div>
+    <h6 class="text-primary-clr">{{ event.title }}</h6>
     <p>{{ event.description }}</p>
     <div class="row mb-2">
       <div class="col-6">
@@ -60,5 +63,23 @@
         </div>
       </div>
     </div>
-  </mat-dialog-content>
+  </section>
+  <section class="mt-3">
+    <div class="d-flex justify-content-between mb-2">
+      <h5 class="text-primary-clr mb-0">Sessions</h5>
+      <button
+        mat-raised-button
+        type="button"
+        class="bg-secondary-clr text-primary-clr"
+        (click)="openSessionModal(event._id)"
+      >
+        <mat-icon>add</mat-icon>
+        Add
+      </button>
+    </div>
+    <ng-container>
+      <p class="text-center">There is no session found.</p>
+    </ng-container>
+  </section>
 }
+</app-outlet-inner>

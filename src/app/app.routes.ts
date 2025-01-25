@@ -8,6 +8,8 @@ import { PrivateComponent } from './layouts/private/private.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { HomeComponent as OrganizerHomeComponent } from './pages/organizer/home/home.component';
 import { HomeComponent as AttendeeHomeComponent } from './pages/attendee/home/home.component';
+import { EventViewComponent as OrganizerEventViewComponent } from './pages/organizer/event-view/event-view.component';
+import { completeAuthGuard } from './guards/complete-auth.guard';
 
 const publicRoutes: Routes = [
   {
@@ -34,7 +36,12 @@ const organizerRoutes: Routes = [
   {
     path: "home",
     component: OrganizerHomeComponent,
-    canActivate: [authGuard, hasRoleGuard]
+    canActivate: [completeAuthGuard]
+  },
+  {
+    path: "events/:id/view",
+    component: OrganizerEventViewComponent,
+    canActivate: [completeAuthGuard]
   },
   {
     path: "**",
@@ -46,7 +53,7 @@ const attendeeRoutes: Routes = [
   {
     path: "home",
     component: AttendeeHomeComponent,
-    canActivate: [authGuard, hasRoleGuard]
+    canActivate: [completeAuthGuard]
   },
   {
     path: "**",

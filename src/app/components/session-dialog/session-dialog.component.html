@@ -1,0 +1,63 @@
+<h6 mat-dialog-title class="text-primary-clr">
+  Create Session
+</h6>
+<mat-dialog-content>
+  <form id="createForm" [formGroup]="create_form" (ngSubmit)="submit()" class="d-flex flex-column create-form">
+    <mat-form-field appearance="outline">
+      <mat-label>Title</mat-label>
+      <input matInput type="text" formControlName="title" placeholder="Enter title">
+      @if (titleControl.hasError('required')) {
+        <mat-error>Title is required.</mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Description</mat-label>
+      <textarea 
+        matInput
+        cdkTextareaAutosize
+        cdkAutosizeMinRows="3"
+        formControlName="description"
+        placeholder="Enter description"
+      ></textarea>
+      @if (descriptionControl.hasError('required')) {
+        <mat-error>Description is required.</mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Start time</mat-label>
+      <input matInput [matTimepicker]="timepicker1" formControlName="start_time">
+      <mat-timepicker #timepicker1/>
+      <mat-timepicker-toggle [for]="timepicker1" matSuffix/>
+      @if (startTimeControl.hasError('required')) {
+        <mat-error>Start time is required.</mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>End time</mat-label>
+      <input matInput [matTimepicker]="timepicker2" formControlName="end_time">
+      <mat-timepicker #timepicker2/>
+      <mat-timepicker-toggle [for]="timepicker2" matSuffix/>
+      @if (endTimeControl.hasError('required')) {
+        <mat-error>End time is required.</mat-error>
+      }
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions [align]="'end'">
+  <button 
+    mat-button
+    type="button"  
+    mat-dialog-close
+  >
+    Cancel
+  </button>
+  <button 
+    form="createForm"
+    mat-stroked-button 
+    type="submit"
+    cdkFocusInitial
+    class="bg-primary-clr text-white"
+  >
+    Create
+  </button>
+</mat-dialog-actions>
