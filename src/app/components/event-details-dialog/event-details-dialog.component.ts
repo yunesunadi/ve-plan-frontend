@@ -4,6 +4,7 @@ import { EventService } from '../../services/event.service';
 import { map, shareReplay } from 'rxjs';
 import { format } from 'date-fns';
 import { Router } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 @Component({
   standalone: false,
@@ -19,10 +20,14 @@ export class EventDetailsDialogComponent {
 
   event$ = this.eventService.getOneById(this.dialog_data.id).pipe(
     map(res => res.data),
-    shareReplay()
+    shareReplay(1)
   );
 
   constructor() {}
+
+  get cover_url() {
+    return environment.coverUrl;
+  }
 
   navigate(url: string) {
     this.route.navigateByUrl(url);

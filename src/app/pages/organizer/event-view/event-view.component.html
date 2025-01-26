@@ -10,6 +10,7 @@
         mat-raised-button
         type="button"
         class="bg-secondary-clr text-primary-clr"
+        (click)="editEvent()"
       >
         <mat-icon>edit</mat-icon>
         Edit
@@ -17,6 +18,9 @@
     </div>
     <mat-card appearance="outlined">
       <mat-card-content>
+        @if (event.cover) {
+          <img [src]="cover_url + '/' + event.cover" alt="Event photo" class="cover-img">
+        }
         <h6 class="text-primary-clr">{{ event.title }}</h6>
         <p>{{ event.description }}</p>
         <div class="row g-2">
@@ -80,8 +84,10 @@
       </button>
     </div>
     <ng-container>
-      @if (sessions) {
+      @if (sessions && sessions.length > 0) {
+      <div class="row g-3">
         @for (session of sessions; track $index) {
+        <div class="col-md-6">
           <mat-card appearance="outlined">
             <mat-card-content>
               <p>
@@ -110,7 +116,9 @@
               </div>
             </mat-card-content>
           </mat-card>
+        </div>
         }
+      </div>
       } @else {
         <p class="text-center">There is no session found.</p>
       }

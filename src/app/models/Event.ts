@@ -2,6 +2,7 @@ import { User } from "./User";
 import { Basic, GeneralResponse, Response } from "./Utils";
 
 export interface Event {
+  cover: string;
   title: string;
   description: string;
   date: string;

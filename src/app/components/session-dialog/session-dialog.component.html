@@ -24,16 +24,16 @@
       }
     </mat-form-field>
     <mat-form-field appearance="outline">
-      <mat-label>Speaker information is required.</mat-label>
+      <mat-label>Speaker information</mat-label>
       <textarea 
         matInput
         cdkTextareaAutosize
         cdkAutosizeMinRows="3"
-        formControlName="description"
-        placeholder="Enter description"
+        formControlName="speaker_info"
+        placeholder="Enter speaker information"
       ></textarea>
-      @if (descriptionControl.hasError('required')) {
-        <mat-error>Description is required.</mat-error>
+      @if (speakerInfoControl.hasError('required')) {
+        <mat-error>Speaker information is required.</mat-error>
       }
     </mat-form-field>
     <mat-form-field appearance="outline">

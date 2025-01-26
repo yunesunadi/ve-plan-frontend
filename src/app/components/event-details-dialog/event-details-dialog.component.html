@@ -11,6 +11,9 @@
     </a>
   </mat-dialog-actions>
   <mat-dialog-content class="pt-2 pb-4">
+    @if (event.cover) {
+      <img [src]="cover_url + '/' + event.cover" alt="Event photo" class="cover-img">
+    }
     <p>{{ event.description }}</p>
     <div class="row mb-2">
       <div class="col-6">

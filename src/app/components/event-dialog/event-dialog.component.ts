@@ -4,6 +4,8 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { format } from "date-fns";
 import { EventService } from '../../services/event.service';
 import { CommonService } from '../../services/common.service';
+import { concatMap, iif, of } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Component({
   standalone: false,
@@ -26,15 +28,19 @@ export class EventDialogComponent {
 
   constructor() {
     this.create_form = this.form_builder.group({
-      cover: [''],
-      title: ['', Validators.required],
-      description: ['', Validators.required],
+      cover: [this.dialog_data.cover],
+      title: [this.dialog_data.title || '', Validators.required],
+      description: [this.dialog_data.description || '', Validators.required],
       date: [this.dialog_data.date, Validators.required],
-      start_time: ['', Validators.required],
-      end_time: ['', Validators.required],
-      category: ['', Validators.required],
-      type: ['', Validators.required],
+      start_time: [this.dialog_data.start_time || '', Validators.required],
+      end_time: [this.dialog_data.end_time || '', Validators.required],
+      category: [this.dialog_data.category || '', Validators.required],
+      type: [this.dialog_data.type || '', Validators.required],
     });
+  }
+
+  ngAfterViewInit() {
+    this.imgView.nativeElement.src = this.dialog_data.cover ? `${environment.coverUrl}/${this.dialog_data.cover}` : 'assets/images/placeholder.jpg';
   }
 
   get titleControl() {
@@ -84,7 +90,13 @@ export class EventDialogComponent {
   submit() {
     if (this.create_form.invalid) return;
 
-    this.eventService.create(this.create_form.value).subscribe({
+    of(true).pipe(
+      concatMap(() => iif(
+        () => !!this.dialog_data._id,
+        this.eventService.update(this.dialog_data._id, this.create_form.value),
+        this.eventService.create(this.create_form.value)
+      ))
+    ).subscribe({
       next: (res) => {
         this.commonService.openSnackBar(res.message);
         this.dialog.close();
