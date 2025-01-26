@@ -5,6 +5,8 @@ import { Router } from '@angular/router';
 import { concatMap, delay, map } from 'rxjs';
 import { jwtDecode } from "jwt-decode";
 import { UserPayload } from '../../models/User';
+import { CommonService } from '../../services/common.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   standalone: false,
@@ -19,6 +21,7 @@ export class LoginComponent {
   private form_builder = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private commonService = inject(CommonService);
 
   constructor() {
     this.login_form = this.form_builder.group({
@@ -59,7 +62,15 @@ export class LoginComponent {
         }
       },
       error: (err) => {
-        console.log("err", err);
+        if (err instanceof HttpErrorResponse) {
+          if (err.status === 401) {
+            this.commonService.openSnackBar("Incorrect password.");
+          }
+
+          if (err.status === 404) {
+            this.commonService.openSnackBar("User with this email is not found.");
+          }
+        }
       }
     });
   }

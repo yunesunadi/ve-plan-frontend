@@ -9,9 +9,9 @@ export const unauthenticatedInterceptor: HttpInterceptorFn = (req, next) => {
     catchError((error) => {
       if (error instanceof HttpErrorResponse && error.status === 401) {
         route.navigateByUrl("login");
-        return throwError(() => new Error(error as any));
+        return throwError(() => error);
       }
-      return throwError(() => new Error(error));
+      return throwError(() => error);
     })
   );
 };

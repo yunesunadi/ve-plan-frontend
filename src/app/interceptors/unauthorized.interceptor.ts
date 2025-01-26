@@ -7,16 +7,17 @@ import { jwtDecode } from 'jwt-decode';
 
 export const unauthorizedInterceptor: HttpInterceptorFn = (req, next) => {
   const route = inject(Router);
-  const token = localStorage.getItem("token") || "";
-  const decoded: UserPayload = jwtDecode(token);
+  const token = localStorage.getItem("token");
 
   return next(req).pipe(
     catchError((error) => {
       if (error instanceof HttpErrorResponse && error.status === 403) {
-        route.navigateByUrl(`${decoded.role}/dashboard/home`);
-        return throwError(() => new Error(error as any));
+        if (token) {
+          route.navigateByUrl(`${(jwtDecode(token) as UserPayload).role}/dashboard/home`);
+        }
+        return throwError(() => error);
       }
-      return throwError(() => new Error(error));
+      return throwError(() => error);
     })
   );
 };

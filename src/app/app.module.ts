@@ -34,6 +34,7 @@ import { FormatDatePipe } from './pipes/format-date.pipe';
 import { FormatTimePipe } from './pipes/format-time.pipe';
 import { SessionDialogComponent } from './components/session-dialog/session-dialog.component';
 import { MatCardModule } from '@angular/material/card';
+import { unauthorizedInterceptor } from './interceptors/unauthorized.interceptor';
 
 @NgModule({
   declarations: [
@@ -75,7 +76,8 @@ import { MatCardModule } from '@angular/material/card';
     appConfig.providers,
     provideHttpClient(withInterceptors([
       notFoundInterceptor,
-      unauthenticatedInterceptor
+      unauthenticatedInterceptor,
+      unauthorizedInterceptor,
     ])),
     provideNativeDateAdapter()
   ],
