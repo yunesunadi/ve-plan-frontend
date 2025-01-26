@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { CreateSessionResponse, GetSessionsResponse, Session } from '../models/Session';
+import { CreateSessionResponse, GetSessionResponse, GetSessionsResponse, Session } from '../models/Session';
 
 @Injectable({
   providedIn: 'root'
@@ -28,6 +28,26 @@ export class SessionService {
       headers: new HttpHeaders({
         Authorization: `Bearer ${token}`,
         "event-id": event
+      })
+    });
+  }
+
+  getOneById(id: string) {
+    const token = localStorage.getItem("token");
+    const url = `${environment.apiUrl}/sessions/${id}`;
+    return this.http.get<GetSessionResponse>(url, {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${token}`,
+      })
+    });
+  }
+
+  update(id: string, session: Session) {
+    const token = localStorage.getItem("token");
+    const url = `${environment.apiUrl}/sessions/${id}`;
+    return this.http.put<CreateSessionResponse>(url, session, {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${token}`,
       })
     });
   }

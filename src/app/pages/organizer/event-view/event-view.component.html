@@ -90,10 +90,20 @@
         <div class="col-md-6">
           <mat-card appearance="outlined">
             <mat-card-content>
-              <p>
-                <b class="text-primary-clr">Title:</b> 
-                {{ session.title }}
-              </p>
+              <div class="d-flex justify-content-between">
+                <p>
+                  <b class="text-primary-clr">Title:</b> 
+                  {{ session.title }}
+                </p>
+                <button
+                  mat-mini-fab
+                  type="button"
+                  class="bg-secondary-clr text-primary-clr"
+                  (click)="editSession(session._id, event._id)"
+                >
+                  <mat-icon>edit</mat-icon>
+                </button>
+              </div>
               <p>
                 <b class="text-primary-clr">Description:</b> 
                 {{ session.description }}

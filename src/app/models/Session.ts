@@ -12,3 +12,5 @@ export interface Session {
 export type CreateSessionResponse = GeneralResponse & Response<"data", Basic & Session>;
 
 export type GetSessionsResponse = GeneralResponse & Response<"data", Array<Basic & Session>>;
+
+export type GetSessionResponse = GeneralResponse & Response<"data", Basic & Session>;

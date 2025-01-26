@@ -79,7 +79,28 @@ export class EventViewComponent {
           }
         });
       }
-    })
-    
+    });
+  }
+
+  editSession(session_id: string, event_id: string) {
+    this.sessionService.getOneById(session_id).pipe(
+      map((res) => res.data),
+    ).subscribe({
+      next: (session) => {
+        const dialogRef = this.dialog.open(SessionDialogComponent, {
+          data: {
+            ...session,
+            event_id
+          },
+          disableClose: true,
+        });
+
+        dialogRef.afterClosed().subscribe({
+          next: () => {
+            this.sessions$ = this.fetchSessions();
+          }
+        });
+      }
+    });
   }
 }
