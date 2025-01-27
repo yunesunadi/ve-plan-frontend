@@ -1,5 +1,5 @@
 <app-outlet-inner>
-  <full-calendar  [options]='calendarOptions()' class="mx-auto" style="max-width: 1100px;">
+  <full-calendar [options]='calendarOptions()' class="mx-auto" style="max-width: 1100px;">
     <ng-template #eventContent let-arg>
       <div class="event-item">
         <i>{{ arg.event.title }}</i>

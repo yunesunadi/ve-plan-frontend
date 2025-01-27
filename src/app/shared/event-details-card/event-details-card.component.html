@@ -1,29 +1,47 @@
-@let event = event$ | async;
-
-@if (event) {
-  @let detailUrl = (role$ | async) + '/dashboard/events/' + event._id + '/view';
-
-  <mat-dialog-actions class="d-flex justify-content-between">
-    <h3 class="text-primary-clr mb-0">{{ event.title }}</h3>
-    <a class="text-decoration-underline cursor-pointer d-flex" style="gap: .3rem;"(click)="navigate(detailUrl)">
-      <span>See Details</span>
-      <mat-icon>arrow_forward</mat-icon>
-    </a>
-  </mat-dialog-actions>
-  <mat-dialog-content class="pt-2 pb-4">
+<mat-card appearance="outlined">
+  <mat-card-content>
     @if (event.cover) {
       <img [src]="cover_url + '/' + event.cover" alt="Event photo" class="cover-img">
     }
+    <h6 class="text-primary-clr">{{ event.title }}</h6>
     <p>{{ event.description }}</p>
-    <div class="row mb-2">
-      <div class="col-6">
+    <div class="row g-2">
+      <div class="col-sm-6 col-md-4">
         <b class="mb-0 text-primary-clr">Date:</b>
         <div class="event-info">
           <mat-icon class="text-primary-clr">event_available</mat-icon>
           <span>{{ event.date | formatDate }}</span>
         </div>
       </div>
-      <div class="col-6">
+      <div class="col-sm-6 col-md-4">
+        <b class="mb-0 text-primary-clr">From:</b>
+        <div class="event-info">
+          <mat-icon class="text-primary-clr">access_time</mat-icon>
+          <span>{{ event.start_time | formatTime }}</span>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-4">
+        <b class="mb-0 text-primary-clr">To:</b>
+        <div class="event-info">
+          <mat-icon class="text-primary-clr">access_time</mat-icon>
+          <span>{{ event.end_time | formatTime }}</span>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-4">
+        <b class="mb-0 text-primary-clr">Category:</b>
+        <div class="event-info">
+          <mat-icon class="text-primary-clr">developer_board</mat-icon>
+          <span class="text-capitalize">{{ event.category }}</span>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-4">
+        <b class="mb-0 text-primary-clr">Type:</b>
+        <div class="event-info">
+          <mat-icon class="text-primary-clr">visibility</mat-icon>
+          <span class="text-capitalize">{{ event.type }}</span>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-4">
         <b class="mb-0 text-primary-clr">Organizer:</b>
         <div class="event-info">
           <mat-icon class="text-primary-clr">person_outline</mat-icon>
@@ -31,37 +49,5 @@
         </div>
       </div>
     </div>
-    <div class="row mb-2">
-      <div class="col-6">
-        <b class="mb-0 text-primary-clr">From:</b>
-        <div class="event-info">
-          <mat-icon class="text-primary-clr">access_time</mat-icon>
-          <span>{{ event.start_time | formatTime }}</span>
-        </div>
-      </div>
-      <div class="col-6">
-        <b class="mb-0 text-primary-clr">To:</b>
-        <div class="event-info">
-          <mat-icon class="text-primary-clr">access_time</mat-icon>
-          <span>{{ event.end_time | formatTime }}</span>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-6">
-        <b class="mb-0 text-primary-clr">Category:</b>
-        <div class="event-info">
-          <mat-icon class="text-primary-clr">developer_board</mat-icon>
-          <span class="text-capitalize">{{ event.category }}</span>
-        </div>
-      </div>
-      <div class="col-6">
-        <b class="mb-0 text-primary-clr">Type:</b>
-        <div class="event-info">
-          <mat-icon class="text-primary-clr">visibility</mat-icon>
-          <span class="text-capitalize">{{ event.type }}</span>
-        </div>
-      </div>
-    </div>
-  </mat-dialog-content>
-}
+  </mat-card-content>
+</mat-card>

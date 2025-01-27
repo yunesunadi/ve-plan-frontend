@@ -1,0 +1,31 @@
+<mat-card appearance="outlined">
+  <mat-card-content>
+    <div class="d-flex justify-content-between">
+      <p>
+        <b class="text-primary-clr">Title:</b> 
+        {{ session.title }}
+      </p>
+      <ng-content></ng-content>
+    </div>
+    <p>
+      <b class="text-primary-clr">Description:</b> 
+      {{ session.description }}
+    </p>
+    <p>
+      <b class="text-primary-clr">Speaker information:</b> 
+      {{ session.speaker_info }}
+    </p>
+    <div class="row g-2">
+      <div class="col-sm-6 session-info">
+        <b class="mb-0 text-primary-clr">From:</b>
+        <mat-icon class="text-primary-clr">access_time</mat-icon>
+        <span>{{ session.start_time | formatTime }}</span>
+      </div>
+      <div class="col-sm-6 session-info">
+        <b class="mb-0 text-primary-clr">To:</b>
+        <mat-icon class="text-primary-clr">access_time</mat-icon>
+        <span>{{ session.end_time | formatTime }}</span>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>

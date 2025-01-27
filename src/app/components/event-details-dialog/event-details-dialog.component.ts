@@ -5,6 +5,9 @@ import { map, shareReplay } from 'rxjs';
 import { format } from 'date-fns';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
+import { UserPayload } from '../../models/User';
+import { jwtDecode } from 'jwt-decode';
+import { UserService } from '../../services/user.service';
 
 @Component({
   standalone: false,
@@ -15,12 +18,17 @@ import { environment } from '../../../environments/environment';
 export class EventDetailsDialogComponent {
   private dialog_data = inject(MAT_DIALOG_DATA);
   private eventService = inject(EventService);
+  private userService = inject(UserService);
   private dialog = inject(MatDialogRef<this>);
   private route = inject(Router);
 
   event$ = this.eventService.getOneById(this.dialog_data.id).pipe(
     map(res => res.data),
     shareReplay(1)
+  );
+
+  role$ = this.userService.hasRole().pipe(
+    map((res) => res.role)
   );
 
   constructor() {}

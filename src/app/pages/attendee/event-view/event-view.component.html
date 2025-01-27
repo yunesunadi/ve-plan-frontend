@@ -1,0 +1,53 @@
+@let event = event$ | async;
+@let sessions = sessions$ | async;
+@let has_registered = has_registered$ | async;
+
+<app-outlet-inner>
+@if (event) {
+  <section>
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h3 class="text-primary-clr mb-0">Event's Details</h3>
+      @if (has_registered) {
+        <button
+          mat-raised-button
+          type="button"
+          class="bg-secondary-clr text-primary-clr"
+          (click)="unregister(event._id)"
+        >
+          <mat-icon>how_to_reg</mat-icon>
+          Registered
+        </button>
+      } @else {
+        <button
+          mat-raised-button
+          type="button"
+          class="bg-secondary-clr text-primary-clr"
+          (click)="register(event._id)"
+        >
+          <mat-icon>how_to_reg</mat-icon>
+          Register
+        </button>
+      }
+    </div>
+    <app-event-details-card [event]="event" />
+  </section>
+  <section class="mt-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="text-primary-clr mb-0">Sessions</h5>
+    </div>
+    <ng-container>
+      @if (sessions && sessions.length > 0) {
+      <div class="row g-3">
+        @for (session of sessions; track $index) {
+        <div class="col-md-6">
+          <app-session-details-card [session]="session" />
+        </div>
+        }
+      </div>
+      } @else {
+        <p class="text-center">There is no session found.</p>
+      }
+    </ng-container>
+  </section>
+}
+</app-outlet-inner>

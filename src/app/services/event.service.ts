@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Event, CreateEventResponse, GetEventsResponse, GetEventResponse } from '../models/Event';
 import { environment } from '../../environments/environment';
+import { GeneralResponse, Response } from '../models/Utils';
 
 @Injectable({
   providedIn: 'root'
@@ -67,5 +68,36 @@ export class EventService {
       })
     });
   }
+
+  register(event_id: string) {
+    const token = localStorage.getItem("token");
+    const url = `${environment.apiUrl}/events/register`;
+    return this.http.post<GeneralResponse>(url, { event_id }, {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${token}`,
+      })
+    });
+  }
+
+  unregister(event_id: string) {
+    const token = localStorage.getItem("token");
+    const url = `${environment.apiUrl}/events/register/${event_id}`;
+    return this.http.delete<GeneralResponse>(url, {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${token}`,
+      })
+    });
+  }
+
+  hasRegistered(event_id: string) {
+    const token = localStorage.getItem("token");
+    const url = `${environment.apiUrl}/events/${event_id}/registered`;
+    return this.http.get<Response<"has_registered", boolean>>(url, {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${token}`,
+      })
+    });
+  }
+
   
 }

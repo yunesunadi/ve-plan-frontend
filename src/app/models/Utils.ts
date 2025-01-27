@@ -13,8 +13,7 @@ export interface JWTPayload {
   exp: number;
 }
 
-export interface Basic {
-  _id: string;
+export interface Timestamp {
   created_at: string;
   updated_at: string;
 }

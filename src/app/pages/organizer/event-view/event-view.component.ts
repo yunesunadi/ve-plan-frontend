@@ -7,6 +7,8 @@ import { SessionDialogComponent } from '../../../components/session-dialog/sessi
 import { SessionService } from '../../../services/session.service';
 import { EventDialogComponent } from '../../../components/event-dialog/event-dialog.component';
 import { environment } from '../../../../environments/environment';
+import { jwtDecode } from 'jwt-decode';
+import { UserPayload } from '../../../models/User';
 
 @Component({
   standalone: false,
@@ -25,10 +27,6 @@ export class EventViewComponent {
   sessions$ = this.fetchSessions();
 
   constructor() {}
-
-  get cover_url() {
-    return environment.coverUrl;
-  }
 
   fetchEvents() {
     return this.aroute.params.pipe(
@@ -102,5 +100,11 @@ export class EventViewComponent {
         });
       }
     });
+  }
+
+  isOwner(user_id: string) {
+    const token = localStorage.getItem("token") || "";
+    const user_payload: UserPayload = jwtDecode(token);
+    return user_payload._id === user_id;
   }
 }

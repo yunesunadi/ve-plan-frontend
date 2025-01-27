@@ -10,6 +10,7 @@ import { HomeComponent as OrganizerHomeComponent } from './pages/organizer/home/
 import { HomeComponent as AttendeeHomeComponent } from './pages/attendee/home/home.component';
 import { EventViewComponent as OrganizerEventViewComponent } from './pages/organizer/event-view/event-view.component';
 import { completeAuthGuard } from './guards/complete-auth.guard';
+import { EventViewComponent as AttendeeEventViewComponent } from './pages/attendee/event-view/event-view.component';
 
 const publicRoutes: Routes = [
   {
@@ -53,6 +54,11 @@ const attendeeRoutes: Routes = [
   {
     path: "home",
     component: AttendeeHomeComponent,
+    canActivate: [completeAuthGuard]
+  },
+  {
+    path: "events/:id/view",
+    component: AttendeeEventViewComponent,
     canActivate: [completeAuthGuard]
   },
   {

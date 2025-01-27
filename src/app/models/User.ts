@@ -1,4 +1,4 @@
-import { Basic, JWTPayload } from "./Utils";
+import { Timestamp, JWTPayload } from "./Utils";
 
 export interface SignUpData {
   profile?: File;
@@ -8,10 +8,11 @@ export interface SignUpData {
 }
 
 export interface User {
+  _id: string;
   profile?: string;
   name: string;
   email: string;
   role: string;
 }
 
-export type UserPayload = User & Basic & JWTPayload;
+export type UserPayload = User & Timestamp & JWTPayload;

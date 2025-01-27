@@ -6,103 +6,69 @@
   <section>
     <div class="d-flex justify-content-between align-items-center mb-2">
       <h3 class="text-primary-clr mb-0">Event's Details</h3>
-      <button
-        mat-raised-button
-        type="button"
-        class="bg-secondary-clr text-primary-clr"
-        (click)="editEvent()"
-      >
-        <mat-icon>edit</mat-icon>
-        Edit
-      </button>
+      @if (isOwner(event.user._id)) {
+        <button
+          mat-raised-button
+          type="button"
+          class="bg-secondary-clr text-primary-clr"
+          (click)="editEvent()"
+        >
+          <mat-icon>edit</mat-icon>
+          Edit
+        </button>
+      }
     </div>
-    <mat-card appearance="outlined">
-      <mat-card-content>
-        @if (event.cover) {
-          <img [src]="cover_url + '/' + event.cover" alt="Event photo" class="cover-img">
-        }
-        <h6 class="text-primary-clr">{{ event.title }}</h6>
-        <p>{{ event.description }}</p>
-        <div class="row g-2">
-          <div class="col-sm-6 col-md-4">
-            <b class="mb-0 text-primary-clr">Date:</b>
-            <div class="event-info">
-              <mat-icon class="text-primary-clr">event_available</mat-icon>
-              <span>{{ event.date | formatDate }}</span>
-            </div>
-          </div>
-          <div class="col-sm-6 col-md-4">
-            <b class="mb-0 text-primary-clr">From:</b>
-            <div class="event-info">
-              <mat-icon class="text-primary-clr">access_time</mat-icon>
-              <span>{{ event.start_time | formatTime }}</span>
-            </div>
-          </div>
-          <div class="col-sm-6 col-md-4">
-            <b class="mb-0 text-primary-clr">To:</b>
-            <div class="event-info">
-              <mat-icon class="text-primary-clr">access_time</mat-icon>
-              <span>{{ event.end_time | formatTime }}</span>
-            </div>
-          </div>
-          <div class="col-sm-6 col-md-4">
-            <b class="mb-0 text-primary-clr">Category:</b>
-            <div class="event-info">
-              <mat-icon class="text-primary-clr">developer_board</mat-icon>
-              <span class="text-capitalize">{{ event.category }}</span>
-            </div>
-          </div>
-          <div class="col-sm-6 col-md-4">
-            <b class="mb-0 text-primary-clr">Type:</b>
-            <div class="event-info">
-              <mat-icon class="text-primary-clr">visibility</mat-icon>
-              <span class="text-capitalize">{{ event.type }}</span>
-            </div>
-          </div>
-          <div class="col-sm-6 col-md-4">
-            <b class="mb-0 text-primary-clr">Organizer:</b>
-            <div class="event-info">
-              <mat-icon class="text-primary-clr">person_outline</mat-icon>
-              <span>{{ event.user.name }}</span>
-            </div>
-          </div>
-        </div>
-      </mat-card-content>
-    </mat-card>
+    <app-event-details-card [event]="event" />
   </section>
   <section class="mt-3">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h5 class="text-primary-clr mb-0">Sessions</h5>
-      <button
-        mat-raised-button
-        type="button"
-        class="bg-secondary-clr text-primary-clr"
-        (click)="openSessionModal(event._id)"
-      >
-        <mat-icon>add</mat-icon>
-        Add
-      </button>
+      @if (isOwner(event.user._id)) {
+        <button
+          mat-raised-button
+          type="button"
+          class="bg-secondary-clr text-primary-clr"
+          (click)="openSessionModal(event._id)"
+        >
+          <mat-icon>add</mat-icon>
+          Add
+        </button>
+      }
     </div>
     <ng-container>
       @if (sessions && sessions.length > 0) {
       <div class="row g-3">
         @for (session of sessions; track $index) {
         <div class="col-md-6">
-          <mat-card appearance="outlined">
+          <app-session-details-card [session]="session">
+            @if (isOwner(event.user._id)) {
+              <button
+                mat-mini-fab
+                type="button"
+                class="bg-secondary-clr text-primary-clr"
+                (click)="editSession(session._id, event._id)"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+            }
+          </app-session-details-card>
+          <!-- <mat-card appearance="outlined">
             <mat-card-content>
               <div class="d-flex justify-content-between">
                 <p>
                   <b class="text-primary-clr">Title:</b> 
                   {{ session.title }}
                 </p>
-                <button
-                  mat-mini-fab
-                  type="button"
-                  class="bg-secondary-clr text-primary-clr"
-                  (click)="editSession(session._id, event._id)"
-                >
-                  <mat-icon>edit</mat-icon>
-                </button>
+                @if (isOwner(event.user._id)) {
+                  <button
+                    mat-mini-fab
+                    type="button"
+                    class="bg-secondary-clr text-primary-clr"
+                    (click)="editSession(session._id, event._id)"
+                  >
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                }
               </div>
               <p>
                 <b class="text-primary-clr">Description:</b> 
@@ -125,7 +91,7 @@
                 </div>
               </div>
             </mat-card-content>
-          </mat-card>
+          </mat-card> -->
         </div>
         }
       </div>
