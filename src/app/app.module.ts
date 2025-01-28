@@ -34,6 +34,10 @@ import { SessionDialogComponent } from './components/session-dialog/session-dial
 import { MatCardModule } from '@angular/material/card';
 import { unauthorizedInterceptor } from './interceptors/unauthorized.interceptor';
 import { EventViewComponent as AttendeeEventViewComponent } from './pages/attendee/event-view/event-view.component';
+import { RegisteredUsersComponent } from './pages/organizer/registered-users/registered-users.component';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
 
 @NgModule({
   declarations: [
@@ -49,6 +53,7 @@ import { EventViewComponent as AttendeeEventViewComponent } from './pages/attend
     OrganizerEventViewComponent,
     SessionDialogComponent,
     AttendeeEventViewComponent,
+    RegisteredUsersComponent,
   ],
   imports: [
     RouterModule,
@@ -69,6 +74,9 @@ import { EventViewComponent as AttendeeEventViewComponent } from './pages/attend
     MatDialogModule,
     MatTimepickerModule,
     MatCardModule,
+    MatTableModule,
+    MatSortModule,
+    MatPaginatorModule
   ],
   providers: [
     appConfig.providers,

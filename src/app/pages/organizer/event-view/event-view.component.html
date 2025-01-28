@@ -7,15 +7,26 @@
     <div class="d-flex justify-content-between align-items-center mb-2">
       <h3 class="text-primary-clr mb-0">Event's Details</h3>
       @if (isOwner(event.user._id)) {
-        <button
-          mat-raised-button
-          type="button"
-          class="bg-secondary-clr text-primary-clr"
-          (click)="editEvent(event)"
-        >
-          <mat-icon>edit</mat-icon>
-          Edit
-        </button>
+        <div class="d-flex" style="gap: .5rem;">
+          <button
+            mat-raised-button
+            type="button"
+            class="bg-secondary-clr text-primary-clr"
+            [routerLink]="'/organizer/dashboard/events/' + event._id + '/registered_users'"
+          >
+            <mat-icon>people_outline</mat-icon>
+            Registered Users
+          </button>
+          <button
+            mat-raised-button
+            type="button"
+            class="bg-secondary-clr text-primary-clr"
+            (click)="editEvent(event)"
+          >
+            <mat-icon>edit</mat-icon>
+            Edit
+          </button>
+        </div>
       }
     </div>
     <app-event-details-card [event]="event" />

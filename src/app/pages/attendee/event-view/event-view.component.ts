@@ -4,6 +4,7 @@ import { SessionService } from '../../../services/session.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { catchError, concatMap, EMPTY, map, shareReplay, switchMap } from 'rxjs';
 import { CommonService } from '../../../services/common.service';
+import { EventRegisterService } from '../../../services/event-register.service';
 
 @Component({
   standalone: false,
@@ -17,6 +18,7 @@ export class EventViewComponent {
   private aroute = inject(ActivatedRoute);
   private route = inject(Router);
   private commonService = inject(CommonService);
+  private eventRegisterService = inject(EventRegisterService);
 
   event$ = this.aroute.params.pipe(
     switchMap((params: any) => this.eventService.getOneById(params.id)),
@@ -40,14 +42,14 @@ export class EventViewComponent {
 
   fetchHasRegistered() {
     return this.event$.pipe(
-      concatMap((event) => this.eventService.hasRegistered(event._id).pipe(
+      concatMap((event) => this.eventRegisterService.hasRegistered(event._id).pipe(
         map((res) => res.has_registered)
       ))
     );
   }
 
   register(event_id: string) {
-    this.eventService.register(event_id).subscribe({
+    this.eventRegisterService.register(event_id).subscribe({
       next: (res) => {
         this.has_registered$ = this.fetchHasRegistered();
         this.commonService.openSnackBar(res.message);
@@ -56,7 +58,7 @@ export class EventViewComponent {
   }
 
   unregister(event_id: string) {
-    this.eventService.unregister(event_id).subscribe({
+    this.eventRegisterService.unregister(event_id).subscribe({
       next: (res) => {
         this.has_registered$ = this.fetchHasRegistered();
         this.commonService.openSnackBar(res.message);
