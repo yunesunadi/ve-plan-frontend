@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { EventService } from '../../../services/event.service';
 import { SessionService } from '../../../services/session.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { catchError, concatMap, EMPTY, map, shareReplay } from 'rxjs';
+import { catchError, concatMap, EMPTY, map, shareReplay, switchMap } from 'rxjs';
 import { CommonService } from '../../../services/common.service';
 
 @Component({
@@ -19,7 +19,7 @@ export class EventViewComponent {
   private commonService = inject(CommonService);
 
   event$ = this.aroute.params.pipe(
-    concatMap((params: any) => this.eventService.getOneById(params.id)),
+    switchMap((params: any) => this.eventService.getOneById(params.id)),
     map((res) => res.data),
     catchError(() => {
       this.route.navigateByUrl("attendee/dashboard/not-found");
@@ -29,7 +29,7 @@ export class EventViewComponent {
   );
 
   sessions$ = this.aroute.params.pipe(
-    concatMap((params: any) => this.sessionService.getAll(params.id)),
+    switchMap((params: any) => this.sessionService.getAll(params.id)),
     map((res) => res.data),
     shareReplay(1)
   );

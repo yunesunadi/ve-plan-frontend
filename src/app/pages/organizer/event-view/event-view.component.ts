@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { EventService } from '../../../services/event.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { catchError, concatMap, EMPTY, map, shareReplay } from 'rxjs';
+import { BehaviorSubject, catchError, concatMap, EMPTY, map, shareReplay, switchMap } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { SessionDialogComponent } from '../../../components/session-dialog/session-dialog.component';
 import { SessionService } from '../../../services/session.service';
@@ -9,6 +9,7 @@ import { EventDialogComponent } from '../../../components/event-dialog/event-dia
 import { environment } from '../../../../environments/environment';
 import { jwtDecode } from 'jwt-decode';
 import { UserPayload } from '../../../models/User';
+import { Event } from '../../../models/Event';
 
 @Component({
   standalone: false,
@@ -22,31 +23,28 @@ export class EventViewComponent {
   private aroute = inject(ActivatedRoute);
   private route = inject(Router);
   private dialog = inject(MatDialog);
+  private fetchEvents$ = new BehaviorSubject(false);
+  private fetchSessions$ = new BehaviorSubject(false);
 
-  event$ = this.fetchEvents();
-  sessions$ = this.fetchSessions();
+  event$ = this.fetchEvents$.pipe(
+    switchMap(() => this.aroute.params),
+    switchMap((params: any) => this.eventService.getOneById(params.id)),
+    map((res) => res.data),
+    catchError(() => {
+      this.route.navigateByUrl("organizer/dashboard/not-found");
+      return EMPTY;
+    }),
+    shareReplay(1)
+  );
+
+  sessions$ = this.fetchSessions$.pipe(
+    switchMap(() => this.aroute.params),
+    switchMap((params: any) => this.sessionService.getAll(params.id)),
+    map((res) => res.data),
+    shareReplay(1)
+  );
 
   constructor() {}
-
-  fetchEvents() {
-    return this.aroute.params.pipe(
-      concatMap((params: any) => this.eventService.getOneById(params.id)),
-      map((res) => res.data),
-      catchError(() => {
-        this.route.navigateByUrl("organizer/dashboard/not-found");
-        return EMPTY;
-      }),
-      shareReplay(1)
-    );
-  }
-
-  fetchSessions() {
-    return this.aroute.params.pipe(
-      concatMap((params: any) => this.sessionService.getAll(params.id)),
-      map((res) => res.data),
-      shareReplay(1)
-    );
-  }
 
   openSessionModal(event_id: string) {
     const dialogRef = this.dialog.open(SessionDialogComponent, {
@@ -58,24 +56,20 @@ export class EventViewComponent {
 
     dialogRef.afterClosed().subscribe({
       next: () => {
-        this.sessions$ = this.fetchSessions();
+        this.fetchSessions$.next(true);
       }
     });
   }
 
-  editEvent() {
-    this.event$.subscribe({
-      next: (event) => {
-        const dialogRef = this.dialog.open(EventDialogComponent, {
-          data: event,
-          disableClose: true,
-        });
+  editEvent(event: Event) {
+    const dialogRef = this.dialog.open(EventDialogComponent, {
+      data: event,
+      disableClose: true,
+    });
 
-        dialogRef.afterClosed().subscribe({
-          next: () => {
-            this.event$ = this.fetchEvents();
-          }
-        });
+    dialogRef.afterClosed().subscribe({
+      next: () => {
+        this.fetchEvents$.next(true);
       }
     });
   }
@@ -95,7 +89,7 @@ export class EventViewComponent {
 
         dialogRef.afterClosed().subscribe({
           next: () => {
-            this.sessions$ = this.fetchSessions();
+            this.fetchSessions$.next(true);
           }
         });
       }

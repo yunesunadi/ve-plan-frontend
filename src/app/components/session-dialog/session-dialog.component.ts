@@ -53,8 +53,6 @@ export class SessionDialogComponent {
   }
 
   submit() {
-    console.log(this.create_form.value);
-    
     if (this.create_form.invalid) return;
 
     of(true).pipe(
