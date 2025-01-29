@@ -38,6 +38,7 @@ import { RegisteredUsersComponent } from './pages/organizer/registered-users/reg
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @NgModule({
   declarations: [
@@ -76,7 +77,8 @@ import { MatTableModule } from '@angular/material/table';
     MatCardModule,
     MatTableModule,
     MatSortModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    MatCheckboxModule,
   ],
   providers: [
     appConfig.providers,

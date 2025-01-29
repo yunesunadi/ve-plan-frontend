@@ -6,7 +6,7 @@ export interface EventRegister {
   id: string;
   event: Event;
   user: User;
-  register_completed: boolean;
+  register_approved: boolean;
   invitation_sent: boolean;
 }
 

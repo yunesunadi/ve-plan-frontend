@@ -58,11 +58,15 @@ export class EventViewComponent {
   }
 
   unregister(event_id: string) {
-    this.eventRegisterService.unregister(event_id).subscribe({
-      next: (res) => {
-        this.has_registered$ = this.fetchHasRegistered();
-        this.commonService.openSnackBar(res.message);
-      }
-    });
+    const isConfirmed = confirm("Are you sure to unregister this event?");
+
+    if (isConfirmed) {
+      this.eventRegisterService.unregister(event_id).subscribe({
+        next: (res) => {
+          this.has_registered$ = this.fetchHasRegistered();
+          this.commonService.openSnackBar(res.message);
+        }
+      });
+    }
   }
 }
