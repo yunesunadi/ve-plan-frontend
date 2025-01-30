@@ -39,6 +39,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { RegisterApprovalDialogComponent } from './components/register-approval-dialog/register-approval-dialog.component';
 
 @NgModule({
   declarations: [
@@ -55,6 +56,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     SessionDialogComponent,
     AttendeeEventViewComponent,
     RegisteredUsersComponent,
+    RegisterApprovalDialogComponent,
   ],
   imports: [
     RouterModule,

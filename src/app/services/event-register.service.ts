@@ -51,4 +51,21 @@ export class EventRegisterService {
       })
     });
   }
+
+  approve(user_id: string, event_id: string) {
+    const token = localStorage.getItem("token");
+    const url = `${environment.apiUrl}/event_registers/approve`;
+    return this.http.put<GeneralResponse>(
+      url,
+      {
+        user_id,
+        event_id
+      },
+      {
+        headers: new HttpHeaders({
+          Authorization: `Bearer ${token}`,
+        })
+      }
+    );
+  }
 }

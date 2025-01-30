@@ -6,7 +6,8 @@ import { EventRegisterService } from '../../../services/event-register.service';
 import { ActivatedRoute } from '@angular/router';
 import { map, switchMap } from 'rxjs';
 import { SelectionModel } from '@angular/cdk/collections';
-import { EmailService } from '../../../services/email.service';
+import { MatDialog } from '@angular/material/dialog';
+import { RegisterApprovalDialogComponent } from '../../../components/register-approval-dialog/register-approval-dialog.component';
 
 @Component({
   standalone: false,
@@ -24,11 +25,15 @@ export class RegisteredUsersComponent {
 
   private eventRegisterService = inject(EventRegisterService);
   private aroute = inject(ActivatedRoute);
-  private emailService = inject(EmailService);
+  private dialog = inject(MatDialog);
 
   constructor() {}
 
   ngOnInit() {
+    this.fetchData();
+  }
+
+  fetchData() {
     this.aroute.params.pipe(
       switchMap((params: any) => this.eventRegisterService.getAll(params.id)),
       map((res) => res.data.map((item, index) => ({
@@ -36,6 +41,8 @@ export class RegisteredUsersComponent {
         name: item.user.name,
         email: item.user.email,
         event_title: item.event.title,
+        user_id: item.user._id,
+        event_id: item.event._id,
         register_approved: item.register_approved,
       })))
     ).subscribe({
@@ -47,6 +54,10 @@ export class RegisteredUsersComponent {
     });
   }
 
+  isDisabled() {
+    return this.dataSource.data.every((item) => item.register_approved);
+  }
+
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
@@ -56,26 +67,21 @@ export class RegisteredUsersComponent {
     }
   }
 
- 
-
-  /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
     const numRows = this.dataSource.data.length;
     return numSelected === numRows;
   }
 
-  /** Selects all rows if they are not all selected; otherwise clear selection. */
   toggleAllRows() {
     if (this.isAllSelected()) {
       this.selection.clear();
       return;
     }
 
-    this.selection.select(...this.dataSource.data);
+    this.selection.select(...this.dataSource.data.filter(item => !item.register_approved));
   }
 
-  /** The label for the checkbox on the passed row */
   checkboxLabel(row?: any): string {
     if (!row) {
       return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
@@ -84,11 +90,19 @@ export class RegisteredUsersComponent {
   }
 
   sendApproval() {
-    this.selection.selected.forEach((item) => {
-      this.emailService.send(item.email, item.name, item.event_title).subscribe(
-      () => {
-        console.log("send email successfully");
-      });
+    const dialogRef = this.dialog.open(RegisterApprovalDialogComponent, {
+      data: this.selection.selected.filter(item => !item.register_approved),
+      disableClose: true,
+    });
+
+    dialogRef.afterClosed().subscribe({
+      next: (fetched) => {
+        if (fetched) {
+          this.fetchData();
+          this.selection.deselect(...this.dataSource.data);
+          this.selection.clear();
+        }
+      }
     });
   }
 }

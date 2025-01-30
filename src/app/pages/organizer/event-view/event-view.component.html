@@ -49,7 +49,7 @@
     <ng-container>
       @if (sessions && sessions.length > 0) {
       <div class="row g-3">
-        @for (session of sessions; track $index) {
+        @for (session of sessions; track session._id) {
         <div class="col-md-6">
           <app-session-details-card [session]="session">
             @if (isOwner(event.user._id)) {
@@ -63,46 +63,6 @@
               </button>
             }
           </app-session-details-card>
-          <!-- <mat-card appearance="outlined">
-            <mat-card-content>
-              <div class="d-flex justify-content-between">
-                <p>
-                  <b class="text-primary-clr">Title:</b> 
-                  {{ session.title }}
-                </p>
-                @if (isOwner(event.user._id)) {
-                  <button
-                    mat-mini-fab
-                    type="button"
-                    class="bg-secondary-clr text-primary-clr"
-                    (click)="editSession(session._id, event._id)"
-                  >
-                    <mat-icon>edit</mat-icon>
-                  </button>
-                }
-              </div>
-              <p>
-                <b class="text-primary-clr">Description:</b> 
-                {{ session.description }}
-              </p>
-              <p>
-                <b class="text-primary-clr">Speaker information:</b> 
-                {{ session.speaker_info }}
-              </p>
-              <div class="row g-2">
-                <div class="col-sm-6 event-info">
-                  <b class="mb-0 text-primary-clr">From:</b>
-                  <mat-icon class="text-primary-clr">access_time</mat-icon>
-                  <span>{{ session.start_time | formatTime }}</span>
-                </div>
-                <div class="col-sm-6 event-info">
-                  <b class="mb-0 text-primary-clr">To:</b>
-                  <mat-icon class="text-primary-clr">access_time</mat-icon>
-                  <span>{{ session.end_time | formatTime }}</span>
-                </div>
-              </div>
-            </mat-card-content>
-          </mat-card> -->
         </div>
         }
       </div>
