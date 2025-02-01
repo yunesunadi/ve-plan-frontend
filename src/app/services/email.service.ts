@@ -11,13 +11,13 @@ export class EmailService {
 
   constructor() { }
 
-  send(recipient: string, name: string, event_title: string) {
+  send(action: string, recipient: string, name: string, event_title: string) {
     const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/emails`;
     return this.http.post<GeneralResponse>(
       url,
       {
-        action: "register_approved",
+        action,
         recipient: recipient,
         additional: {
           name,

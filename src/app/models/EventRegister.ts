@@ -7,7 +7,6 @@ export interface EventRegister {
   event: Event;
   user: User;
   register_approved: boolean;
-  invitation_sent: boolean;
 }
 
 export type GetEventRegistersResponse = GeneralResponse & Response<"data", Array<Timestamp & EventRegister>>;

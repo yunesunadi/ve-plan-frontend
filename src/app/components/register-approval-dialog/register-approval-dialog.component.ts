@@ -23,7 +23,7 @@ export class RegisterApprovalDialogComponent {
   send() {
     of(...this.dialog_data).pipe(
       mergeMap(
-        (item: any) => this.emailService.send(item.email, item.name, item.event_title).pipe(
+        (item: any) => this.emailService.send("register_approved", item.email, item.name, item.event_title).pipe(
           concatMap(() => this.eventRegisterService.approve(item.user_id, item.event_id))
         )
       )

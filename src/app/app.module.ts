@@ -40,6 +40,9 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { RegisterApprovalDialogComponent } from './components/register-approval-dialog/register-approval-dialog.component';
+import { MatMenuModule } from '@angular/material/menu';
+import { InviteComponent } from './pages/organizer/invite/invite.component';
+import { InvitationSentDialogComponent } from './components/invitation-sent-dialog/invitation-sent-dialog.component';
 
 @NgModule({
   declarations: [
@@ -57,6 +60,8 @@ import { RegisterApprovalDialogComponent } from './components/register-approval-
     AttendeeEventViewComponent,
     RegisteredUsersComponent,
     RegisterApprovalDialogComponent,
+    InviteComponent,
+    InvitationSentDialogComponent,
   ],
   imports: [
     RouterModule,
@@ -81,6 +86,7 @@ import { RegisterApprovalDialogComponent } from './components/register-approval-
     MatSortModule,
     MatPaginatorModule,
     MatCheckboxModule,
+    MatMenuModule,
   ],
   providers: [
     appConfig.providers,

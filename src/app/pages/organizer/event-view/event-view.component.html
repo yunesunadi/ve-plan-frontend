@@ -7,26 +7,23 @@
     <div class="d-flex justify-content-between align-items-center mb-2">
       <h3 class="text-primary-clr mb-0">Event's Details</h3>
       @if (isOwner(event.user._id)) {
-        <div class="d-flex" style="gap: .5rem;">
-          <button
-            mat-raised-button
-            type="button"
-            class="bg-secondary-clr text-primary-clr"
-            [routerLink]="'/organizer/dashboard/events/' + event._id + '/registered_users'"
-          >
+        <button mat-icon-button class="bg-secondary-clr text-primary-clr" [matMenuTriggerFor]="menu">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item [routerLink]="'/organizer/dashboard/events/' + event._id + '/registered_users'">
             <mat-icon>people_outline</mat-icon>
             Registered Users
           </button>
-          <button
-            mat-raised-button
-            type="button"
-            class="bg-secondary-clr text-primary-clr"
-            (click)="editEvent(event)"
-          >
-            <mat-icon>edit</mat-icon>
-            Edit
+          <button mat-menu-item [routerLink]="'/organizer/dashboard/events/' + event._id + '/invite'">
+            <mat-icon>person_add</mat-icon>
+            Invite Users
           </button>
-        </div>
+          <button mat-menu-item (click)="editEvent(event)">
+            <mat-icon>edit</mat-icon>
+            Edit Event
+          </button>
+        </mat-menu>
       }
     </div>
     <app-event-details-card [event]="event" />
