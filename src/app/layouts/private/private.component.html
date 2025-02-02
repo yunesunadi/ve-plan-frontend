@@ -23,6 +23,20 @@
         <span>Events</span>
       </a>
     </div>
+    @if (isAttendee) {
+      <div class="sidenav-list">
+        <a class="sidenav-item" routerLink="invitations" routerLinkActive="active">
+          <mat-icon>drafts</mat-icon>
+          <span>Invitations</span>
+        </a>
+      </div>
+      <div class="sidenav-list">
+        <a class="sidenav-item" routerLink="joined_events" routerLinkActive="active">
+          <mat-icon>how_to_reg</mat-icon>
+          <span>Joined Events</span>
+        </a>
+      </div>
+    }
   </mat-drawer>
   <div class="sidenav-content">
     <router-outlet />

@@ -1,0 +1,59 @@
+@let registered_events = registered_events$ | async;
+@let accepted_events = accepted_events$ | async;
+
+<app-outlet-inner>
+  <section>
+    <h3 class="text-primary-clr mb-3">Registered Events</h3>
+    @if (registered_events && registered_events.length > 0) {
+      <div class="d-flex flex-column align-items-center" style="gap: 1rem;">
+        @for (registered of registered_events; track registered._id) {
+          <mat-card appearance="outlined" class="event-card">
+            <div class="px-3 pt-3">
+              <mat-card-title class="text-primary-clr">{{ registered.event.title }}</mat-card-title>
+              <mat-card-subtitle class="text-primary-clr">{{ registered.event.description }}</mat-card-subtitle>
+            </div>
+            <mat-card-actions [align]="'end'" class="px-3 pb-3">
+              <button
+                mat-stroked-button
+                class="text-secondary-clr bg-primary-clr"
+                [routerLink]="'/attendee/dashboard/events/' + registered.event._id + '/view'"
+              >
+                <span>See Details</span>
+                <mat-icon>arrow_forward</mat-icon>
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        }
+      </div>
+    } @else {
+      <p class="text-center mt-3">There is no registered event.</p>
+    }
+  </section>
+  <section>
+    <h3 class="text-primary-clr mb-3">Invitation Accepted Events</h3>
+    @if (accepted_events && accepted_events.length > 0) {
+      <div class="d-flex flex-column align-items-center" style="gap: 1rem;">
+        @for (accepted of accepted_events; track accepted._id) {
+          <mat-card appearance="outlined" class="event-card">
+            <div class="px-3 pt-3">
+              <mat-card-title class="text-primary-clr">{{ accepted.event.title }}</mat-card-title>
+              <mat-card-subtitle class="text-primary-clr">{{ accepted.event.description }}</mat-card-subtitle>
+            </div>
+            <mat-card-actions [align]="'end'" class="px-3 pb-3">
+              <button
+                mat-stroked-button
+                class="text-secondary-clr bg-primary-clr"
+                [routerLink]="'/attendee/dashboard/events/' + accepted.event._id + '/view'"
+              >
+                <span>See Details</span>
+                <mat-icon>arrow_forward</mat-icon>
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        }
+      </div>
+    } @else {
+      <p class="text-center mt-3">There is no invitation accepted event.</p>
+    }
+  </section>
+</app-outlet-inner>

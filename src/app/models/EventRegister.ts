@@ -3,7 +3,7 @@ import { User } from "./User";
 import { GeneralResponse, Response, Timestamp } from "./Utils";
 
 export interface EventRegister {
-  id: string;
+  _id: string;
   event: Event;
   user: User;
   register_approved: boolean;

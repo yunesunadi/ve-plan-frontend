@@ -1,0 +1,31 @@
+@let invitations = invitations$ | async;
+
+<app-outlet-inner>
+  <h3 class="text-primary-clr mb-3">Invitations</h3>
+  <section class="d-flex flex-column align-items-center" style="gap: 1rem;">
+    @for (item of invitations; track item._id) {
+      <mat-card appearance="outlined" class="event-card">
+        <div class="d-flex justify-content-between px-3 pt-3">
+          <div>
+            <mat-card-title class="text-primary-clr">{{ item.event.title }}</mat-card-title>
+            <mat-card-subtitle class="text-primary-clr">{{ item.event.description }}</mat-card-subtitle>
+          </div>
+          <a class="text-decoration-underline cursor-pointer d-flex" style="gap: .3rem;" 
+          [routerLink]="'/attendee/dashboard/events/' + item.event._id + '/view'">
+            <span>See Details</span>
+            <mat-icon>arrow_forward</mat-icon>
+          </a>
+        </div>
+        <mat-card-actions [align]="'end'" class="px-3 pb-3">
+          <button
+            mat-stroked-button
+            class="text-secondary-clr bg-primary-clr"
+            (click)="accept(item.event._id)"
+          >
+            Accept
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    }
+  </section>
+</app-outlet-inner>

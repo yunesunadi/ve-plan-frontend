@@ -17,7 +17,7 @@
         class="bg-secondary-clr text-primary-clr"
         (click)="sendInvitation()"
       >
-        <mat-icon>edit</mat-icon>
+        <mat-icon>mail</mat-icon>
         Send Invitation
       </button>
       @if (event) {
@@ -26,11 +26,11 @@
         </button>
         <mat-menu #menu="matMenu">
           <button mat-menu-item (click)="openInvitedUsersDialog(event._id)">
-            <mat-icon>people_outline</mat-icon>
+            <mat-icon>supervised_user_circle</mat-icon>
             Invited Users
           </button>
           <button mat-menu-item (click)="openAcceptedUsersDialog(event._id)">
-            <mat-icon>person_add</mat-icon>
+            <mat-icon>done_all</mat-icon>
             Accepted Users
           </button>
         </mat-menu>

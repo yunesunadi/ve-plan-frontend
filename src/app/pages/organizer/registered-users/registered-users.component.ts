@@ -35,7 +35,7 @@ export class RegisteredUsersComponent {
 
   fetchData() {
     this.aroute.params.pipe(
-      switchMap((params: any) => this.eventRegisterService.getAll(params.id)),
+      switchMap((params: any) => this.eventRegisterService.getAllByEventId(params.id)),
       map((res) => res.data.map((item, index) => ({
         id: index + 1,
         name: item.user.name,

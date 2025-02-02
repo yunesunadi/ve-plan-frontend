@@ -1,6 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
+import { UserPayload } from '../../models/User';
+import { jwtDecode } from 'jwt-decode';
 
 @Component({
   standalone: false,
@@ -18,5 +20,11 @@ export class PrivateComponent {
       localStorage.removeItem("token");
       this.route.navigateByUrl("login");
     }
+  }
+
+  get isAttendee() {
+    const token = localStorage.getItem("token") || "";
+    const decoded: UserPayload = jwtDecode(token);
+    return decoded.role === "attendee";
   }
 }

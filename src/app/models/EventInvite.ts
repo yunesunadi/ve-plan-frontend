@@ -3,7 +3,7 @@ import { User } from "./User";
 import { GeneralResponse, Response, Timestamp } from "./Utils";
 
 export interface EventInvite {
-  id: string;
+  _id: string;
   event: Event;
   user: User;
   invitation_sent: boolean;

@@ -29,7 +29,7 @@ export class EventInviteService {
     );
   }
   
-  getAll(event_id: string) {
+  getAllByEventId(event_id: string) {
     const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/event_invites/${event_id}/users`;
     return this.http.get<GetEventInvitesResponse>(url, {
@@ -39,7 +39,7 @@ export class EventInviteService {
     });
   }
 
-  getAllAccepted(event_id: string) {
+  getAllAcceptedByEventId(event_id: string) {
     const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/event_invites/${event_id}/accepted_users`;
     return this.http.get<GetEventAcceptedInvitesResponse>(url, {
@@ -49,13 +49,32 @@ export class EventInviteService {
     });
   }
 
-  accept_invite(user_id: string, event_id: string) {
+  getAllByUserId() {
+    const token = localStorage.getItem("token");
+    const url = `${environment.apiUrl}/event_invites/events`;
+    return this.http.get<GetEventInvitesResponse>(url, {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${token}`,
+      })
+    });
+  }
+
+  getAllAcceptedByUserId() {
+    const token = localStorage.getItem("token");
+    const url = `${environment.apiUrl}/event_invites/accepted_events`;
+    return this.http.get<GetEventAcceptedInvitesResponse>(url, {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${token}`,
+      })
+    });
+  }
+
+  accept_invite(event_id: string) {
     const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/event_invites/accept`;
     return this.http.put<GeneralResponse>(
       url,
       {
-        user_id,
         event_id
       },
       {

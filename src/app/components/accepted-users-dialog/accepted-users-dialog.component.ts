@@ -13,7 +13,7 @@ export class AcceptedUsersDialogComponent {
   private dialog_data = inject(MAT_DIALOG_DATA);
   private eventInviteService = inject(EventInviteService);
 
-  accepted_users$ = this.eventInviteService.getAllAccepted(this.dialog_data.id).pipe(
+  accepted_users$ = this.eventInviteService.getAllAcceptedByEventId(this.dialog_data.id).pipe(
     map((res) => res.data)
   );
 

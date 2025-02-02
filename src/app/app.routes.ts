@@ -13,6 +13,8 @@ import { completeAuthGuard } from './guards/complete-auth.guard';
 import { EventViewComponent as AttendeeEventViewComponent } from './pages/attendee/event-view/event-view.component';
 import { RegisteredUsersComponent } from './pages/organizer/registered-users/registered-users.component';
 import { InviteComponent } from './pages/organizer/invite/invite.component';
+import { InvitationsComponent } from './pages/attendee/invitations/invitations.component';
+import { JoinedEventsComponent } from './pages/attendee/joined-events/joined-events.component';
 
 const publicRoutes: Routes = [
   {
@@ -71,6 +73,16 @@ const attendeeRoutes: Routes = [
   {
     path: "events/:id/view",
     component: AttendeeEventViewComponent,
+    canActivate: [completeAuthGuard]
+  },
+  {
+    path: "invitations",
+    component: InvitationsComponent,
+    canActivate: [completeAuthGuard]
+  },
+  {
+    path: "joined_events",
+    component: JoinedEventsComponent,
     canActivate: [completeAuthGuard]
   },
   {
