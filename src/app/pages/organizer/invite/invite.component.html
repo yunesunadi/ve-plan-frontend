@@ -1,3 +1,5 @@
+@let event = event$ | async;
+
 <app-outlet-inner>
   <div class="d-flex justify-content-between align-items-center">
     <div [formGroup]="form">
@@ -8,15 +10,31 @@
       </mat-form-field>
     </div>
 
-    <div class="">
+    <div class="d-flex align-items-center" style="gap: .5rem;">
       <button
-        mat-stroked-button
+        mat-raised-button
         type="button"
         class="bg-secondary-clr text-primary-clr"
         (click)="sendInvitation()"
       >
+        <mat-icon>edit</mat-icon>
         Send Invitation
       </button>
+      @if (event) {
+        <button mat-icon-button class="bg-secondary-clr text-primary-clr" [matMenuTriggerFor]="menu">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item (click)="openInvitedUsersDialog(event._id)">
+            <mat-icon>people_outline</mat-icon>
+            Invited Users
+          </button>
+          <button mat-menu-item (click)="openAcceptedUsersDialog(event._id)">
+            <mat-icon>person_add</mat-icon>
+            Accepted Users
+          </button>
+        </mat-menu>
+      }
     </div>
   </div>
 

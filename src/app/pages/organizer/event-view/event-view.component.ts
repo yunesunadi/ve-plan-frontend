@@ -1,12 +1,11 @@
 import { Component, inject } from '@angular/core';
 import { EventService } from '../../../services/event.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BehaviorSubject, catchError, concatMap, EMPTY, map, shareReplay, switchMap } from 'rxjs';
+import { BehaviorSubject, catchError, EMPTY, map, shareReplay, switchMap } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { SessionDialogComponent } from '../../../components/session-dialog/session-dialog.component';
 import { SessionService } from '../../../services/session.service';
 import { EventDialogComponent } from '../../../components/event-dialog/event-dialog.component';
-import { environment } from '../../../../environments/environment';
 import { jwtDecode } from 'jwt-decode';
 import { UserPayload } from '../../../models/User';
 import { Event } from '../../../models/Event';

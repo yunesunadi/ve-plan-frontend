@@ -43,6 +43,8 @@ import { RegisterApprovalDialogComponent } from './components/register-approval-
 import { MatMenuModule } from '@angular/material/menu';
 import { InviteComponent } from './pages/organizer/invite/invite.component';
 import { InvitationSentDialogComponent } from './components/invitation-sent-dialog/invitation-sent-dialog.component';
+import { InvitedUsersDialogComponent } from './components/invited-users-dialog/invited-users-dialog.component';
+import { AcceptedUsersDialogComponent } from './components/accepted-users-dialog/accepted-users-dialog.component';
 
 @NgModule({
   declarations: [
@@ -62,6 +64,8 @@ import { InvitationSentDialogComponent } from './components/invitation-sent-dial
     RegisterApprovalDialogComponent,
     InviteComponent,
     InvitationSentDialogComponent,
+    InvitedUsersDialogComponent,
+    AcceptedUsersDialogComponent,
   ],
   imports: [
     RouterModule,

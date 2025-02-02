@@ -5,12 +5,13 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute } from '@angular/router';
-import { BehaviorSubject, concatMap, debounceTime, distinctUntilChanged, iif, map, of, switchMap } from 'rxjs';
-import { EventInviteService } from '../../../services/event-invite.service';
+import { concatMap, debounceTime, iif, map, of, switchMap } from 'rxjs';
 import { UserService } from '../../../services/user.service';
 import { FormControl, FormGroup } from '@angular/forms';
 import { EventService } from '../../../services/event.service';
 import { InvitationSentDialogComponent } from '../../../components/invitation-sent-dialog/invitation-sent-dialog.component';
+import { InvitedUsersDialogComponent } from '../../../components/invited-users-dialog/invited-users-dialog.component';
+import { AcceptedUsersDialogComponent } from '../../../components/accepted-users-dialog/accepted-users-dialog.component';
 
 @Component({
   standalone: false,
@@ -27,12 +28,18 @@ export class InviteComponent {
   selection = new SelectionModel<any>(true, []);
   form = new FormGroup({
     search_input: new FormControl()
-  })
+  });
 
   private userService = inject(UserService);
   private eventService = inject(EventService);
   private aroute = inject(ActivatedRoute);
   private dialog = inject(MatDialog);
+
+  event$ = this.aroute.params.pipe(
+    switchMap((params: any) => this.eventService.getOneById(params.id).pipe(
+      map((res) => res.data)
+    )),
+  );
 
   constructor() {}
 
@@ -42,11 +49,8 @@ export class InviteComponent {
       switchMap((value) => iif(
         () => !!value,
         this.userService.getAttendees(value).pipe(
-          concatMap((users) =>  this.aroute.params.pipe(
-            switchMap((params: any) => this.eventService.getOneById(params.id).pipe(
-              map((res) => res.data.title)
-            )),
-            map((event_title) => (users.data.map((item) => ({ ...item, event_title}))))
+          concatMap((users) => this.event$.pipe(
+            map((event) => (users.data.map((item) => ({ ...item, event_id: event._id, event_title: event.title }))))
           ))
         ),
         of([])
@@ -55,7 +59,9 @@ export class InviteComponent {
         id: index + 1,
         name: item.name,
         email: item.email,
-        event_title: item.event_title
+        event_title: item.event_title,
+        user_id: item._id,
+        event_id: item.event_id,
       })))
     ).subscribe({
       next: (users) => {
@@ -64,8 +70,6 @@ export class InviteComponent {
         this.dataSource.sort = this.sort;
       }
     });
-
-
   }
 
   isAllSelected() {
@@ -96,14 +100,31 @@ export class InviteComponent {
       disableClose: true,
     });
 
-    // dialogRef.afterClosed().subscribe({
-    //   next: (fetched) => {
-    //     if (fetched) {
-    //       this.fetchData();
-    //       this.selection.deselect(...this.dataSource.data);
-    //       this.selection.clear();
-    //     }
-    //   }
-    // });
+    dialogRef.afterClosed().subscribe({
+      next: () => {
+        this.selection.deselect(...this.dataSource.data);
+        this.selection.clear();
+
+        this.dataSource = new MatTableDataSource([] as any);
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+      }
+    });
+  }
+
+  openInvitedUsersDialog(event_id: string) {
+    this.dialog.open(InvitedUsersDialogComponent, {
+      data: {
+        id: event_id
+      }
+    });
+  }
+
+  openAcceptedUsersDialog(event_id: string) {
+    this.dialog.open(AcceptedUsersDialogComponent, {
+      data: {
+        id: event_id
+      }
+    });
   }
 }
