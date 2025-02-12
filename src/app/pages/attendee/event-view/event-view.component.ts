@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { catchError, concatMap, EMPTY, map, shareReplay, switchMap } from 'rxjs';
 import { CommonService } from '../../../services/common.service';
 import { EventRegisterService } from '../../../services/event-register.service';
+import { EventInviteService } from '../../../services/event-invite.service';
 
 @Component({
   standalone: false,
@@ -19,6 +20,7 @@ export class EventViewComponent {
   private route = inject(Router);
   private commonService = inject(CommonService);
   private eventRegisterService = inject(EventRegisterService);
+  private eventInviteService = inject(EventInviteService);
 
   event$ = this.aroute.params.pipe(
     switchMap((params: any) => this.eventService.getOneById(params.id)),
@@ -37,6 +39,20 @@ export class EventViewComponent {
   );
 
   has_registered$ = this.fetchHasRegistered();
+
+  is_invited$ = this.eventInviteService.getAllByUserId().pipe(
+    map((res) => res.data),
+    concatMap((invites) => this.event$.pipe(
+      map((event) => !!invites.find((item) => item.event._id === event._id))
+    ))
+  );
+
+  is_invite_accepted$ = this.eventInviteService.getAllAcceptedByUserId().pipe(
+    map((res) => res.data),
+    concatMap((accepts) => this.event$.pipe(
+      map((event) => !!accepts.find((item) => item.event._id === event._id))
+    ))
+  );
 
   constructor() {}
 

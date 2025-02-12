@@ -3,6 +3,8 @@ import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn,
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { map } from 'rxjs';
+import { CommonService } from '../../services/common.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 const MIN_LENGTH = 6;
 @Component({
@@ -20,6 +22,7 @@ export class SignupComponent {
   private form_builder = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private commonService = inject(CommonService);
 
   constructor() {
      this.signup_form = this.form_builder.group(
@@ -96,7 +99,9 @@ export class SignupComponent {
         this.router.navigateByUrl("role");
       },
       error: (err) => {
-        console.log("err", err);
+        if (err instanceof HttpErrorResponse) {
+          this.commonService.openSnackBar(err.error.message);
+        }
       }
     });
   }

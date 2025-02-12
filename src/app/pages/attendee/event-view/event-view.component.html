@@ -1,32 +1,54 @@
 @let event = event$ | async;
 @let sessions = sessions$ | async;
 @let has_registered = has_registered$ | async;
+@let is_invited = is_invited$ | async;
+@let is_invite_accepted = is_invite_accepted$ | async;
 
 <app-outlet-inner>
 @if (event) {
   <section>
     <div class="d-flex justify-content-between align-items-center mb-2">
       <h3 class="text-primary-clr mb-0">Event's Details</h3>
-      @if (has_registered) {
-        <button
-          mat-raised-button
-          type="button"
-          class="bg-secondary-clr text-primary-clr"
-          (click)="unregister(event._id)"
+      @if (is_invited) {
+        <div
+          class="d-flex"
+          style="gap: .5rem; cursor: pointer;"
+          routerLink="/attendee/dashboard/invitations"
         >
-          <mat-icon>how_to_reg</mat-icon>
-          Registered
-        </button>
+          <mat-icon class="text-primary-clr">mail_outline</mat-icon>
+          <p class="mb-0 fw-bold text-primary-clr">Invited</p>
+        </div>
+      } @else if (is_invite_accepted) {
+        <div 
+          class="d-flex"
+          style="gap: .5rem;"
+          routerLink="/attendee/dashboard/joined_events"
+        >
+          <mat-icon class="text-primary-clr">done_all</mat-icon>
+          <p class="mb-0 fw-bold text-primary-clr">Invitation Accepted</p>
+        </div>
       } @else {
-        <button
-          mat-raised-button
-          type="button"
-          class="bg-secondary-clr text-primary-clr"
-          (click)="register(event._id)"
-        >
-          <mat-icon>how_to_reg</mat-icon>
-          Register
-        </button>
+        @if (has_registered) {
+          <button
+            mat-raised-button
+            type="button"
+            class="bg-secondary-clr text-primary-clr"
+            (click)="unregister(event._id)"
+          >
+            <mat-icon>how_to_reg</mat-icon>
+            Registered
+          </button>
+        } @else {
+          <button
+            mat-raised-button
+            type="button"
+            class="bg-secondary-clr text-primary-clr"
+            (click)="register(event._id)"
+          >
+            <mat-icon>how_to_reg</mat-icon>
+            Register
+          </button>
+        }
       }
     </div>
     <app-event-details-card [event]="event" />

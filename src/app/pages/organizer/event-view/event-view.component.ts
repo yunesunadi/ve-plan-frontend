@@ -61,8 +61,14 @@ export class EventViewComponent {
   }
 
   editEvent(event: Event) {
+    const event_data = {
+      ...event,
+      start_time: new Date(event.start_time).toISOString(),
+      end_time: new Date(event.end_time).toISOString(),
+    }
+
     const dialogRef = this.dialog.open(EventDialogComponent, {
-      data: event,
+      data: event_data,
       disableClose: true,
     });
 

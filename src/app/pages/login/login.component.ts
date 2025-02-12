@@ -63,13 +63,7 @@ export class LoginComponent {
       },
       error: (err) => {
         if (err instanceof HttpErrorResponse) {
-          if (err.status === 401) {
-            this.commonService.openSnackBar("Incorrect password.");
-          }
-
-          if (err.status === 404) {
-            this.commonService.openSnackBar("User with this email is not found.");
-          }
+            this.commonService.openSnackBar(err.error.message);
         }
       }
     });

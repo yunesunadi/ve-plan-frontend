@@ -8,12 +8,11 @@ export type Response<K extends string, T> = GeneralResponse & {
 }
 
 export interface JWTPayload {
-  __v: number;
   iat: number;
   exp: number;
 }
 
 export interface Timestamp {
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
 }

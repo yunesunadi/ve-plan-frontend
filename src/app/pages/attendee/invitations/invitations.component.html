@@ -3,6 +3,7 @@
 <app-outlet-inner>
   <h3 class="text-primary-clr mb-3">Invitations</h3>
   <section class="d-flex flex-column align-items-center" style="gap: 1rem;">
+  @if (invitations && invitations.length > 0) {
     @for (item of invitations; track item._id) {
       <mat-card appearance="outlined" class="event-card">
         <div class="d-flex justify-content-between px-3 pt-3">
@@ -27,5 +28,8 @@
         </mat-card-actions>
       </mat-card>
     }
+  } @else {
+    <p class="text-center mt-3">There is no invitations.</p>
+  }
   </section>
 </app-outlet-inner>

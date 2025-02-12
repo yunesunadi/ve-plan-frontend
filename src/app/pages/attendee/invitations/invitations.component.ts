@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { EventInviteService } from '../../../services/event-invite.service';
-import { map } from 'rxjs';
+import { BehaviorSubject, concatMap, map } from 'rxjs';
 import { CommonService } from '../../../services/common.service';
 
 @Component({
@@ -12,8 +12,10 @@ import { CommonService } from '../../../services/common.service';
 export class InvitationsComponent {
   private eventInviteService = inject(EventInviteService);
   private commonService = inject(CommonService);
+  private accept$ = new BehaviorSubject(false);
 
-  invitations$ = this.eventInviteService.getAllByUserId().pipe(
+  invitations$ = this.accept$.pipe(
+    concatMap(() => this.eventInviteService.getAllByUserId()),
     map((res) => res.data)
   );
 
@@ -23,6 +25,7 @@ export class InvitationsComponent {
     this.eventInviteService.accept_invite(event_id).subscribe({
       next: () => {
         this.commonService.openSnackBar("Accept invitation successfully.");
+        this.accept$.next(true);
       }
     });
   }

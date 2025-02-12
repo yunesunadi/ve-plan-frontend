@@ -2,11 +2,8 @@ import { Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { EventService } from '../../services/event.service';
 import { map, shareReplay } from 'rxjs';
-import { format } from 'date-fns';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
-import { UserPayload } from '../../models/User';
-import { jwtDecode } from 'jwt-decode';
 import { UserService } from '../../services/user.service';
 
 @Component({
