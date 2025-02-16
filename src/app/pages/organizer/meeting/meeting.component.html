@@ -1,0 +1,27 @@
+@let is_created = is_created$ | async;
+
+<app-outlet-inner>
+  @if (is_created) {
+    <button
+      type="button"
+      mat-raised-button
+      (click)="join()"
+    >
+      Join Meeting
+    </button>
+    <button
+      type="button"
+      mat-raised-button
+    >
+      Notify Attendees
+    </button>
+  } @else {
+    <button
+      type="button"
+      mat-raised-button
+      (click)="create()"
+    >
+      Start Meeting
+    </button>
+  }
+</app-outlet-inner>

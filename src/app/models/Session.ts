@@ -1,3 +1,4 @@
+import { Event } from "./Event";
 import { Timestamp, GeneralResponse, Response } from "./Utils";
 
 export interface Session {
