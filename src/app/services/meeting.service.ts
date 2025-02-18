@@ -3,12 +3,15 @@ import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { CreateMeetingResponse } from '../models/Meeting';
 import { GeneralResponse, Response } from '../models/Utils';
+import { Router } from '@angular/router';
+declare var JitsiMeetExternalAPI: any;
 
 @Injectable({
   providedIn: 'root'
 })
 export class MeetingService {
   private http = inject(HttpClient);
+  private route = inject(Router);
 
   constructor() { }
 

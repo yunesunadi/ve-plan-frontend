@@ -29,6 +29,10 @@
             <mat-icon>person_add</mat-icon>
             Invite Users
           </button>
+          <button mat-menu-item [routerLink]="'/organizer/dashboard/events/' + event._id + '/meeting'">
+            <mat-icon>meeting_room</mat-icon>
+            Meeting
+          </button>
         </mat-menu>
       </div>
       }

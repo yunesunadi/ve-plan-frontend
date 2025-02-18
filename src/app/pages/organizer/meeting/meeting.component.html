@@ -24,4 +24,31 @@
       Start Meeting
     </button>
   }
+
+  <ng-container>
+
+    <div #jitsi_iframe></div>
+
+    <div class="item-center">
+        <span>Custom Controls</span>
+    </div>
+    <div class="item-center">
+        <span>&nbsp;&nbsp;</span>
+        <button mat-button (click)="executeCommand('toggleAudio')">
+          {{isAudioMuted ? 'Mute' : 'Unmute'}}
+        </button>
+        <button mat-button (click)="executeCommand('hangup')">
+          Leave
+        </button>
+        <button mat-button (click)="executeCommand('toggleVideo')">
+          {{ isVideoMuted ? 'Camera Off' : 'Camera On' }}
+        </button>
+        <button mat-button (click)="executeCommand('toggleShareScreen')">
+          Share Screen
+        </button>
+    </div>
+
+
+  </ng-container>
+
 </app-outlet-inner>
