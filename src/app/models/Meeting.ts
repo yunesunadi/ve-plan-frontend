@@ -11,3 +11,5 @@ export interface Meeting {
 }
 
 export type CreateMeetingResponse = GeneralResponse & Response<"data", Timestamp & Meeting>;
+
+export type GetMeetingResponse = CreateMeetingResponse;

@@ -1,11 +1,12 @@
-import { Component, ElementRef, inject, ViewChild } from '@angular/core';
-import { EventRegisterService } from '../../../services/event-register.service';
+import { Component, inject, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { combineLatest, concatMap, map, of, switchMap } from 'rxjs';
-import { EventInviteService } from '../../../services/event-invite.service';
+import { BehaviorSubject, concatMap, map, switchMap } from 'rxjs';
 import { MeetingService } from '../../../services/meeting.service';
 import { CommonService } from '../../../services/common.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { environment } from '../../../../environments/environment';
+import { nanoid } from "nanoid";
+
 declare var JitsiMeetExternalAPI: any;
 
 @Component({
@@ -17,101 +18,65 @@ declare var JitsiMeetExternalAPI: any;
 export class MeetingComponent {
   @ViewChild("jitsi_iframe") jitsi_iframe: any;
 
-  private eventRegisterService = inject(EventRegisterService);
-  private eventInviteService = inject(EventInviteService);
   private meetingService = inject(MeetingService);
   private aroute = inject(ActivatedRoute);
   private commonService = inject(CommonService);
   private router = inject(Router);
+  private refresh$ = new BehaviorSubject<boolean>(false);
 
-  domain: string = "8x8.vc";
-  room: any;
   options: any;
   api: any;
-  user: any;
 
   // For Custom Controls
   isAudioMuted = false;
   isVideoMuted = false;
 
-  ngOnInit() {
-    this.attendees$.subscribe(
-      (res) => {
-        console.log(res);
-        
-      }
-    )
-
-    this.room = '<AppID>/exampleroom'; // set your room name
-    this.user = {
-        name: 'yune' // set your username
-    }
-
-  }
-
-
+  ngOnInit() {}
 
   ngAfterViewInit(): void {
-    this.options = {
-      roomName: this.room,
-      width: 700,
-      height: 500,
-      configOverwrite: {
-        prejoinPageEnabled: false
-      },
-      interfaceConfigOverwrite: {
-        startAudioMuted: true,
-        startVideoMuted: true,
-      },
-      parentNode: this.jitsi_iframe.nativeElement,
-      // userInfo: {
-      //   displayName: this.user.name,
-      //   email: 'john.doe@company.com',
-      // },
-      jwt: ""
-    }
+    this.refresh$.pipe(
+      switchMap(() => this.aroute.params.pipe(
+        concatMap((params: any) => this.meetingService.getOneById(params.id)),
+        map((res) => res.data)
+      ))
+    ).subscribe({
+      next: (data) => {
+        this.options = {
+          roomName: `${environment.appId}/${data.room_name}`,
+          width: 1000,
+          height: 400,
+          configOverwrite: {
+            prejoinPageEnabled: false
+          },
+          interfaceConfigOverwrite: {
+            startAudioMuted: true,
+            startVideoMuted: true,
+          },
+          parentNode: this.jitsi_iframe.nativeElement,
+          jwt: data.token
+        };
+      }
+    });
   }
 
-  registered_users$ = this.aroute.params.pipe(
-    switchMap((params: any) => this.eventRegisterService.getAllByEventId(params.id)),
-    map((res) => res.data)
-  );
-
-  invite_accepted_users$ = this.aroute.params.pipe(
-    switchMap((params: any) => this.eventInviteService.getAllAcceptedByEventId(params.id)),
-    map((res) => res.data)
-  );
-
-  attendees$ = combineLatest([
-    this.registered_users$,
-    this.invite_accepted_users$
-  ]).pipe(
-    map((res) => {
-      const users = [...res[0], ...res[1]];
-      const unique_users = [...new Map(users.map(item => [item.user._id, item])).values()];
-      
-      return unique_users.map((item, index) => ({
-        id: index + 1,
-        name: item.user.name
-      }));
-    })
-  );
-
-  is_created$ =  this.aroute.params.pipe(
-    concatMap((params: any) => this.meetingService.isCreated(params.id).pipe(
-      map((res) => res.is_created),
+  is_created$ = this.refresh$.pipe(
+    switchMap(() => this.aroute.params.pipe(
+      concatMap((params: any) => this.meetingService.isCreated(params.id).pipe(
+        map((res) => res.is_created),
+      ))
     ))
   );
 
   create() {
     this.aroute.params.pipe(
-      concatMap((params: any) => this.meetingService.createToken().pipe(
+      concatMap((params: any) => this.meetingService.createToken(true).pipe(
         map((res) => res.token),
-        concatMap((token) => this.meetingService.start(params.id, "some string", token))
+        concatMap((token) => this.meetingService.start(params.id, nanoid(), token))
       ))
     )
     .subscribe({
       next: (res) => {
+        this.refresh$.next(true);
         this.commonService.openSnackBar(res.message);
       },
       error: (err) => {
@@ -124,7 +89,7 @@ export class MeetingComponent {
   }
 
   join() {
-    this.api = new JitsiMeetExternalAPI(this.domain, this.options);
+    this.api = new JitsiMeetExternalAPI(environment.meeting_domain, this.options);
 
     this.api.addEventListeners({
       readyToClose: this.handleClose,

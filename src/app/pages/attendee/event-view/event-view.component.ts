@@ -6,6 +6,8 @@ import { catchError, concatMap, EMPTY, map, shareReplay, switchMap } from 'rxjs'
 import { CommonService } from '../../../services/common.service';
 import { EventRegisterService } from '../../../services/event-register.service';
 import { EventInviteService } from '../../../services/event-invite.service';
+import { MeetingService } from '../../../services/meeting.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   standalone: false,
@@ -21,6 +23,7 @@ export class EventViewComponent {
   private commonService = inject(CommonService);
   private eventRegisterService = inject(EventRegisterService);
   private eventInviteService = inject(EventInviteService);
+  private meetingService = inject(MeetingService);
 
   event$ = this.aroute.params.pipe(
     switchMap((params: any) => this.eventService.getOneById(params.id)),
@@ -52,6 +55,12 @@ export class EventViewComponent {
     concatMap((accepts) => this.event$.pipe(
       map((event) => !!accepts.find((item) => item.event._id === event._id))
     ))
+  );
+
+  has_meeting_started$ = this.aroute.params.pipe(
+    switchMap((params: any) => this.meetingService.isStarted(params.id)),
+    map((res) => res.is_started),
+    shareReplay(1)
   );
 
   constructor() {}

@@ -1,32 +1,37 @@
 @let is_created = is_created$ | async;
 
 <app-outlet-inner>
-  @if (is_created) {
+  <div class="d-flex justify-content-end mb-3" style="gap: .5rem;">
+    @if (is_created) {
+      <button
+        type="button"
+        mat-raised-button
+        class="bg-primary-clr text-secondary-clr"
+        (click)="join()"
+      >
+        Join Meeting
+      </button>
+    } @else {
+      <button
+        type="button"
+        mat-raised-button
+        class="bg-primary-clr text-secondary-clr"
+        (click)="create()"
+      >
+        Start Meeting
+      </button>
+    }
     <button
       type="button"
       mat-raised-button
-      (click)="join()"
+      class="bg-primary-clr text-secondary-clr"
+      routerLink="attendees"
     >
-      Join Meeting
+      View Attendees
     </button>
-    <button
-      type="button"
-      mat-raised-button
-    >
-      Notify Attendees
-    </button>
-  } @else {
-    <button
-      type="button"
-      mat-raised-button
-      (click)="create()"
-    >
-      Start Meeting
-    </button>
-  }
+  </div>
 
   <ng-container>
-
     <div #jitsi_iframe></div>
 
     <div class="item-center">

@@ -61,6 +61,7 @@ export class HomeComponent {
         date: arg.date,
       },
       disableClose: true,
+      width: "500px"
     });
 
     dialogRef.afterClosed().pipe(
@@ -76,13 +77,13 @@ export class HomeComponent {
   }
 
   handleEventClick(clickInfo: EventClickArg) {
-    const dialogRef = this.dialog.open(EventDetailsDialogComponent, {
+    this.dialog.open(EventDetailsDialogComponent, {
       data: {
         id: clickInfo.event.id,
       },
-      autoFocus: false
+      autoFocus: false,
+      width: "500px"
     });
-
   }
 
   handleEvents() {

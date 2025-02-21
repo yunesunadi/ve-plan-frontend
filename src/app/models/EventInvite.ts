@@ -8,6 +8,7 @@ export interface EventInvite {
   user: User;
   invitation_sent: boolean;
   invitation_accepted: boolean;
+  meeting_started: boolean;
 }
 
 export type GetEventInvitesResponse = GeneralResponse & Response<"data", Array<Timestamp & EventInvite>>;

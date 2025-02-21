@@ -51,6 +51,7 @@ export class EventViewComponent {
         event_id,
       },
       disableClose: true,
+      width: "500px"
     });
 
     dialogRef.afterClosed().subscribe({
@@ -70,6 +71,7 @@ export class EventViewComponent {
     const dialogRef = this.dialog.open(EventDialogComponent, {
       data: event_data,
       disableClose: true,
+      width: "500px"
     });
 
     dialogRef.afterClosed().subscribe({
@@ -90,6 +92,7 @@ export class EventViewComponent {
             event_id
           },
           disableClose: true,
+          width: "500px"
         });
 
         dialogRef.afterClosed().subscribe({

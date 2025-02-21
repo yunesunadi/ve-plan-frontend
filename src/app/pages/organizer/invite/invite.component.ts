@@ -98,6 +98,7 @@ export class InviteComponent {
     const dialogRef = this.dialog.open(InvitationSentDialogComponent, {
       data: this.selection.selected,
       disableClose: true,
+      width: "500px"
     });
 
     dialogRef.afterClosed().subscribe({
@@ -116,7 +117,8 @@ export class InviteComponent {
     this.dialog.open(InvitedUsersDialogComponent, {
       data: {
         id: event_id
-      }
+      },
+      width: "500px"
     });
   }
 
@@ -124,7 +126,8 @@ export class InviteComponent {
     this.dialog.open(AcceptedUsersDialogComponent, {
       data: {
         id: event_id
-      }
+      },
+      width: "500px"
     });
   }
 }

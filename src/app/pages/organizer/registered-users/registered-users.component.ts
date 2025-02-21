@@ -92,6 +92,7 @@ export class RegisteredUsersComponent {
   sendApproval() {
     const dialogRef = this.dialog.open(RegisterApprovalDialogComponent, {
       data: this.selection.selected.filter(item => !item.register_approved),
+      width: "500px",
       disableClose: true,
     });
 

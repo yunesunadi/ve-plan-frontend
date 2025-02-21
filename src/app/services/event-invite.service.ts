@@ -84,4 +84,21 @@ export class EventInviteService {
       }
     );
   }
+
+  startMeeting(user_id: string, event_id: string) {
+    const token = localStorage.getItem("token");
+    const url = `${environment.apiUrl}/event_invites/meeting_started`;
+    return this.http.put<GeneralResponse>(
+      url,
+      {
+        user_id,
+        event_id
+      },
+      {
+        headers: new HttpHeaders({
+          Authorization: `Bearer ${token}`,
+        })
+      }
+    );
+  }
 }

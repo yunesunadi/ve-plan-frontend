@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { CreateMeetingResponse } from '../models/Meeting';
+import { CreateMeetingResponse, GetMeetingResponse } from '../models/Meeting';
 import { GeneralResponse, Response } from '../models/Utils';
 import { Router } from '@angular/router';
 declare var JitsiMeetExternalAPI: any;
@@ -15,12 +15,12 @@ export class MeetingService {
 
   constructor() { }
 
-  createToken() {
+  createToken(is_moderator: boolean) {
     const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/meetings/token`;
     return this.http.post<GeneralResponse & Response<"token", string>>(
       url,
-      null,
+      { is_moderator },
       {
         headers: new HttpHeaders({
           Authorization: `Bearer ${token}`,
@@ -47,9 +47,9 @@ export class MeetingService {
     );
   }
 
-  isCreated(id: string) {
+  isCreated(event_id: string) {
     const token = localStorage.getItem("token");
-    const url = `${environment.apiUrl}/meetings/${id}/is_created`;
+    const url = `${environment.apiUrl}/meetings/${event_id}/is_created`;
     return this.http.get<GeneralResponse & { is_created: boolean; }>(
       url,
       {
@@ -58,6 +58,39 @@ export class MeetingService {
         })
       }
     );
+  }
+
+  isStarted(event_id: string) {
+    const token = localStorage.getItem("token");
+    const url = `${environment.apiUrl}/meetings/${event_id}/is_started`;
+    return this.http.get<GeneralResponse & { is_started: boolean; }>(
+      url,
+      {
+        headers: new HttpHeaders({
+          Authorization: `Bearer ${token}`
+        })
+      }
+    );
+  }
+
+  getOneById(event_id: string) {
+    const token = localStorage.getItem("token");
+    const url = `${environment.apiUrl}/meetings/${event_id}`;
+    return this.http.get<GetMeetingResponse>(url, {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${token}`,
+      })
+    });
+  }
+
+  getOneByEventId(event_id: string) {
+    const token = localStorage.getItem("token");
+    const url = `${environment.apiUrl}/meetings/${event_id}/attendee`;
+    return this.http.get<GetMeetingResponse>(url, {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${token}`,
+      })
+    });
   }
 
 }

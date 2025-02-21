@@ -58,7 +58,8 @@ export class HomeComponent {
       data: {
         id: clickInfo.event.id,
       },
-      autoFocus: false
+      autoFocus: false,
+      width: "500px"
     });
   }
 

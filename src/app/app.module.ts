@@ -47,7 +47,10 @@ import { InvitedUsersDialogComponent } from './components/invited-users-dialog/i
 import { AcceptedUsersDialogComponent } from './components/accepted-users-dialog/accepted-users-dialog.component';
 import { InvitationsComponent } from './pages/attendee/invitations/invitations.component';
 import { JoinedEventsComponent } from './pages/attendee/joined-events/joined-events.component';
-import { MeetingComponent } from './pages/organizer/meeting/meeting.component';
+import { MeetingComponent as OrganizerMeetingComponent } from './pages/organizer/meeting/meeting.component';
+import { MeetingComponent as AttendeeMeetingComponent } from './pages/attendee/meeting/meeting.component';
+import { EventAttendeesComponent } from './pages/organizer/event-attendees/event-attendees.component';
+import { MeetingStartedDialogComponent } from './components/meeting-started-dialog/meeting-started-dialog.component';
 
 @NgModule({
   declarations: [
@@ -71,7 +74,10 @@ import { MeetingComponent } from './pages/organizer/meeting/meeting.component';
     AcceptedUsersDialogComponent,
     InvitationsComponent,
     JoinedEventsComponent,
-    MeetingComponent,
+    OrganizerMeetingComponent,
+    AttendeeMeetingComponent,
+    EventAttendeesComponent,
+    MeetingStartedDialogComponent,
   ],
   imports: [
     RouterModule,

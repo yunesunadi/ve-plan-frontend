@@ -3,4 +3,6 @@ export const environment = {
   apiUrl: "",
   profileUrl: "",
   coverUrl: "",
+  appId: "",
+  meeting_domain: "",
 };
