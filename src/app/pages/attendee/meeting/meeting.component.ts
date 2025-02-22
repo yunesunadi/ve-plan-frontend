@@ -1,8 +1,10 @@
 import { Component, inject, ViewChild } from '@angular/core';
 import { MeetingService } from '../../../services/meeting.service';
-import { ActivatedRoute } from '@angular/router';
-import { concatMap, map } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
+import { concatMap, map, tap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
+import { UserPayload } from '../../../models/User';
+import { jwtDecode } from 'jwt-decode';
 
 declare var JitsiMeetExternalAPI: any;
 
@@ -17,12 +19,23 @@ export class MeetingComponent {
 
   private meetingService = inject(MeetingService);
   private aroute = inject(ActivatedRoute);
+  private router = inject(Router);
 
   options: any;
   api: any;
+  event_id = "";
+
+  ngOnDestroy() {
+    if (this.api) {
+      this.api.dispose();
+    }
+  }
 
   ngAfterViewInit(): void {
     this.aroute.params.pipe(
+      tap((params: any) => {
+        this.event_id = params.id;
+      }),
       concatMap((params: any) => this.meetingService.getOneByEventId(params.id).pipe(
         map((res) => res.data.room_name),
         concatMap((room_name) => this.meetingService.createToken(false).pipe(
@@ -53,5 +66,20 @@ export class MeetingComponent {
 
   join() {
     this.api = new JitsiMeetExternalAPI(environment.meeting_domain, this.options);
+
+    this.api.addEventListeners({
+      readyToClose: this.handleClose,
+    });
+  }
+
+  handleClose = () => {
+    const token = localStorage.getItem("token") || "";
+    const decoded: UserPayload = jwtDecode(token);
+    // const isConfirmed = confirm("Are you sure to leave this event meeting?");
+
+    // if (isConfirmed) {
+      this.api.dispose();
+      this.router.navigateByUrl(`/${decoded.role}/dashboard/events/${this.event_id}/view`);
+    // }
   }
 }

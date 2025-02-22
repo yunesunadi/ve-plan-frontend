@@ -1,11 +1,14 @@
 <app-outlet-inner>
-  <button
-    type="button"
-    mat-raised-button
-    (click)="join()"
-  >
-    Join Meeting
-  </button>
+  <div class="d-flex justify-content-end">
+    <button
+      type="button"
+      mat-raised-button
+      class="bg-primary-clr text-secondary-clr"
+      (click)="join()"
+    >
+      Join Meeting
+    </button>
+  </div>
 
   <ng-container>
     <div #jitsi_iframe></div>

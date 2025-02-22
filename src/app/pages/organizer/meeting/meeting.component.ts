@@ -1,11 +1,13 @@
 import { Component, inject, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BehaviorSubject, concatMap, map, switchMap } from 'rxjs';
+import { BehaviorSubject, concatMap, map, switchMap, tap } from 'rxjs';
 import { MeetingService } from '../../../services/meeting.service';
 import { CommonService } from '../../../services/common.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import { nanoid } from "nanoid";
+import { jwtDecode } from 'jwt-decode';
+import { UserPayload } from '../../../models/User';
 
 declare var JitsiMeetExternalAPI: any;
 
@@ -26,16 +28,22 @@ export class MeetingComponent {
 
   options: any;
   api: any;
-
-  // For Custom Controls
-  isAudioMuted = false;
-  isVideoMuted = false;
+  event_id = "";
 
   ngOnInit() {}
+
+  ngOnDestroy() {
+    if (this.api) {
+      this.api.dispose();
+    }
+  }
 
   ngAfterViewInit(): void {
     this.refresh$.pipe(
       switchMap(() => this.aroute.params.pipe(
+        tap((params: any) => {
+          this.event_id = params.id;
+        }),
         concatMap((params: any) => this.meetingService.getOneById(params.id)),
         map((res) => res.data)
       ))
@@ -85,7 +93,6 @@ export class MeetingComponent {
         }
       }
     });
-   
   }
 
   join() {
@@ -96,7 +103,7 @@ export class MeetingComponent {
       participantLeft: this.handleParticipantLeft,
       participantJoined: this.handleParticipantJoined,
       videoConferenceJoined: this.handleVideoConferenceJoined,
-      videoConferenceLeft: this.handleVideoConferenceLeft,
+      // videoConferenceLeft: this.handleVideoConferenceLeft,
       audioMuteStatusChanged: this.handleMuteStatus,
       videoMuteStatusChanged: this.handleVideoStatus,
       passwordRequired: this.passwordRequired,
@@ -104,70 +111,59 @@ export class MeetingComponent {
   }
 
   passwordRequired = async () => {
-    console.log('passwordRequired'); // { id: "2baa184e" }
+    console.log('passwordRequired');
     this.api.executeCommand('password', 'The Password');
   };
 
   handleClose = () => {
-    console.log("handleClose");
+    const token = localStorage.getItem("token") || "";
+    const decoded: UserPayload = jwtDecode(token);
+    // const isConfirmed = confirm("Are you sure to leave this event meeting?");
+
+    // if (isConfirmed) {
+      this.api.dispose();
+      this.router.navigateByUrl(`/${decoded.role}/dashboard/events/${this.event_id}/view`);
+    // }
   }
 
   handleParticipantLeft = async (participant: any) => {
-    console.log("handleParticipantLeft", participant); // { id: "2baa184e" }
+    console.log("handleParticipantLeft", participant);
     const data = await this.getParticipants();
     console.log("left participants", data);
   }
 
   handleParticipantJoined = async (participant: any) => {
-    console.log("handleParticipantJoined", participant); // { id: "2baa184e", displayName: "Shanu Verma", formattedDisplayName: "Shanu Verma" }
+    console.log("handleParticipantJoined", participant);
     const data = await this.getParticipants();
     console.log("joined participants", data);
   }
 
   handleVideoConferenceJoined = async (participant: any) => {
-    console.log("handleVideoConferenceJoined", participant); // { roomName: "bwb-bfqi-vmh", id: "8c35a951", displayName: "Akash Verma", formattedDisplayName: "Akash Verma (me)"}
+    console.log("handleVideoConferenceJoined", participant);
     const data = await this.getParticipants();
     console.log("conference joined participants", data);
   }
 
-  handleVideoConferenceLeft = () => {
-    console.log("handleVideoConferenceLeft");
-    this.router.navigateByUrl("/home");
-  }
+  // handleVideoConferenceLeft = () => {
+  //   const token = localStorage.getItem("token") || "";
+  //   const decoded: UserPayload = jwtDecode(token);
+  //   this.router.navigateByUrl(`/${decoded.role}/dashboard/events/${this.event_id}/view`);
+  // }
 
   handleMuteStatus = (audio: any) => {
-    console.log("handleMuteStatus", audio); // { muted: true }
+    console.log("handleMuteStatus", audio);
   }
 
   handleVideoStatus = (video: any) => {
-    console.log("handleVideoStatus", video); // { muted: true }
+    console.log("handleVideoStatus", video);
   }
 
   getParticipants() {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        resolve(this.api.getParticipantsInfo()); // get all participants
-      }, 500)
+        resolve(this.api.getParticipantsInfo());
+      }, 500);
     });
   }
-
-  // custom events
-  executeCommand(command: string) {
-    this.api.executeCommand(command);;
-    if(command == 'hangup') {
-      this.router.navigateByUrl("organizer/dashboard/home");
-      return;
-    }
-
-    if(command == 'toggleAudio') {
-      this.isAudioMuted = !this.isAudioMuted;
-    }
-
-    if(command == 'toggleVideo') {
-      this.isVideoMuted = !this.isVideoMuted;
-    }
-  }
-
-
 
 }

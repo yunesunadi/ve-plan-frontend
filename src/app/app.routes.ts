@@ -18,6 +18,8 @@ import { JoinedEventsComponent } from './pages/attendee/joined-events/joined-eve
 import { MeetingComponent as OrganizerMeetingComponent } from './pages/organizer/meeting/meeting.component';
 import { MeetingComponent as AttendeeMeetingComponent } from './pages/attendee/meeting/meeting.component';
 import { EventAttendeesComponent } from './pages/organizer/event-attendees/event-attendees.component';
+import { EventsComponent as OrganizerEventsComponent } from './pages/organizer/events/events.component';
+import { EventsComponent as AttendeeEventsComponent } from './pages/attendee/events/events.component';
 
 const publicRoutes: Routes = [
   {
@@ -44,6 +46,11 @@ const organizerRoutes: Routes = [
   {
     path: "home",
     component: OrganizerHomeComponent,
+    canActivate: [completeAuthGuard]
+  },
+  {
+    path: "events",
+    component: OrganizerEventsComponent,
     canActivate: [completeAuthGuard]
   },
   {
@@ -81,6 +88,11 @@ const attendeeRoutes: Routes = [
   {
     path: "home",
     component: AttendeeHomeComponent,
+    canActivate: [completeAuthGuard]
+  },
+  {
+    path: "events",
+    component: AttendeeEventsComponent,
     canActivate: [completeAuthGuard]
   },
   {

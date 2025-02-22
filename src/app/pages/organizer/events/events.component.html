@@ -1,0 +1,29 @@
+@let events = events$ | async;
+
+<app-outlet-inner>
+  <section>
+    <h3 class="text-primary-clr mb-3">Events</h3>
+    @if (events && events.length > 0) {
+      @for (item of events; track item._id) {
+        <mat-card appearance="outlined" class="event-card">
+          <div class="px-3 pt-3">
+            <mat-card-title class="text-primary-clr">{{ item.title }}</mat-card-title>
+            <mat-card-subtitle class="text-primary-clr">{{ item.description }}</mat-card-subtitle>
+          </div>
+          <mat-card-actions [align]="'end'" class="px-3 pb-3">
+            <button
+              mat-stroked-button
+              class="text-secondary-clr bg-primary-clr"
+              [routerLink]="'/organizer/dashboard/events/' + item._id + '/view'"
+            >
+              <span>See Details</span>
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      }
+    } @else {
+      <p class="text-center mt-3">There is no events.</p>
+    }
+  </section>
+</app-outlet-inner>

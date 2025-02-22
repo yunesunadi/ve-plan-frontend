@@ -51,6 +51,8 @@ import { MeetingComponent as OrganizerMeetingComponent } from './pages/organizer
 import { MeetingComponent as AttendeeMeetingComponent } from './pages/attendee/meeting/meeting.component';
 import { EventAttendeesComponent } from './pages/organizer/event-attendees/event-attendees.component';
 import { MeetingStartedDialogComponent } from './components/meeting-started-dialog/meeting-started-dialog.component';
+import { EventsComponent as OrganizerEventsComponent } from './pages/organizer/events/events.component';
+import { EventsComponent as AttendeeEventsComponent } from './pages/attendee/events/events.component';
 
 @NgModule({
   declarations: [
@@ -78,6 +80,8 @@ import { MeetingStartedDialogComponent } from './components/meeting-started-dial
     AttendeeMeetingComponent,
     EventAttendeesComponent,
     MeetingStartedDialogComponent,
+    OrganizerEventsComponent,
+    AttendeeEventsComponent, 
   ],
   imports: [
     RouterModule,
