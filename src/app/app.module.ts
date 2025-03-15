@@ -53,6 +53,8 @@ import { EventAttendeesComponent } from './pages/organizer/event-attendees/event
 import { MeetingStartedDialogComponent } from './components/meeting-started-dialog/meeting-started-dialog.component';
 import { EventsComponent as OrganizerEventsComponent } from './pages/organizer/events/events.component';
 import { EventsComponent as AttendeeEventsComponent } from './pages/attendee/events/events.component';
+import { MatDividerModule } from "@angular/material/divider";
+import { SettingComponent } from './pages/setting/setting.component';
 
 @NgModule({
   declarations: [
@@ -81,7 +83,8 @@ import { EventsComponent as AttendeeEventsComponent } from './pages/attendee/eve
     EventAttendeesComponent,
     MeetingStartedDialogComponent,
     OrganizerEventsComponent,
-    AttendeeEventsComponent, 
+    AttendeeEventsComponent,
+    SettingComponent,
   ],
   imports: [
     RouterModule,
@@ -107,6 +110,7 @@ import { EventsComponent as AttendeeEventsComponent } from './pages/attendee/eve
     MatPaginatorModule,
     MatCheckboxModule,
     MatMenuModule,
+    MatDividerModule,
   ],
   providers: [
     appConfig.providers,

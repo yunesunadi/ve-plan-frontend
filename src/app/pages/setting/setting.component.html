@@ -1,0 +1,36 @@
+<app-outlet-inner>
+  <h4 class="text-primary-clr mb-4">Edit Profile</h4>
+  <form [formGroup]="edit_profile_form" (ngSubmit)="editProfile()" class="d-flex flex-column edit-profile-form">
+    <div class="align-self-center mb-3">
+      <p class="mb-1">Profile</p>
+      <label for="profile" class="profile-img-container">
+        <input id="profile" type="file" accept="image/*" (change)="changeProfile($event)" class="d-none">
+        <img [src]="profile" #imgView alt="Profile image" class="profile-img rounded">
+      </label>
+    </div>
+    <mat-form-field appearance="outline">
+      <mat-label>Name</mat-label>
+      <input matInput type="text" formControlName="name" placeholder="Enter name">
+      @if (nameControl.hasError('required')) {
+        <mat-error>Name is required.</mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Email</mat-label>
+      <input type="email" matInput formControlName="email" placeholder="Enter email">
+      @if (emailControl.hasError('email') && !emailControl.hasError('required')) {
+        <mat-error>Please enter a valid email address.</mat-error>
+      }
+      @if (emailControl.hasError('required')) {
+        <mat-error>Email is required.</mat-error>
+      }
+    </mat-form-field>
+    <button
+      mat-raised-button
+      type="submit"
+      class="bg-primary-clr text-white"
+    >
+      Edit Profile
+    </button>
+  </form>
+</app-outlet-inner>

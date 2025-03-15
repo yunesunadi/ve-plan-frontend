@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { UserPayload } from '../../models/User';
 import { jwtDecode } from 'jwt-decode';
+import { environment } from '../../../environments/environment';
 
 @Component({
   standalone: false,
@@ -25,5 +26,15 @@ export class PrivateComponent {
     const token = localStorage.getItem("token") || "";
     const decoded: UserPayload = jwtDecode(token);
     return decoded.role === "attendee";
+  }
+
+  get profile_url() {
+    const token = localStorage.getItem("token") || "";
+    const decoded: UserPayload = jwtDecode(token);
+    if (decoded.profile) {
+      return environment.profileUrl + "/" + decoded.profile;
+    }
+
+    return "assets/images/placeholder_person.png";
   }
 }

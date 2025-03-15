@@ -4,9 +4,23 @@
   </button>
   <p class="text-secondary-clr mb-0 ms-3">VE-Plan</p>
   <span class="spacer"></span>
-  <button mat-icon-button class="text-secondary-clr" (click)="logout()">
-    <mat-icon>logout</mat-icon>
-  </button>
+  <div mat-button [matMenuTriggerFor]="menu" class="d-flex align-items-center cursor-pointer">
+    <img [src]="profile_url" width="45" height="45" class="rounded-circle" alt="User profile">
+    <mat-icon class="text-secondary-clr">keyboard_arrow_down</mat-icon>
+  </div>
+  <mat-menu #menu="matMenu">
+    <button mat-menu-item routerLink="setting">
+      <mat-icon>settings</mat-icon>
+      Setting
+    </button>
+    <button mat-menu-item (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      Logout
+    </button>
+    <mat-divider></mat-divider>
+    <button mat-menu-item>Terms and Conditions</button>
+    <button mat-menu-item>Privacy Policy</button>
+  </mat-menu>
 </mat-toolbar>
 
 <mat-drawer-container class="sidenav-container" autosize>

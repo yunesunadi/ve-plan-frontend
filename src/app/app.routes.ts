@@ -20,6 +20,7 @@ import { MeetingComponent as AttendeeMeetingComponent } from './pages/attendee/m
 import { EventAttendeesComponent } from './pages/organizer/event-attendees/event-attendees.component';
 import { EventsComponent as OrganizerEventsComponent } from './pages/organizer/events/events.component';
 import { EventsComponent as AttendeeEventsComponent } from './pages/attendee/events/events.component';
+import { SettingComponent } from './pages/setting/setting.component';
 
 const publicRoutes: Routes = [
   {
@@ -79,6 +80,11 @@ const organizerRoutes: Routes = [
     canActivate: [completeAuthGuard]
   },
   {
+    path: "setting",
+    component: SettingComponent,
+    canActivate: [completeAuthGuard]
+  },
+  {
     path: "**",
     component: NotFoundComponent,
   },
@@ -113,6 +119,11 @@ const attendeeRoutes: Routes = [
   {
     path: "events/:id/meeting",
     component: AttendeeMeetingComponent,
+    canActivate: [completeAuthGuard]
+  },
+  {
+    path: "setting",
+    component: SettingComponent,
     canActivate: [completeAuthGuard]
   },
   {
