@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { EventInviteService } from '../../services/event-invite.service';
-import { map } from 'rxjs';
+import { map, shareReplay } from 'rxjs';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 @Component({
@@ -14,7 +14,8 @@ export class InvitedUsersDialogComponent {
   private eventInviteService = inject(EventInviteService);
 
   invited_users$ = this.eventInviteService.getAllByEventId(this.dialog_data.id).pipe(
-    map((res) => res.data)
+    map((res) => res.data),
+    shareReplay(1)
   );
 
   constructor() {}

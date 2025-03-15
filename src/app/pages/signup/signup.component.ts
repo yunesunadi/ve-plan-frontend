@@ -82,7 +82,6 @@ export class SignupComponent {
       }
       fileReader.readAsDataURL(file);
 
-      // const url = URL.createObjectURL(file);
       this.signup_form.get("profile")?.patchValue(file);
     }
   }

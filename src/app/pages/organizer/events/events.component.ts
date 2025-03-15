@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { EventService } from '../../../services/event.service';
-import { map } from 'rxjs';
+import { map, shareReplay } from 'rxjs';
 
 @Component({
   standalone: false,
@@ -12,6 +12,7 @@ export class EventsComponent {
   private eventService = inject(EventService);
 
   events$ = this.eventService.getAll().pipe(
-    map((res) => res.data)
+    map((res) => res.data),
+    shareReplay(1)
   );
 }

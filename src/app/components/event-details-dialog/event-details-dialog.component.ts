@@ -25,7 +25,8 @@ export class EventDetailsDialogComponent {
   );
 
   role$ = this.userService.hasRole().pipe(
-    map((res) => res.role)
+    map((res) => res.role),
+    shareReplay(1)
   );
 
   constructor() {}

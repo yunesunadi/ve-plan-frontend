@@ -7,7 +7,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute } from '@angular/router';
 import { EventRegisterService } from '../../../services/event-register.service';
 import { EventInviteService } from '../../../services/event-invite.service';
-import { combineLatest, map, switchMap } from 'rxjs';
+import { combineLatest, map, shareReplay, switchMap } from 'rxjs';
 import { MeetingStartedDialogComponent } from '../../../components/meeting-started-dialog/meeting-started-dialog.component';
 
 @Component({
@@ -37,12 +37,14 @@ export class EventAttendeesComponent {
 
   registered_users$ = this.aroute.params.pipe(
     switchMap((params: any) => this.eventRegisterService.getAllByEventId(params.id)),
-    map((res) => res.data.map((item => ({ ...item, type: "registered" }))))
+    map((res) => res.data.map((item => ({ ...item, type: "registered" })))),
+    shareReplay(1)
   );
 
   invite_accepted_users$ = this.aroute.params.pipe(
     switchMap((params: any) => this.eventInviteService.getAllAcceptedByEventId(params.id)),
-    map((res) => res.data.map((item => ({ ...item, type: "invitation_approved" }))))
+    map((res) => res.data.map((item => ({ ...item, type: "invitation_approved" })))),
+    shareReplay(1)
   );
 
   fetchData() {

@@ -5,7 +5,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute } from '@angular/router';
-import { concatMap, debounceTime, iif, map, of, switchMap } from 'rxjs';
+import { concatMap, debounceTime, iif, map, of, shareReplay, switchMap } from 'rxjs';
 import { UserService } from '../../../services/user.service';
 import { FormControl, FormGroup } from '@angular/forms';
 import { EventService } from '../../../services/event.service';
@@ -39,6 +39,7 @@ export class InviteComponent {
     switchMap((params: any) => this.eventService.getOneById(params.id).pipe(
       map((res) => res.data)
     )),
+    shareReplay(1)
   );
 
   constructor() {}

@@ -2,12 +2,11 @@ import { Component, inject } from '@angular/core';
 import { EventService } from '../../../services/event.service';
 import { SessionService } from '../../../services/session.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { catchError, concatMap, EMPTY, map, shareReplay, switchMap } from 'rxjs';
+import { BehaviorSubject, catchError, concatMap, EMPTY, map, shareReplay, switchMap } from 'rxjs';
 import { CommonService } from '../../../services/common.service';
 import { EventRegisterService } from '../../../services/event-register.service';
 import { EventInviteService } from '../../../services/event-invite.service';
 import { MeetingService } from '../../../services/meeting.service';
-import { environment } from '../../../../environments/environment';
 
 @Component({
   standalone: false,
@@ -24,6 +23,7 @@ export class EventViewComponent {
   private eventRegisterService = inject(EventRegisterService);
   private eventInviteService = inject(EventInviteService);
   private meetingService = inject(MeetingService);
+  private refresh$ = new BehaviorSubject(null);
 
   event$ = this.aroute.params.pipe(
     switchMap((params: any) => this.eventService.getOneById(params.id)),
@@ -41,20 +41,29 @@ export class EventViewComponent {
     shareReplay(1)
   );
 
-  has_registered$ = this.fetchHasRegistered();
+  has_registered$ = this.refresh$.pipe(
+    switchMap(() => this.event$.pipe(
+      concatMap((event) => this.eventRegisterService.hasRegistered(event._id).pipe(
+        map((res) => res.has_registered)
+      )),
+      shareReplay(1)
+    ))
+  );
 
   is_invited$ = this.eventInviteService.getAllByUserId().pipe(
     map((res) => res.data),
     concatMap((invites) => this.event$.pipe(
       map((event) => !!invites.find((item) => item.event._id === event._id))
-    ))
+    )),
+    shareReplay(1)
   );
 
   is_invite_accepted$ = this.eventInviteService.getAllAcceptedByUserId().pipe(
     map((res) => res.data),
     concatMap((accepts) => this.event$.pipe(
       map((event) => !!accepts.find((item) => item.event._id === event._id))
-    ))
+    )),
+    shareReplay(1)
   );
 
   has_meeting_started$ = this.aroute.params.pipe(
@@ -65,18 +74,10 @@ export class EventViewComponent {
 
   constructor() {}
 
-  fetchHasRegistered() {
-    return this.event$.pipe(
-      concatMap((event) => this.eventRegisterService.hasRegistered(event._id).pipe(
-        map((res) => res.has_registered)
-      ))
-    );
-  }
-
   register(event_id: string) {
     this.eventRegisterService.register(event_id).subscribe({
       next: (res) => {
-        this.has_registered$ = this.fetchHasRegistered();
+        this.refresh$.next(null);
         this.commonService.openSnackBar(res.message);
       }
     });
@@ -88,7 +89,7 @@ export class EventViewComponent {
     if (isConfirmed) {
       this.eventRegisterService.unregister(event_id).subscribe({
         next: (res) => {
-          this.has_registered$ = this.fetchHasRegistered();
+          this.refresh$.next(null);
           this.commonService.openSnackBar(res.message);
         }
       });

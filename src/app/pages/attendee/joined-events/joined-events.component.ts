@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { EventRegisterService } from '../../../services/event-register.service';
 import { EventInviteService } from '../../../services/event-invite.service';
-import { map } from 'rxjs';
+import { map, shareReplay } from 'rxjs';
 
 @Component({
   standalone: false,
@@ -16,10 +16,12 @@ export class JoinedEventsComponent {
   constructor() {}
 
   registered_events$ = this.eventRegisterService.getAllByUserId().pipe(
-    map((res) => res.data)
+    map((res) => res.data),
+    shareReplay(1)
   );
 
   accepted_events$ = this.eventInviteService.getAllAcceptedByUserId().pipe(
-    map((res) => res.data)
+    map((res) => res.data),
+    shareReplay(1)
   );
 }

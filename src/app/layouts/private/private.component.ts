@@ -1,5 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
-import { AuthService } from '../../services/auth.service';
+import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { UserPayload } from '../../models/User';
 import { jwtDecode } from 'jwt-decode';

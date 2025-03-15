@@ -1,8 +1,8 @@
 import { ChangeDetectorRef, Component, inject, signal } from '@angular/core';
 import { EventService } from '../../../services/event.service';
-import { map } from 'rxjs';
+import { map, shareReplay } from 'rxjs';
 import { CalendarOptions, EventClickArg } from '@fullcalendar/core/index.js';
-import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction';
+import interactionPlugin from '@fullcalendar/interaction';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import { MatDialog } from '@angular/material/dialog';
 import { EventDetailsDialogComponent } from '../../../components/event-details-dialog/event-details-dialog.component';
@@ -22,7 +22,8 @@ export class HomeComponent {
       id: event._id,
       title: event.title,
       start: event.date,
-    })))
+    }))),
+    shareReplay(1)
   );
 
   calendarOptions = signal<CalendarOptions>({
@@ -54,7 +55,7 @@ export class HomeComponent {
   constructor() {}
 
   handleEventClick(clickInfo: EventClickArg) {
-    const dialogRef = this.dialog.open(EventDetailsDialogComponent, {
+    this.dialog.open(EventDetailsDialogComponent, {
       data: {
         id: clickInfo.event.id,
       },

@@ -1,6 +1,6 @@
 import { Component, inject, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BehaviorSubject, concatMap, map, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, concatMap, map, shareReplay, switchMap, tap } from 'rxjs';
 import { MeetingService } from '../../../services/meeting.service';
 import { CommonService } from '../../../services/common.service';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -72,7 +72,8 @@ export class MeetingComponent {
       concatMap((params: any) => this.meetingService.isCreated(params.id).pipe(
         map((res) => res.is_created),
       ))
-    ))
+    )),
+    shareReplay(1)
   );
 
   create() {

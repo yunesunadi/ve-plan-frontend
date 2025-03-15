@@ -2,7 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
-import { concatMap, delay, map } from 'rxjs';
+import { map } from 'rxjs';
 import { jwtDecode } from "jwt-decode";
 import { UserPayload } from '../../models/User';
 import { CommonService } from '../../services/common.service';

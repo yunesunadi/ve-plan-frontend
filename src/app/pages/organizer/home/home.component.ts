@@ -5,7 +5,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import { MatDialog } from '@angular/material/dialog';
 import { EventDialogComponent } from '../../../components/event-dialog/event-dialog.component';
 import { EventService } from '../../../services/event.service';
-import { concatMap, map } from 'rxjs';
+import { concatMap, map, shareReplay } from 'rxjs';
 import { EventDetailsDialogComponent } from '../../../components/event-details-dialog/event-details-dialog.component';
 
 @Component({
@@ -23,7 +23,8 @@ export class HomeComponent {
       id: event._id,
       title: event.title,
       start: event.date,
-    })))
+    }))),
+    shareReplay(1)
   );
 
   calendarOptions = signal<CalendarOptions>({
