@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { GeneralResponse, Response } from '../models/Utils';
+import { GeneralResponse } from '../models/Utils';
 import { User } from '../models/User';
 
 @Injectable({
@@ -68,5 +68,20 @@ export class UserService {
         })
       }
     );
+  }
+
+  updatePassword(current_password: string, new_password: string) {
+    const token = localStorage.getItem("token");
+    const url = `${environment.apiUrl}/user/password`;
+    return this.http.put<GeneralResponse>(url, 
+      {
+        current_password,
+        new_password
+      },
+      {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${token}`,
+      })
+    });
   }
 }

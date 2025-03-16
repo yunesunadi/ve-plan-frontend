@@ -1,12 +1,12 @@
 import { Component, inject, signal, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AuthService } from '../../services/auth.service';
-import { Router } from '@angular/router';
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { CommonService } from '../../services/common.service';
 import { map } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { UserService } from '../../services/user.service';
 import { environment } from '../../../environments/environment';
+
+const MIN_LENGTH = 6;
 
 @Component({
   standalone: false,
@@ -16,13 +16,15 @@ import { environment } from '../../../environments/environment';
 })
 export class SettingComponent {
   @ViewChild("imgView") imgView: any;
-  isPassword = signal(true);
+  isCurrentPassword = signal(true);
+  isNewPassword = signal(true);
+  isConfirmPassword = signal(true);
   edit_profile_form: FormGroup;
+  change_password_form: FormGroup;
   profile = "";
 
   private form_builder = inject(FormBuilder);
   private userService = inject(UserService);
-  private router = inject(Router);
   private commonService = inject(CommonService);
 
   constructor() {
@@ -33,6 +35,24 @@ export class SettingComponent {
         email: [''],
       }
     );
+
+    this.change_password_form = this.form_builder.group(
+      {
+        current_password: ['', [Validators.required, Validators.minLength(MIN_LENGTH)]],
+        new_password: ['', [Validators.required, Validators.minLength(MIN_LENGTH)]],
+        confirm_password: ['', [Validators.required, Validators.minLength(MIN_LENGTH)]]
+      },
+      {
+        validators: this.checkPasswordsValidator()
+      }
+    );
+  }
+
+  checkPasswordsValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const isNotMatched = control.value['new_password'] !== control.value['confirm_password'];
+      return  isNotMatched ? { passwordsNotMatched: true } : null;
+    };
   }
 
   ngOnInit() {
@@ -65,8 +85,28 @@ export class SettingComponent {
     return this.edit_profile_form.controls["email"];
   }
 
-  togglePasswordVisibility() {
-    this.isPassword.set(!this.isPassword());
+  get currentPasswordControl() {
+    return this.change_password_form.controls["current_password"];
+  }
+
+  get newPasswordControl() {
+    return this.change_password_form.controls["new_password"];
+  }
+
+  get confirmPasswordControl() {
+    return this.change_password_form.controls["confirm_password"];
+  }
+
+  toggleCurrentPasswordVisibility() {
+    this.isCurrentPassword.set(!this.isCurrentPassword());
+  }
+
+  toggleNewPasswordVisibility() {
+    this.isNewPassword.set(!this.isNewPassword());
+  }
+
+  toggleConfirmPasswordVisibility() {
+    this.isConfirmPassword.set(!this.isConfirmPassword());
   }
 
   changeProfile(event: any) {
@@ -91,6 +131,28 @@ export class SettingComponent {
     this.userService.editProfile(this.edit_profile_form.value).subscribe({
       next: (res) => {
         this.commonService.openSnackBar(res.message);
+      },
+      error: (err) => {
+        if (err instanceof HttpErrorResponse) {
+          this.commonService.openSnackBar(err.error.message);
+        }
+      }
+    });
+  }
+
+  changePassword() {
+    if (this.change_password_form.invalid) return;
+
+    const current_password = this.change_password_form.value.current_password;
+    const new_password = this.change_password_form.value.new_password;
+    
+    this.userService.updatePassword(current_password, new_password).subscribe({
+      next: (res) => {
+        this.commonService.openSnackBar(res.message);
+        this.change_password_form.reset();
+        this.currentPasswordControl.setErrors(null);
+        this.newPasswordControl.setErrors(null);
+        this.confirmPasswordControl.setErrors(null);
       },
       error: (err) => {
         if (err instanceof HttpErrorResponse) {
