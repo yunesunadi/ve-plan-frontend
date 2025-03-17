@@ -35,22 +35,16 @@ export class EventAttendeesComponent {
     this.fetchData();
   }
 
-  registered_users$ = this.aroute.params.pipe(
-    switchMap((params: any) => this.eventRegisterService.getAllByEventId(params.id)),
-    map((res) => res.data.map((item => ({ ...item, type: "registered" })))),
-    shareReplay(1)
-  );
-
-  invite_accepted_users$ = this.aroute.params.pipe(
-    switchMap((params: any) => this.eventInviteService.getAllAcceptedByEventId(params.id)),
-    map((res) => res.data.map((item => ({ ...item, type: "invitation_approved" })))),
-    shareReplay(1)
-  );
-
   fetchData() {
     combineLatest([
-      this.registered_users$,
-      this.invite_accepted_users$
+      this.aroute.params.pipe(
+        switchMap((params: any) => this.eventRegisterService.getAllByEventId(params.id)),
+        map((res) => res.data.map((item => ({ ...item, type: "registered" }))))
+      ),
+      this.aroute.params.pipe(
+        switchMap((params: any) => this.eventInviteService.getAllAcceptedByEventId(params.id)),
+        map((res) => res.data.map((item => ({ ...item, type: "invitation_approved" }))))
+      )
     ]).pipe(
       map((res) => {
         const users = [...res[0], ...res[1]];
