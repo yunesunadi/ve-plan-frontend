@@ -7,6 +7,8 @@ import { CommonService } from '../../../services/common.service';
 import { EventRegisterService } from '../../../services/event-register.service';
 import { EventInviteService } from '../../../services/event-invite.service';
 import { MeetingService } from '../../../services/meeting.service';
+import { MatDialog } from '@angular/material/dialog';
+import { AttendeeMeetingDialogComponent } from '../../../components/attendee-meeting-dialog/attendee-meeting-dialog.component';
 
 @Component({
   standalone: false,
@@ -24,6 +26,7 @@ export class EventViewComponent {
   private eventInviteService = inject(EventInviteService);
   private meetingService = inject(MeetingService);
   private refresh$ = new BehaviorSubject(null);
+  private dialog = inject(MatDialog);
 
   event$ = this.aroute.params.pipe(
     switchMap((params: any) => this.eventService.getOneById(params.id)),
@@ -94,5 +97,18 @@ export class EventViewComponent {
         }
       });
     }
+  }
+
+  joinMeeting(event_id: string) {
+    this.dialog.open(AttendeeMeetingDialogComponent, {
+      width: "calc(100% - 10px)",
+      maxWidth: "100%",
+      height: "calc(100% - 10px)",
+      maxHeight: "100%",
+      disableClose: true,
+      data: {
+        event_id
+      }
+    });
   }
 }

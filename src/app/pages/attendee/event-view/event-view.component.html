@@ -15,10 +15,10 @@
           mat-raised-button
           type="button"
           class="bg-secondary-clr text-primary-clr"
-          [routerLink]="'/attendee/dashboard/events/' + event._id + '/meeting'"
+          (click)="joinMeeting(event._id)"
         >
           <mat-icon>meeting_room</mat-icon>
-          Go to Meeting
+          Join Meeting
         </button>
       } @else if (is_invited) {
         <div

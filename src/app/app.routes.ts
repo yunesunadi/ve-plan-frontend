@@ -16,7 +16,6 @@ import { InviteComponent } from './pages/organizer/invite/invite.component';
 import { InvitationsComponent } from './pages/attendee/invitations/invitations.component';
 import { JoinedEventsComponent } from './pages/attendee/joined-events/joined-events.component';
 import { MeetingComponent as OrganizerMeetingComponent } from './pages/organizer/meeting/meeting.component';
-import { MeetingComponent as AttendeeMeetingComponent } from './pages/attendee/meeting/meeting.component';
 import { EventAttendeesComponent } from './pages/organizer/event-attendees/event-attendees.component';
 import { EventsComponent as OrganizerEventsComponent } from './pages/organizer/events/events.component';
 import { EventsComponent as AttendeeEventsComponent } from './pages/attendee/events/events.component';
@@ -114,11 +113,6 @@ const attendeeRoutes: Routes = [
   {
     path: "joined_events",
     component: JoinedEventsComponent,
-    canActivate: [completeAuthGuard]
-  },
-  {
-    path: "events/:id/meeting",
-    component: AttendeeMeetingComponent,
     canActivate: [completeAuthGuard]
   },
   {

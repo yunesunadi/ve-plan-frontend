@@ -48,13 +48,14 @@ import { AcceptedUsersDialogComponent } from './components/accepted-users-dialog
 import { InvitationsComponent } from './pages/attendee/invitations/invitations.component';
 import { JoinedEventsComponent } from './pages/attendee/joined-events/joined-events.component';
 import { MeetingComponent as OrganizerMeetingComponent } from './pages/organizer/meeting/meeting.component';
-import { MeetingComponent as AttendeeMeetingComponent } from './pages/attendee/meeting/meeting.component';
 import { EventAttendeesComponent } from './pages/organizer/event-attendees/event-attendees.component';
 import { MeetingStartedDialogComponent } from './components/meeting-started-dialog/meeting-started-dialog.component';
 import { EventsComponent as OrganizerEventsComponent } from './pages/organizer/events/events.component';
 import { EventsComponent as AttendeeEventsComponent } from './pages/attendee/events/events.component';
 import { MatDividerModule } from "@angular/material/divider";
 import { SettingComponent } from './pages/setting/setting.component';
+import { AttendeeMeetingDialogComponent } from './components/attendee-meeting-dialog/attendee-meeting-dialog.component';
+import { OrganizerMeetingDialogComponent } from './components/organizer-meeting-dialog/organizer-meeting-dialog.component';
 
 @NgModule({
   declarations: [
@@ -79,12 +80,13 @@ import { SettingComponent } from './pages/setting/setting.component';
     InvitationsComponent,
     JoinedEventsComponent,
     OrganizerMeetingComponent,
-    AttendeeMeetingComponent,
     EventAttendeesComponent,
     MeetingStartedDialogComponent,
     OrganizerEventsComponent,
     AttendeeEventsComponent,
     SettingComponent,
+    AttendeeMeetingDialogComponent,
+    OrganizerMeetingDialogComponent,
   ],
   imports: [
     RouterModule,
