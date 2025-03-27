@@ -57,6 +57,13 @@ export class OrganizerMeetingDialogComponent {
           videoConferenceJoined: this.handleVideoConferenceJoined,
           videoConferenceLeft: this.handleVideoConferenceLeft,
         });
+
+        if (this.dialog_data.is_expired) {
+          const isConfirmed = confirm("Can't join this meeting since meeting token is expired.");
+          if (isConfirmed) {
+            this.dialog.close();
+          }
+        }
       }
     });
   }
@@ -72,8 +79,7 @@ export class OrganizerMeetingDialogComponent {
     console.log("left participants", data);
   }
 
-  handleParticipantJoined = async (participant: any) => {
-    console.log("handleParticipantJoined", participant);
+  handleParticipantJoined = async () => {
     const data = await this.getParticipants();
     console.log("joined participants", data);
   }

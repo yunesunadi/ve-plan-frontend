@@ -28,6 +28,8 @@ export class EventViewComponent {
   private refresh$ = new BehaviorSubject(null);
   private dialog = inject(MatDialog);
 
+  private is_expired = false;
+
   event$ = this.aroute.params.pipe(
     switchMap((params: any) => this.eventService.getOneById(params.id)),
     map((res) => res.data),
@@ -77,6 +79,16 @@ export class EventViewComponent {
 
   constructor() {}
 
+  ngOnInit() {
+    this.aroute.params.pipe(
+      switchMap((params: any) => this.meetingService.isExpired(params.id))
+    ).subscribe({
+      next: (res) => {
+        this.is_expired = res.is_expired;
+      }
+    })
+  }
+
   register(event_id: string) {
     this.eventRegisterService.register(event_id).subscribe({
       next: (res) => {
@@ -107,7 +119,8 @@ export class EventViewComponent {
       maxHeight: "100%",
       disableClose: true,
       data: {
-        event_id
+        event_id,
+        is_expired: this.is_expired
       }
     });
   }

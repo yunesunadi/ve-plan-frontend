@@ -22,11 +22,18 @@ export class MeetingComponent {
   private dialog = inject(MatDialog);
 
   event_id = "";
+  private is_expired = false;
 
   ngOnInit() {
     this.aroute.params.subscribe({
       next: (params: any) => {
         this.event_id = params.id;
+      }
+    });
+
+    this.meetingService.isExpired(this.event_id).subscribe({
+      next: (res) => {
+        this.is_expired = res.is_expired;
       }
     });
   }
@@ -64,7 +71,8 @@ export class MeetingComponent {
       maxHeight: "100%",
       disableClose: true,
       data: {
-        event_id: this.event_id
+        event_id: this.event_id,
+        is_expired: this.is_expired
       }
     });
   }

@@ -56,6 +56,13 @@ export class AttendeeMeetingDialogComponent {
         this.api.addEventListeners({
           readyToClose: this.handleClose,
         });
+
+        if (this.dialog_data.is_expired) {
+          const isConfirmed = confirm("Can't join this meeting since meeting token is expired.");
+          if (isConfirmed) {
+            this.dialog.close();
+          }
+        }
       }
     });
   }

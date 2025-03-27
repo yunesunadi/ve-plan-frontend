@@ -93,4 +93,17 @@ export class MeetingService {
     });
   }
 
+  isExpired(event_id: string) {
+    const token = localStorage.getItem("token");
+    const url = `${environment.apiUrl}/meetings/${event_id}/is_expired`;
+    return this.http.get<GeneralResponse & { is_expired: boolean; }>(
+      url,
+      {
+        headers: new HttpHeaders({
+          Authorization: `Bearer ${token}`
+        })
+      }
+    );
+  }
+
 }
