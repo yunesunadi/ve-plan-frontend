@@ -3,6 +3,8 @@ import { map } from 'rxjs';
 import { MeetingService } from '../../services/meeting.service';
 import { environment } from '../../../environments/environment';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MeetingParticipant } from '../../models/Participant';
+import { ParticipantService } from '../../services/participant.service';
 
 declare var JitsiMeetExternalAPI: any;
 
@@ -16,11 +18,13 @@ export class OrganizerMeetingDialogComponent {
   @ViewChild("jitsi_iframe") jitsi_iframe: any;
 
   private meetingService = inject(MeetingService);
+  private participantService = inject(ParticipantService);
   private dialog_data = inject(MAT_DIALOG_DATA);
   private dialog = inject(MatDialogRef<this>);
 
   options: any;
   api: any;
+  room_name = "";
 
   ngOnDestroy() {
     if (this.api) {
@@ -33,6 +37,8 @@ export class OrganizerMeetingDialogComponent {
       map((res) => res.data)
     ).subscribe({
       next: (data) => {
+        this.room_name = data.room_name;
+
         this.options = {
           roomName: `${environment.appId}/${data.room_name}`,
           configOverwrite: {
@@ -52,8 +58,6 @@ export class OrganizerMeetingDialogComponent {
 
         this.api.addEventListeners({
           readyToClose: this.handleClose,
-          participantLeft: this.handleParticipantLeft,
-          participantJoined: this.handleParticipantJoined,
           videoConferenceJoined: this.handleVideoConferenceJoined,
           videoConferenceLeft: this.handleVideoConferenceLeft,
         });
@@ -62,6 +66,7 @@ export class OrganizerMeetingDialogComponent {
           const isConfirmed = confirm("Can't join this meeting since meeting token is expired.");
           if (isConfirmed) {
             this.dialog.close();
+            this.api.dispose();
           }
         }
       }
@@ -73,32 +78,25 @@ export class OrganizerMeetingDialogComponent {
     this.dialog.close();
   }
 
-  handleParticipantLeft = async (participant: any) => {
-    console.log("handleParticipantLeft", participant);
-    const data = await this.getParticipants();
-    console.log("left participants", data);
-  }
-
-  handleParticipantJoined = async () => {
-    const data = await this.getParticipants();
-    console.log("joined participants", data);
-  }
-
-  handleVideoConferenceJoined = async (participant: any) => {
-    console.log("handleVideoConferenceJoined", participant);
-    const data = await this.getParticipants();
-    console.log("conference joined participants", data);
-  }
-
-  handleVideoConferenceLeft() {
-    console.log("handleVideoConferenceLeft");
-  }
-
-  getParticipants() {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        resolve(this.api.getParticipantsInfo());
-      }, 500);
+  handleVideoConferenceJoined = async (participant: MeetingParticipant) => {
+    this.participantService.create({
+      event: this.dialog_data.event_id,
+      room_name: this.room_name,
+      start_time: new Date().toISOString(),
+    }).subscribe({
+      next: () => {
+        console.log("handleVideoConferenceJoined:", participant);
+      }
     });
   }
+
+  handleVideoConferenceLeft = async (participant: any) => {
+    this.participantService.update(this.dialog_data.event_id, { end_time: new Date().toISOString() })
+      .subscribe({
+        next: () => {
+          console.log("handleVideoConferenceLeft:", participant);
+        }
+      });
+  }
+
 }

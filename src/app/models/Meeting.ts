@@ -8,6 +8,9 @@ export interface Meeting {
   user: User;
   room_name: string;
   token: string;
+  start_time: string;
+  end_time: string;
+  duration: number;
 }
 
 export type CreateMeetingResponse = GeneralResponse & Response<"data", Timestamp & Meeting>;
