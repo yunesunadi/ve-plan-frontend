@@ -7,6 +7,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { nanoid } from "nanoid";
 import { OrganizerMeetingDialogComponent } from '../../../components/organizer-meeting-dialog/organizer-meeting-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import { ParticipantService } from '../../../services/participant.service';
+import { Participant } from '../../../models/Participant';
 
 @Component({
   standalone: false,
@@ -16,13 +18,16 @@ import { MatDialog } from '@angular/material/dialog';
 })
 export class MeetingComponent {
   private meetingService = inject(MeetingService);
+  private participantService = inject(ParticipantService);
   private aroute = inject(ActivatedRoute);
   private commonService = inject(CommonService);
   private refresh$ = new BehaviorSubject<boolean>(false);
   private dialog = inject(MatDialog);
+  private closed$ = new BehaviorSubject(null);
 
   event_id = "";
   private is_expired = false;
+  meeting = <Participant>{};
 
   ngOnInit() {
     this.aroute.params.subscribe({
@@ -36,6 +41,16 @@ export class MeetingComponent {
         this.is_expired = res.is_expired;
       }
     });
+
+    this.closed$.pipe(
+      concatMap(() => this.participantService.getOneById(this.event_id).pipe(
+        map((res) => res.data)
+      ))
+    ).subscribe({
+      next: (res) => {
+        this.meeting = res;
+      }
+    })
   }
 
   is_created$ = this.refresh$.pipe(
@@ -64,7 +79,7 @@ export class MeetingComponent {
   }
 
   join() {
-    this.dialog.open(OrganizerMeetingDialogComponent, {
+    const dialogRef = this.dialog.open(OrganizerMeetingDialogComponent, {
       width: "calc(100% - 10px)",
       maxWidth: "100%",
       height: "calc(100% - 10px)",
@@ -73,6 +88,12 @@ export class MeetingComponent {
       data: {
         event_id: this.event_id,
         is_expired: this.is_expired
+      }
+    });
+
+    dialogRef.afterClosed().subscribe({
+      next: () => {
+        this.closed$.next(null);
       }
     });
   }

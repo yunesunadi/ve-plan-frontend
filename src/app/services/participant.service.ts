@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Participant } from '../models/Participant';
+import { GetParticipantResponse, Participant } from '../models/Participant';
 import { environment } from '../../environments/environment';
 import { GeneralResponse } from '../models/Utils';
 
@@ -34,4 +34,13 @@ export class ParticipantService {
     });
   }
 
+  getOneById(event_id: string) {
+    const token = localStorage.getItem("token");
+    const url = `${environment.apiUrl}/participants/${event_id}`;
+    return this.http.get<GetParticipantResponse>(url, {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${token}`,
+      })
+    });
+  }
 }

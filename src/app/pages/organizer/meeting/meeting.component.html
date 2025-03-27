@@ -34,4 +34,8 @@
   <ng-container>
     <div #jitsi_iframe></div>
   </ng-container>
+
+  {{ meeting.start_time | date: "hh:mm a" }}
+  {{ meeting.end_time | date: "hh:mm a" }}
+  {{ meeting.duration }} minutes
 </app-outlet-inner>

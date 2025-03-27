@@ -1,5 +1,6 @@
 import { Event } from "./Event";
 import { User } from "./User";
+import { GeneralResponse, Response, Timestamp } from "./Utils";
 
 export interface MeetingParticipant {
   roomName: string;
@@ -21,3 +22,5 @@ export interface Participant {
   end_time: string;
   duration: number;
 }
+
+export type GetParticipantResponse = GeneralResponse & Response<"data", Timestamp & Participant>;
