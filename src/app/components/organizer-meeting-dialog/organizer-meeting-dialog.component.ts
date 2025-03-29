@@ -4,7 +4,6 @@ import { MeetingService } from '../../services/meeting.service';
 import { environment } from '../../../environments/environment';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MeetingParticipant } from '../../models/Participant';
-import { ParticipantService } from '../../services/participant.service';
 
 declare var JitsiMeetExternalAPI: any;
 
@@ -18,7 +17,6 @@ export class OrganizerMeetingDialogComponent {
   @ViewChild("jitsi_iframe") jitsi_iframe: any;
 
   private meetingService = inject(MeetingService);
-  private participantService = inject(ParticipantService);
   private dialog_data = inject(MAT_DIALOG_DATA);
   private dialog = inject(MatDialogRef<this>);
 
@@ -79,19 +77,16 @@ export class OrganizerMeetingDialogComponent {
   }
 
   handleVideoConferenceJoined = async (participant: MeetingParticipant) => {
-    this.participantService.create({
-      event: this.dialog_data.event_id,
-      room_name: this.room_name,
-      start_time: new Date().toISOString(),
-    }).subscribe({
-      next: () => {
-        console.log("handleVideoConferenceJoined:", participant);
-      }
-    });
+    this.meetingService.updateStartTime(this.dialog_data.event_id, { start_time: new Date().toISOString() })
+      .subscribe({
+        next: () => {
+          console.log("handleVideoConferenceJoined:", participant);
+        }
+      });
   }
 
   handleVideoConferenceLeft = async (participant: any) => {
-    this.participantService.update(this.dialog_data.event_id, { end_time: new Date().toISOString() })
+    this.meetingService.updateEndTime(this.dialog_data.event_id, { end_time: new Date().toISOString() })
       .subscribe({
         next: () => {
           console.log("handleVideoConferenceLeft:", participant);

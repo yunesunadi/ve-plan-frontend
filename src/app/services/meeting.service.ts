@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { CreateMeetingResponse, GetMeetingResponse } from '../models/Meeting';
+import { CreateMeetingResponse, GetMeetingResponse, Meeting } from '../models/Meeting';
 import { GeneralResponse, Response } from '../models/Utils';
 
 @Injectable({
@@ -101,6 +101,26 @@ export class MeetingService {
         })
       }
     );
+  }
+
+  updateStartTime(event_id: string, meeting: Partial<Meeting>) {
+    const token = localStorage.getItem("token");
+    const url = `${environment.apiUrl}/meetings/${event_id}/start_time`;
+    return this.http.put<GeneralResponse>(url, meeting, {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${token}`,
+      })
+    });
+  }
+
+  updateEndTime(event_id: string, meeting: Partial<Meeting>) {
+    const token = localStorage.getItem("token");
+    const url = `${environment.apiUrl}/meetings/${event_id}/end_time`;
+    return this.http.put<GeneralResponse>(url, meeting, {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${token}`,
+      })
+    });
   }
 
 }

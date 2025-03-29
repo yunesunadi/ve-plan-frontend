@@ -1,13 +1,22 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { BehaviorSubject, concatMap, map, shareReplay } from 'rxjs';
+import { BehaviorSubject, combineLatest, concatMap, map, shareReplay, switchMap } from 'rxjs';
 import { MeetingService } from '../../../services/meeting.service';
 import { CommonService } from '../../../services/common.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { nanoid } from "nanoid";
 import { OrganizerMeetingDialogComponent } from '../../../components/organizer-meeting-dialog/organizer-meeting-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import { Meeting } from '../../../models/Meeting';
+import { EventRegisterService } from '../../../services/event-register.service';
+import { EventInviteService } from '../../../services/event-invite.service';
 import { ParticipantService } from '../../../services/participant.service';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
+import { SelectionModel } from '@angular/cdk/collections';
+import { EventRegister } from '../../../models/EventRegister';
+import { EventInvite } from '../../../models/EventInvite';
 import { Participant } from '../../../models/Participant';
 
 @Component({
@@ -17,7 +26,12 @@ import { Participant } from '../../../models/Participant';
   styleUrl: './meeting.component.scss'
 })
 export class MeetingComponent {
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+
   private meetingService = inject(MeetingService);
+  private eventRegisterService = inject(EventRegisterService);
+  private eventInviteService = inject(EventInviteService);
   private participantService = inject(ParticipantService);
   private aroute = inject(ActivatedRoute);
   private commonService = inject(CommonService);
@@ -27,7 +41,15 @@ export class MeetingComponent {
 
   event_id = "";
   private is_expired = false;
-  meeting = <Participant>{};
+  meeting = <Meeting>{};
+  registered_users: EventRegister[] = [];
+  invitation_accepted_users: EventInvite[] = [];
+  event_attendees: (EventRegister | EventInvite)[] = [];
+  joined_participants: Participant[] = [];
+
+  displayedColumns: string[] = ['id', 'name', 'start_time', 'end_time', 'duration'];
+  dataSource = new MatTableDataSource<any>([]);
+  selection = new SelectionModel<any>(true, []);
 
   ngOnInit() {
     this.aroute.params.subscribe({
@@ -43,14 +65,43 @@ export class MeetingComponent {
     });
 
     this.closed$.pipe(
-      concatMap(() => this.participantService.getOneById(this.event_id).pipe(
+      concatMap(() => this.meetingService.getOneById(this.event_id).pipe(
         map((res) => res.data)
       ))
     ).subscribe({
       next: (res) => {
         this.meeting = res;
       }
-    })
+    });
+
+    combineLatest([
+      this.aroute.params.pipe(
+        switchMap((params: any) => this.eventRegisterService.getAllByEventId(params.id)),
+        map((res) => res.data)
+      ),
+      this.aroute.params.pipe(
+        switchMap((params: any) => this.eventInviteService.getAllAcceptedByEventId(params.id)),
+        map((res) => res.data)
+      ),
+      this.aroute.params.pipe(
+        switchMap((params: any) => this.participantService.getAllByEventId(params.id)),
+        map(res => res.data)
+      )
+    ]).subscribe({
+      next: (data) => {
+        this.registered_users = data[0];
+        this.invitation_accepted_users = data[1];
+        this.joined_participants = data[2];
+        this.event_attendees = [...new Map([...this.registered_users, ...this.invitation_accepted_users]
+          .map(item => [item.user._id, item])).values()];
+        
+        const participants = this.joined_participants
+          .map((data: Participant, index: number) => ({ id: index + 1, ...data }));
+        this.dataSource = new MatTableDataSource(participants);
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+      }
+    });
   }
 
   is_created$ = this.refresh$.pipe(
@@ -96,6 +147,15 @@ export class MeetingComponent {
         this.closed$.next(null);
       }
     });
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
   }
 
 }

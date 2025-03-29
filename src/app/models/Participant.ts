@@ -23,4 +23,4 @@ export interface Participant {
   duration: number;
 }
 
-export type GetParticipantResponse = GeneralResponse & Response<"data", Timestamp & Participant>;
+export type GetParticipantsResponse = GeneralResponse & Response<"data", Array<Timestamp & Participant>>;
