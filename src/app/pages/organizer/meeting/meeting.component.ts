@@ -18,6 +18,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { EventRegister } from '../../../models/EventRegister';
 import { EventInvite } from '../../../models/EventInvite';
 import { Participant } from '../../../models/Participant';
+import { Location } from '@angular/common';
 
 @Component({
   standalone: false,
@@ -38,6 +39,7 @@ export class MeetingComponent {
   private refresh$ = new BehaviorSubject<boolean>(false);
   private dialog = inject(MatDialog);
   private closed$ = new BehaviorSubject(null);
+  location = inject(Location);
 
   event_id = "";
   private is_expired = false;

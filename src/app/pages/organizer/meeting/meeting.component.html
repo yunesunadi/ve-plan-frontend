@@ -1,7 +1,15 @@
 @let is_created = is_created$ | async;
 
 <app-outlet-inner>
-  <div class="d-flex justify-content-end mb-3" style="gap: .5rem;">
+  <div class="d-flex justify-content-between mb-4">
+    <button
+      mat-stroked-button
+      type="button"
+      (click)="location.back()"
+    >
+      <mat-icon class="text-primary-clr m-0">keyboard_backspace</mat-icon>
+    </button>
+    <div class="d-flex" style="gap: .5rem;">
     @if (is_created) {
       <button
         type="button"
@@ -21,27 +29,95 @@
         Start Meeting
       </button>
     }
-    <button
-      type="button"
-      mat-raised-button
-      class="bg-primary-clr text-secondary-clr"
-      routerLink="attendees"
-    >
-      View Attendees
-    </button>
+      <button
+        type="button"
+        mat-raised-button
+        class="bg-primary-clr text-secondary-clr"
+        routerLink="attendees"
+      >
+        View Attendees
+      </button>
+    </div>
   </div>
 
   <ng-container>
     <div #jitsi_iframe></div>
   </ng-container>
 
-  <p>Registered users: {{ registered_users.length }}</p>
-  <p>Invitation accepted users: {{ invitation_accepted_users.length }}</p>
-  <p>Event attendees: {{ event_attendees.length }}</p>
-  <p>Joined participants: {{ joined_participants.length }}</p>
-  <p>Start time: {{ meeting.start_time | date: "hh:mm a" }}</p>
-  <p>End time: {{ meeting.end_time | date: "hh:mm a" }}</p>
-  <p>Duration: {{ meeting.duration }} minutes</p>
+  <section class="row mb-3">
+    <div class="col-4 meeting-info">
+      <b class="mb-0 text-primary-clr">From:</b>
+      <div class="meeting-info">
+        <mat-icon class="text-primary-clr">access_time</mat-icon>
+        <span>{{ meeting.start_time | date: "hh:mm a" }}</span>
+      </div>
+    </div>
+    <div class="col-4 meeting-info">
+      <b class="mb-0 text-primary-clr">To:</b>
+      <div class="meeting-info">
+        <mat-icon class="text-primary-clr">access_time</mat-icon>
+        <span>{{ meeting.end_time | date: "hh:mm a" }}</span>
+      </div>
+    </div>
+    <div class="col-4 meeting-info">
+      <b class="mb-0 text-primary-clr">Duration:</b>
+      <div class="meeting-info">
+        <mat-icon class="text-primary-clr">timer</mat-icon>
+        <span>{{ meeting.duration }} minutes</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="row g-3 mb-4">
+    <div class="col-sm-6 col-md-4 col-lg-3">
+      <mat-card appearance="outlined">
+        <div class="text-center py-3">
+          <mat-card-title class="fw-bold text-primary-clr">
+            {{ event_attendees.length }}
+          </mat-card-title>
+          <mat-card-subtitle class="text-primary-clr">
+            Event Attendees
+          </mat-card-subtitle>
+        </div>
+      </mat-card>
+    </div>
+    <div class="col-sm-6 col-md-4 col-lg-3">
+      <mat-card appearance="outlined">
+        <div class="text-center py-3">
+          <mat-card-title class="fw-bold text-primary-clr">
+            {{ joined_participants.length }}
+          </mat-card-title>
+          <mat-card-subtitle class="text-primary-clr">
+            Joined Participants
+          </mat-card-subtitle>
+        </div>
+      </mat-card>
+    </div>
+    <div class="col-sm-6 col-md-4 col-lg-3">
+      <mat-card appearance="outlined">
+        <div class="text-center py-3">
+          <mat-card-title class="fw-bold text-primary-clr">
+            {{ registered_users.length }}
+          </mat-card-title>
+          <mat-card-subtitle class="text-primary-clr">
+            Registered Users
+          </mat-card-subtitle>
+        </div>
+      </mat-card>
+    </div>
+    <div class="col-sm-6 col-md-4 col-lg-3">
+      <mat-card appearance="outlined">
+        <div class="text-center py-3">
+          <mat-card-title class="fw-bold text-primary-clr">
+            {{ invitation_accepted_users.length }}
+          </mat-card-title>
+          <mat-card-subtitle class="text-primary-clr">
+            Invitation Accepted Users
+          </mat-card-subtitle>
+        </div>
+      </mat-card>
+    </div>
+  </section>
 
   <mat-form-field appearance="outline">
     <mat-icon matPrefix>search</mat-icon>
