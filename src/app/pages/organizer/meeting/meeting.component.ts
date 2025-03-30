@@ -19,6 +19,7 @@ import { EventRegister } from '../../../models/EventRegister';
 import { EventInvite } from '../../../models/EventInvite';
 import { Participant } from '../../../models/Participant';
 import { Location } from '@angular/common';
+import Chart from "chart.js/auto";
 
 @Component({
   standalone: false,
@@ -29,6 +30,8 @@ import { Location } from '@angular/common';
 export class MeetingComponent {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild("doughnut_canvas") doughnut_canvas: any;
+  @ViewChild("line_canvas") line_canvas: any;
 
   private meetingService = inject(MeetingService);
   private eventRegisterService = inject(EventRegisterService);
@@ -48,10 +51,17 @@ export class MeetingComponent {
   invitation_accepted_users: EventInvite[] = [];
   event_attendees: (EventRegister | EventInvite)[] = [];
   joined_participants: Participant[] = [];
+  line_chart_data: {
+    label: string;
+    value: number;
+  }[] = [];
 
   displayedColumns: string[] = ['id', 'name', 'start_time', 'end_time', 'duration'];
   dataSource = new MatTableDataSource<any>([]);
   selection = new SelectionModel<any>(true, []);
+
+  doughnut_chart: any;
+  line_chart: any;
 
   ngOnInit() {
     this.aroute.params.subscribe({
@@ -88,12 +98,17 @@ export class MeetingComponent {
       this.aroute.params.pipe(
         switchMap((params: any) => this.participantService.getAllByEventId(params.id)),
         map(res => res.data)
+      ),
+      this.aroute.params.pipe(
+        switchMap((params: any) => this.participantService.getStayTimes(params.id)),
+        map((res) => res.data)
       )
     ]).subscribe({
       next: (data) => {
         this.registered_users = data[0];
         this.invitation_accepted_users = data[1];
         this.joined_participants = data[2];
+        this.line_chart_data = data[3];
         this.event_attendees = [...new Map([...this.registered_users, ...this.invitation_accepted_users]
           .map(item => [item.user._id, item])).values()];
         
@@ -102,6 +117,38 @@ export class MeetingComponent {
         this.dataSource = new MatTableDataSource(participants);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
+
+        this.doughnut_chart = new Chart(this.doughnut_canvas.nativeElement, {
+          type: "doughnut",
+          data: {
+            labels: [
+              "Event Attendees",
+              "Joined Participants",
+            ],
+            datasets: [{
+              label: "No. of person",
+              data: [this.event_attendees.length, this.joined_participants.length],
+              backgroundColor: [
+                "#E8BCB9",
+                "#432E54",
+              ],
+            }]
+          },
+        });
+
+        this.line_chart = new Chart(this.line_canvas.nativeElement, {
+          type: "line",
+          data: {
+            labels: this.line_chart_data.map(item => item.label),
+            datasets: [{
+              label: "No. of participants",
+              data: this.line_chart_data.map(item => item.value),
+              fill: true,
+              borderColor: "#432E54",
+              tension: 0.1
+            }]
+          },
+        });
       }
     });
   }

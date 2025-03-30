@@ -68,7 +68,7 @@
     </div>
   </section>
 
-  <section class="row g-3 mb-4">
+  <section class="row g-3" style="margin-bottom: 1.7rem;">
     <div class="col-sm-6 col-md-4 col-lg-3">
       <mat-card appearance="outlined">
         <div class="text-center py-3">
@@ -119,6 +119,21 @@
     </div>
   </section>
 
+  <section class="row g-3 mb-5">
+    <div class="col-lg-5">
+      <h6 class="text-center">Event Attendees Vs Joined Participants</h6>
+      <div style="width: 300px; margin: 0 auto;">
+        <canvas #doughnut_canvas></canvas>
+      </div>
+    </div>
+    <div class="col-lg-7">
+      <h6 class="text-center">Meeting Stay Times Per Participants</h6>
+      <div style="width: 550px; margin: 0 auto;">
+        <canvas #line_canvas></canvas>
+      </div>
+    </div>
+  </section>
+
   <mat-form-field appearance="outline">
     <mat-icon matPrefix>search</mat-icon>
     <mat-label>Search</mat-label>
@@ -158,5 +173,4 @@
 
     <mat-paginator [pageSizeOptions]="[5, 10, 25]" aria-label="Select page of users"></mat-paginator>
   </div>
-
 </app-outlet-inner>

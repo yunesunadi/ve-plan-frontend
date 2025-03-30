@@ -24,3 +24,5 @@ export interface Participant {
 }
 
 export type GetParticipantsResponse = GeneralResponse & Response<"data", Array<Timestamp & Participant>>;
+
+export type GetStayTimesResponse = GeneralResponse & Response<"data", Array<{ label: string; value: number; }>>;
