@@ -9,6 +9,7 @@ import { EventRegisterService } from '../../../services/event-register.service';
 import { EventInviteService } from '../../../services/event-invite.service';
 import { combineLatest, map, shareReplay, switchMap } from 'rxjs';
 import { MeetingStartedDialogComponent } from '../../../components/meeting-started-dialog/meeting-started-dialog.component';
+import { Location } from '@angular/common';
 
 @Component({
   standalone: false,
@@ -28,6 +29,7 @@ export class EventAttendeesComponent {
   private eventInviteService = inject(EventInviteService);
   private aroute = inject(ActivatedRoute);
   private dialog = inject(MatDialog);
+  location = inject(Location);
 
   constructor() {}
 

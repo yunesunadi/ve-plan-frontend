@@ -8,6 +8,7 @@ import { map, switchMap } from 'rxjs';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatDialog } from '@angular/material/dialog';
 import { RegisterApprovalDialogComponent } from '../../../components/register-approval-dialog/register-approval-dialog.component';
+import { Location } from '@angular/common';
 
 @Component({
   standalone: false,
@@ -26,6 +27,7 @@ export class RegisteredUsersComponent {
   private eventRegisterService = inject(EventRegisterService);
   private aroute = inject(ActivatedRoute);
   private dialog = inject(MatDialog);
+  location = inject(Location);
 
   constructor() {}
 

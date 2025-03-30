@@ -1,15 +1,18 @@
 @let is_created = is_created$ | async;
 
 <app-outlet-inner>
-  <div class="d-flex justify-content-between mb-4">
-    <button
-      mat-stroked-button
-      type="button"
-      (click)="location.back()"
-    >
-      <mat-icon class="text-primary-clr m-0">keyboard_backspace</mat-icon>
-    </button>
-    <div class="d-flex" style="gap: .5rem;">
+  <div class="d-flex flex-column flex-md-row justify-content-md-between mb-4" style="gap: 1rem;">
+    <div class="d-flex align-items-center" style="gap: 1rem;">
+      <button
+        mat-stroked-button
+        type="button"
+        (click)="location.back()"
+      >
+        <mat-icon class="text-primary-clr m-0">keyboard_backspace</mat-icon>
+      </button>
+      <h3 class="text-primary-clr mb-0">Event's Meeting</h3>
+    </div>
+    <div class="d-flex align-self-end align-self-md-auto" style="gap: .5rem;">
     @if (is_created) {
       <button
         type="button"
@@ -44,22 +47,22 @@
     <div #jitsi_iframe></div>
   </ng-container>
 
-  <section class="row mb-3">
-    <div class="col-4 meeting-info">
+  <section class="row mb-3 g-2 mx-auto" style="width: 100%; max-width: 730px;">
+    <div class="col-sm-6 col-md-4 meeting-info">
       <b class="mb-0 text-primary-clr">From:</b>
       <div class="meeting-info">
         <mat-icon class="text-primary-clr">access_time</mat-icon>
         <span>{{ meeting.start_time | date: "hh:mm a" }}</span>
       </div>
     </div>
-    <div class="col-4 meeting-info">
+    <div class="col-sm-6 col-md-4 meeting-info">
       <b class="mb-0 text-primary-clr">To:</b>
       <div class="meeting-info">
         <mat-icon class="text-primary-clr">access_time</mat-icon>
         <span>{{ meeting.end_time | date: "hh:mm a" }}</span>
       </div>
     </div>
-    <div class="col-4 meeting-info">
+    <div class="col-sm-6 col-md-4 meeting-info">
       <b class="mb-0 text-primary-clr">Duration:</b>
       <div class="meeting-info">
         <mat-icon class="text-primary-clr">timer</mat-icon>
@@ -119,22 +122,23 @@
     </div>
   </section>
 
-  <section class="row g-3 mb-5">
+  <section class="row g-4 mb-4">
     <div class="col-lg-5">
       <h6 class="text-center">Event Attendees Vs Joined Participants</h6>
-      <div style="width: 300px; margin: 0 auto;">
+      <div style="width: 100%; max-width: 300px; margin: 0 auto;">
         <canvas #doughnut_canvas></canvas>
       </div>
     </div>
     <div class="col-lg-7">
       <h6 class="text-center">Meeting Stay Times Per Participants</h6>
-      <div style="width: 550px; margin: 0 auto;">
+      <div style="width: 100%; max-width: 550px; margin: 0 auto;">
         <canvas #line_canvas></canvas>
       </div>
     </div>
   </section>
 
-  <mat-form-field appearance="outline">
+  <h5 class="text-primary-clr mb-3">Joined Participants</h5>
+  <mat-form-field appearance="outline" class="w-100" style="max-width: 300px;">
     <mat-icon matPrefix>search</mat-icon>
     <mat-label>Search</mat-label>
     <input matInput (keyup)="applyFilter($event)" placeholder="Enter search value" #input>

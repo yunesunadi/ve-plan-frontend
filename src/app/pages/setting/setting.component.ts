@@ -5,6 +5,7 @@ import { map } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { UserService } from '../../services/user.service';
 import { environment } from '../../../environments/environment';
+import { Location } from '@angular/common';
 
 const MIN_LENGTH = 6;
 
@@ -26,6 +27,7 @@ export class SettingComponent {
   private form_builder = inject(FormBuilder);
   private userService = inject(UserService);
   private commonService = inject(CommonService);
+  location = inject(Location);
 
   constructor() {
     this.edit_profile_form = this.form_builder.group(

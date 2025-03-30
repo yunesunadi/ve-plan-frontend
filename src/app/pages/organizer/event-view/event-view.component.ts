@@ -9,6 +9,7 @@ import { EventDialogComponent } from '../../../components/event-dialog/event-dia
 import { jwtDecode } from 'jwt-decode';
 import { UserPayload } from '../../../models/User';
 import { Event } from '../../../models/Event';
+import { Location } from '@angular/common';
 
 @Component({
   standalone: false,
@@ -24,6 +25,7 @@ export class EventViewComponent {
   private dialog = inject(MatDialog);
   private fetchEvents$ = new BehaviorSubject(false);
   private fetchSessions$ = new BehaviorSubject(false);
+  location = inject(Location);
 
   event$ = this.fetchEvents$.pipe(
     switchMap(() => this.aroute.params),

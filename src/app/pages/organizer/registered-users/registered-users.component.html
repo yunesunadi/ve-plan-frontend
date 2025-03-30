@@ -1,16 +1,27 @@
 <app-outlet-inner>
-  <div class="d-flex justify-content-between align-items-center">
-    <mat-form-field appearance="outline">
+  <div class="d-flex align-items-center mb-4" style="gap: 1rem;">
+    <button
+      mat-stroked-button
+      type="button"
+      (click)="location.back()"
+      >
+      <mat-icon class="text-primary-clr m-0">keyboard_backspace</mat-icon>
+    </button>
+    <h3 class="text-primary-clr mb-0">Registered Users</h3>
+  </div>
+
+  <div class="d-flex flex-column flex-md-row justify-content-md-between">
+    <mat-form-field appearance="outline" class="w-100" style="max-width: 300px;">
       <mat-icon matPrefix>search</mat-icon>
       <mat-label>Search</mat-label>
       <input matInput (keyup)="applyFilter($event)" placeholder="Enter search value" #input>
     </mat-form-field>
-
-    <div class="">
+    
+    <div class="align-self-end align-self-md-auto">
       <button
         mat-stroked-button
         type="button"
-        class="bg-secondary-clr text-primary-clr"
+        class="bg-secondary-clr text-primary-clr mt-2"
         (click)="sendApproval()"
       >
         <mat-icon>mail</mat-icon>

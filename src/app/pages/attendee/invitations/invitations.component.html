@@ -1,7 +1,16 @@
 @let invitations = invitations$ | async;
 
 <app-outlet-inner>
-  <h3 class="text-primary-clr mb-3">Invitations</h3>
+  <div class="d-flex align-items-center" style="gap: 1rem;">
+    <button
+      mat-stroked-button
+      type="button"
+      (click)="location.back()"
+    >
+      <mat-icon class="text-primary-clr m-0">keyboard_backspace</mat-icon>
+    </button>
+    <h3 class="text-primary-clr mb-0">Invitations</h3>
+  </div>
   <section class="d-flex flex-column align-items-center" style="gap: 1rem;">
   @if (invitations && invitations.length > 0) {
     @for (item of invitations; track item._id) {

@@ -1,6 +1,15 @@
 <app-outlet-inner>
-  <h4 class="text-primary-clr mb-4">Edit Profile</h4>
-  <form [formGroup]="edit_profile_form" (ngSubmit)="editProfile()" class="d-flex flex-column edit-profile-form">
+  <button
+    mat-stroked-button
+    type="button"
+    (click)="location.back()"
+    class="mb-3 float-start me-3"
+  >
+    <mat-icon class="text-primary-clr m-0">keyboard_backspace</mat-icon>
+  </button>
+
+  <form [formGroup]="edit_profile_form" (ngSubmit)="editProfile()" class="d-flex flex-column edit-profile-form mb-4">
+    <h4 class="text-primary-clr mb-3">Edit Profile</h4>
     <div class="align-self-center mb-3">
       <p class="mb-1">Profile</p>
       <label for="profile" class="profile-img-container">
@@ -34,8 +43,8 @@
     </button>
   </form>
 
-  <h4 class="text-primary-clr my-4">Change Password</h4>
   <form [formGroup]="change_password_form" (ngSubmit)="changePassword()" class="d-flex flex-column edit-profile-form mb-2">
+    <h4 class="text-primary-clr my-3">Change Password</h4>
     <mat-form-field appearance="outline">
       <mat-label>Current Password</mat-label>
       <input matInput [type]="isCurrentPassword() ? 'password' : 'text'" formControlName="current_password" placeholder="Enter current password" />

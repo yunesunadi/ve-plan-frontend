@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { EventRegisterService } from '../../../services/event-register.service';
 import { EventInviteService } from '../../../services/event-invite.service';
 import { map, shareReplay } from 'rxjs';
+import { Location } from '@angular/common';
 
 @Component({
   standalone: false,
@@ -12,6 +13,7 @@ import { map, shareReplay } from 'rxjs';
 export class JoinedEventsComponent {
   private eventRegisterService = inject(EventRegisterService);
   private eventInviteService = inject(EventInviteService);
+  location = inject(Location);
 
   constructor() {}
 

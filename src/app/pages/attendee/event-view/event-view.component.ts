@@ -9,6 +9,7 @@ import { EventInviteService } from '../../../services/event-invite.service';
 import { MeetingService } from '../../../services/meeting.service';
 import { MatDialog } from '@angular/material/dialog';
 import { AttendeeMeetingDialogComponent } from '../../../components/attendee-meeting-dialog/attendee-meeting-dialog.component';
+import { Location } from '@angular/common';
 
 @Component({
   standalone: false,
@@ -27,6 +28,7 @@ export class EventViewComponent {
   private meetingService = inject(MeetingService);
   private refresh$ = new BehaviorSubject(null);
   private dialog = inject(MatDialog);
+  location = inject(Location);
 
   private is_expired = false;
 
