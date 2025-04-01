@@ -1,4 +1,4 @@
-import { Component, inject, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -19,6 +19,7 @@ import { Location } from '@angular/common';
 export class RegisteredUsersComponent {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild("input") input!: ElementRef;
   
   displayedColumns: string[] = ['select', 'id', 'name', 'register_approved'];
   dataSource = new MatTableDataSource<any>([]);
@@ -104,6 +105,7 @@ export class RegisteredUsersComponent {
           this.fetchData();
           this.selection.deselect(...this.dataSource.data);
           this.selection.clear();
+          this.input.nativeElement.value = "";
         }
       }
     });

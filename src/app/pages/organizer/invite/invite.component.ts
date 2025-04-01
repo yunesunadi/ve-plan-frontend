@@ -1,5 +1,5 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { Component, inject, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -23,6 +23,7 @@ import { Location } from '@angular/common';
 export class InviteComponent {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild("input") input!: ElementRef;
   
   displayedColumns: string[] = ['select', 'id', 'name'];
   dataSource = new MatTableDataSource<any>([]);
@@ -108,6 +109,7 @@ export class InviteComponent {
       next: () => {
         this.selection.deselect(...this.dataSource.data);
         this.selection.clear();
+        this.input.nativeElement.value = "";
 
         this.dataSource = new MatTableDataSource([] as any);
         this.dataSource.paginator = this.paginator;

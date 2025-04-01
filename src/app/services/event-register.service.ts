@@ -42,9 +42,29 @@ export class EventRegisterService {
     });
   }
 
+  isRegisterApproved(event_id: string) {
+    const token = localStorage.getItem("token");
+    const url = `${environment.apiUrl}/event_registers/${event_id}/approved`;
+    return this.http.get<Response<"is_register_approved", boolean>>(url, {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${token}`,
+      })
+    });
+  }
+
   getAllByEventId(event_id: string) {
     const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/event_registers/${event_id}/users`;
+    return this.http.get<GetEventRegistersResponse>(url, {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${token}`,
+      })
+    });
+  }
+
+  getAllApprovedByEventId(event_id: string) {
+    const token = localStorage.getItem("token");
+    const url = `${environment.apiUrl}/event_registers/${event_id}/users/approved`;
     return this.http.get<GetEventRegistersResponse>(url, {
       headers: new HttpHeaders({
         Authorization: `Bearer ${token}`,

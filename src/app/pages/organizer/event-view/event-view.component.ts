@@ -10,6 +10,7 @@ import { jwtDecode } from 'jwt-decode';
 import { UserPayload } from '../../../models/User';
 import { Event } from '../../../models/Event';
 import { Location } from '@angular/common';
+import { CommonService } from '../../../services/common.service';
 
 @Component({
   standalone: false,
@@ -20,6 +21,7 @@ import { Location } from '@angular/common';
 export class EventViewComponent {
   private eventService = inject(EventService);
   private sessionService = inject(SessionService);
+  private commonService = inject(CommonService);
   private aroute = inject(ActivatedRoute);
   private route = inject(Router);
   private dialog = inject(MatDialog);
@@ -110,5 +112,31 @@ export class EventViewComponent {
     const token = localStorage.getItem("token") || "";
     const user_payload: UserPayload = jwtDecode(token);
     return user_payload._id === user_id;
+  }
+
+  deleteEvent(event_id: string) {
+    const isConfirmed = confirm("Are you sure to delete this event? Once you delete this, all data related with this event will be removed. This action cannot be undone.");
+
+    if (isConfirmed) {
+      this.eventService.delete(event_id).subscribe({
+        next: (res) => {
+          this.commonService.openSnackBar(res.message);
+          this.route.navigateByUrl("organizer/dashboard/events");
+        }
+      });
+    }
+  }
+
+  deleteSession(session_id: string) {
+    const isConfirmed = confirm("Are you sure to delete this event session? This action cannot be undone.");
+
+    if (isConfirmed) {
+      this.sessionService.delete(session_id).subscribe({
+        next: (res) => {
+          this.commonService.openSnackBar(res.message);
+          this.fetchSessions$.next(true);
+        }
+      });
+    }
   }
 }

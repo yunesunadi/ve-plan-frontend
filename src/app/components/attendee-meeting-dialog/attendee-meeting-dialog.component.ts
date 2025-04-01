@@ -87,20 +87,12 @@ export class AttendeeMeetingDialogComponent {
       event: this.dialog_data.event_id,
       room_name: this.room_name,
       start_time: new Date().toISOString(),
-    }).subscribe({
-      next: () => {
-        console.log("handleVideoConferenceJoined:", participant);
-      }
-    });
+    }).subscribe();
   }
 
   handleVideoConferenceLeft = async (participant: any) => {
     this.participantService.update(this.dialog_data.event_id, { end_time: new Date().toISOString() })
-      .subscribe({
-        next: () => {
-          console.log("handleVideoConferenceLeft:", participant);
-        }
-      });
+      .subscribe();
   }
 
 }

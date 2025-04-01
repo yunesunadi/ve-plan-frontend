@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
+import { CommonService } from '../../services/common.service';
 
 @Component({
   standalone: false,
@@ -14,11 +15,14 @@ export class RoleComponent {
 
   private authService = inject(AuthService);
   private router = inject(Router);
+  private commonService = inject(CommonService);
 
   submit() {
     this.authService.setRole(this.chosen_role).subscribe({
       next: () => {
-        this.router.navigateByUrl(`${this.chosen_role}/dashboard/home`);
+        this.commonService.openSnackBar("Your account is successfully registered. Please login.");
+        localStorage.removeItem("token");
+        this.router.navigateByUrl("login");
       },
       error: (err) => {
         console.log("err", err);

@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { CreateSessionResponse, GetSessionResponse, GetSessionsResponse, Session } from '../models/Session';
+import { GeneralResponse } from '../models/Utils';
 
 @Injectable({
   providedIn: 'root'
@@ -46,6 +47,16 @@ export class SessionService {
     const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/sessions/${id}`;
     return this.http.put<CreateSessionResponse>(url, session, {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${token}`,
+      })
+    });
+  }
+
+  delete(id: string) {
+    const token = localStorage.getItem("token");
+    const url = `${environment.apiUrl}/sessions/${id}`;
+    return this.http.delete<GeneralResponse>(url, {
       headers: new HttpHeaders({
         Authorization: `Bearer ${token}`,
       })

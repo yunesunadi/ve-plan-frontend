@@ -88,7 +88,7 @@ export class MeetingComponent {
 
     combineLatest([
       this.aroute.params.pipe(
-        switchMap((params: any) => this.eventRegisterService.getAllByEventId(params.id)),
+        switchMap((params: any) => this.eventRegisterService.getAllApprovedByEventId(params.id)),
         map((res) => res.data)
       ),
       this.aroute.params.pipe(

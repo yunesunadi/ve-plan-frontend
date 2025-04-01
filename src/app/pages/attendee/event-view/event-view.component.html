@@ -4,11 +4,12 @@
 @let is_invited = is_invited$ | async;
 @let is_invite_accepted = is_invite_accepted$ | async;
 @let has_meeting_started = has_meeting_started$ | async;
+@let is_register_approved = is_register_approved$ | async;
 
 <app-outlet-inner>
 @if (event) {
   <section>
-    <div class="d-flex justify-content-between align-items-center mb-2">
+    <div class="d-flex flex-column flex-lg-row justify-content-lg-between align-items-lg-center mb-3" style="gap: .5rem;">
       <div class="d-flex align-items-center" style="gap: 1rem;">
         <button
           mat-stroked-button
@@ -19,17 +20,8 @@
         </button>
         <h3 class="text-primary-clr mb-0">Event's Details</h3>
       </div>
-      @if (has_meeting_started) {
-        <button
-          mat-raised-button
-          type="button"
-          class="bg-secondary-clr text-primary-clr"
-          (click)="joinMeeting(event._id)"
-        >
-          <mat-icon>meeting_room</mat-icon>
-          Join Meeting
-        </button>
-      } @else if (is_invited) {
+      <div class="d-flex align-items-center align-self-end align-self-lg-center" style="gap: 1rem;">
+      @if (is_invited) {
         <div
           class="d-flex"
           style="gap: .5rem;"
@@ -46,7 +38,15 @@
           <p class="mb-0 fw-bold text-primary-clr">Invitation Accepted</p>
         </div>
       } @else {
-        @if (has_registered) {
+        @if (is_register_approved) {
+          <div 
+            class="d-flex"
+            style="gap: .5rem;"
+          >
+            <mat-icon class="text-primary-clr">done_all</mat-icon>
+            <p class="mb-0 fw-bold text-primary-clr">Register Approved</p>
+          </div>
+        } @else if (has_registered) {
           <button
             mat-raised-button
             type="button"
@@ -68,6 +68,18 @@
           </button>
         }
       }
+      @if (has_meeting_started) {
+        <button
+          mat-raised-button
+          type="button"
+          class="bg-secondary-clr text-primary-clr"
+          (click)="joinMeeting(event._id)"
+        >
+          <mat-icon>meeting_room</mat-icon>
+          Join Meeting
+        </button>
+      }
+      </div>
     </div>
     <app-event-details-card [event]="event" />
   </section>

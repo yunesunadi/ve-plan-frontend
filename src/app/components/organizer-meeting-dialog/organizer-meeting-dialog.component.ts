@@ -78,20 +78,12 @@ export class OrganizerMeetingDialogComponent {
 
   handleVideoConferenceJoined = async (participant: MeetingParticipant) => {
     this.meetingService.updateStartTime(this.dialog_data.event_id, { start_time: new Date().toISOString() })
-      .subscribe({
-        next: () => {
-          console.log("handleVideoConferenceJoined:", participant);
-        }
-      });
+      .subscribe();
   }
 
   handleVideoConferenceLeft = async (participant: any) => {
     this.meetingService.updateEndTime(this.dialog_data.event_id, { end_time: new Date().toISOString() })
-      .subscribe({
-        next: () => {
-          console.log("handleVideoConferenceLeft:", participant);
-        }
-      });
+      .subscribe();
   }
 
 }

@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Event, CreateEventResponse, GetEventsResponse, GetEventResponse } from '../models/Event';
 import { environment } from '../../environments/environment';
+import { GeneralResponse } from '../models/Utils';
 
 @Injectable({
   providedIn: 'root'
@@ -53,7 +54,9 @@ export class EventService {
     const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/events/${id}`;
     const formData = new FormData();
-    formData.append("cover", event.cover);
+    if (event.cover) {
+      formData.append("cover", event.cover);
+    }
     formData.append("title", event.title);
     formData.append("description", event.description);
     formData.append("date", event.date);
@@ -68,4 +71,13 @@ export class EventService {
     });
   }
   
+  delete(id: string) {
+    const token = localStorage.getItem("token");
+    const url = `${environment.apiUrl}/events/${id}`;
+    return this.http.delete<GeneralResponse>(url, {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${token}`,
+      })
+    });
+  }
 }

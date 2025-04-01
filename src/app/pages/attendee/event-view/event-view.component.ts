@@ -57,6 +57,15 @@ export class EventViewComponent {
     ))
   );
 
+  is_register_approved$ = this.refresh$.pipe(
+    switchMap(() => this.event$.pipe(
+      concatMap((event) => this.eventRegisterService.isRegisterApproved(event._id).pipe(
+        map((res) => res.is_register_approved)
+      )),
+      shareReplay(1)
+    ))
+  );
+
   is_invited$ = this.eventInviteService.getAllByUserId().pipe(
     map((res) => res.data),
     concatMap((invites) => this.event$.pipe(

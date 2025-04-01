@@ -5,7 +5,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import { MatDialog } from '@angular/material/dialog';
 import { EventDialogComponent } from '../../../components/event-dialog/event-dialog.component';
 import { EventService } from '../../../services/event.service';
-import { concatMap, map, shareReplay } from 'rxjs';
+import { BehaviorSubject, concatMap, map, shareReplay, switchMap, take } from 'rxjs';
 import { EventDetailsDialogComponent } from '../../../components/event-details-dialog/event-details-dialog.component';
 
 @Component({
@@ -16,15 +16,20 @@ import { EventDetailsDialogComponent } from '../../../components/event-details-d
 })
 export class HomeComponent {
   private eventService = inject(EventService);
+  private refresh$ = new BehaviorSubject(null);
 
-  private events$ = this.eventService.getAll().pipe(
-    map(res => res.data),
-    map(events => events.map((event) => ({
-      id: event._id,
-      title: event.title,
-      start: event.date,
-    }))),
-    shareReplay(1)
+  private events$ = this.refresh$.pipe(
+    switchMap(() => 
+      this.eventService.getAll().pipe(
+      map(res => res.data),
+      map(events => events.map((event) => ({
+        id: event._id,
+        title: event.title,
+        start: event.date,
+      }))),
+      shareReplay(1)
+    )),
+    take(1),
   );
 
   calendarOptions = signal<CalendarOptions>({
@@ -69,10 +74,8 @@ export class HomeComponent {
       concatMap(() => this.events$)
     ).subscribe({
       next: (events) => {
-        this.calendarOptions.update(prev => ({
-          ...prev,
-          events
-        }));
+        this.refresh$.next(null);
+        this.calendarOptions.update(() => ({ events }));
       }
     });
   }

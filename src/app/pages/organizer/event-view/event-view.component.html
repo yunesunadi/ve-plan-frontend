@@ -4,7 +4,7 @@
 <app-outlet-inner>
 @if (event) {
   <section>
-    <div class="d-flex flex-column flex-md-row justify-content-md-between align-items-md-center mb-2" style="gap: .5rem;">
+    <div class="d-flex flex-column flex-md-row justify-content-md-between align-items-md-center mb-3" style="gap: .5rem;">
       <div class="d-flex align-items-center" style="gap: 1rem;">
         <button
           mat-stroked-button
@@ -24,7 +24,16 @@
           (click)="editEvent(event)"
         >
           <mat-icon>edit</mat-icon>
-          Edit Event
+          Edit
+        </button>
+        <button
+          mat-raised-button
+          type="button"
+          class="bg-secondary-clr text-primary-clr"
+          (click)="deleteEvent(event._id)"
+        >
+          <mat-icon>delete</mat-icon>
+          Delete
         </button>
         <button mat-icon-button class="bg-secondary-clr text-primary-clr" [matMenuTriggerFor]="menu">
           <mat-icon>more_vert</mat-icon>
@@ -70,14 +79,19 @@
         <div class="col-md-6">
           <app-session-details-card [session]="session">
             @if (isOwner(event.user._id)) {
-              <button
-                mat-mini-fab
-                type="button"
-                class="bg-secondary-clr text-primary-clr"
-                (click)="editSession(session._id, event._id)"
-              >
-                <mat-icon>edit</mat-icon>
+              <button mat-icon-button class="bg-secondary-clr text-primary-clr" [matMenuTriggerFor]="menu">
+                <mat-icon>more_vert</mat-icon>
               </button>
+              <mat-menu #menu="matMenu">
+                <button mat-menu-item (click)="editSession(session._id, event._id)">
+                  <mat-icon>edit</mat-icon>
+                  Edit
+                </button>
+                <button mat-menu-item (click)="deleteSession(session._id)">
+                  <mat-icon>delete</mat-icon>
+                  Delete
+                </button>
+              </mat-menu>
             }
           </app-session-details-card>
         </div>

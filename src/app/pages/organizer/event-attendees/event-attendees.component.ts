@@ -1,5 +1,5 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { Component, inject, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -20,6 +20,7 @@ import { Location } from '@angular/common';
 export class EventAttendeesComponent {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild("input") input!: ElementRef;
   
   displayedColumns: string[] = ['select', 'id', 'name', 'meeting_started'];
   dataSource = new MatTableDataSource<any>([]);
@@ -40,7 +41,7 @@ export class EventAttendeesComponent {
   fetchData() {
     combineLatest([
       this.aroute.params.pipe(
-        switchMap((params: any) => this.eventRegisterService.getAllByEventId(params.id)),
+        switchMap((params: any) => this.eventRegisterService.getAllApprovedByEventId(params.id)),
         map((res) => res.data.map((item => ({ ...item, type: "registered" }))))
       ),
       this.aroute.params.pipe(
@@ -120,6 +121,7 @@ export class EventAttendeesComponent {
           this.fetchData();
           this.selection.deselect(...this.dataSource.data);
           this.selection.clear();
+          this.input.nativeElement.value = "";
         }
       }
     });
