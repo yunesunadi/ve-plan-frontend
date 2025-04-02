@@ -77,7 +77,7 @@ export class MeetingComponent {
     });
 
     this.closed$.pipe(
-      concatMap(() => this.meetingService.getOneById(this.event_id).pipe(
+      switchMap(() => this.meetingService.getOneById(this.event_id).pipe(
         map((res) => res.data)
       ))
     ).subscribe({
@@ -87,21 +87,29 @@ export class MeetingComponent {
     });
 
     combineLatest([
-      this.aroute.params.pipe(
-        switchMap((params: any) => this.eventRegisterService.getAllApprovedByEventId(params.id)),
-        map((res) => res.data)
+      this.closed$.pipe(
+        switchMap(() => this.aroute.params.pipe(
+          switchMap((params: any) => this.eventRegisterService.getAllApprovedByEventId(params.id)),
+          map((res) => res.data)
+        ))
       ),
-      this.aroute.params.pipe(
-        switchMap((params: any) => this.eventInviteService.getAllAcceptedByEventId(params.id)),
-        map((res) => res.data)
+      this.closed$.pipe(
+        switchMap(() => this.aroute.params.pipe(
+          switchMap((params: any) => this.eventInviteService.getAllAcceptedByEventId(params.id)),
+          map((res) => res.data)
+        ))
       ),
-      this.aroute.params.pipe(
-        switchMap((params: any) => this.participantService.getAllByEventId(params.id)),
-        map(res => res.data)
+      this.closed$.pipe(
+        switchMap(() => this.aroute.params.pipe(
+          switchMap((params: any) => this.participantService.getAllByEventId(params.id)),
+          map(res => res.data)
+        ))
       ),
-      this.aroute.params.pipe(
-        switchMap((params: any) => this.participantService.getStayTimes(params.id)),
-        map((res) => res.data)
+      this.closed$.pipe(
+        switchMap(() => this.aroute.params.pipe(
+          switchMap((params: any) => this.participantService.getStayTimes(params.id)),
+          map((res) => res.data)
+        ))
       )
     ]).subscribe({
       next: (data) => {

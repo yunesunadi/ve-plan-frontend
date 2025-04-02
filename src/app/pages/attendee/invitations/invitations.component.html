@@ -20,7 +20,7 @@
             <mat-card-title class="text-primary-clr">{{ item.event.title }}</mat-card-title>
             <mat-card-subtitle class="text-primary-clr">{{ item.event.description }}</mat-card-subtitle>
           </div>
-          <a class="text-decoration-underline cursor-pointer d-flex" style="gap: .3rem;" 
+          <a class="text-decoration-underline cursor-pointer d-flex text-nowrap" style="gap: .3rem;" 
           [routerLink]="'/attendee/dashboard/events/' + item.event._id + '/view'">
             <span>See Details</span>
             <mat-icon>arrow_forward</mat-icon>

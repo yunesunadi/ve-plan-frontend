@@ -1,11 +1,11 @@
 <mat-dialog-content class="pt-3">
-  <h5 class="text-primary-clr">User List for approval</h5>
+  <h5 class="text-primary-clr">User List for meeting</h5>
   @if (dialog_data.length > 0) {
     @for (item of dialog_data; track item.email) {
       <p class="mb-1">{{ $index + 1 }}. {{ item.name }}</p>
     }
   } @else {
-    <p class="text-center mt-3">There is no selected user to send approval.</p>
+    <p class="text-center mt-3">There is no selected user to send meeting email.</p>
   }
 </mat-dialog-content>
 <mat-dialog-actions [align]="'end'">

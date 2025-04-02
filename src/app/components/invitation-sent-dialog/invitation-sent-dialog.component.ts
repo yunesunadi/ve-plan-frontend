@@ -4,6 +4,7 @@ import { EmailService } from '../../services/email.service';
 import { CommonService } from '../../services/common.service';
 import { EventInviteService } from '../../services/event-invite.service';
 import { concatMap, mergeMap, of } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   standalone: false,
@@ -28,9 +29,12 @@ export class InvitationSentDialogComponent {
         )
       )
     ).subscribe({
-      error: () => {
+      error: (err) => {
         this.dialog.close();
-        this.commonService.openSnackBar("Failed to send invitation.");
+
+        if (err instanceof HttpErrorResponse) {
+          this.commonService.openSnackBar(err.error.message);
+        }
       },
       complete: () => {
         this.dialog.close(true);
