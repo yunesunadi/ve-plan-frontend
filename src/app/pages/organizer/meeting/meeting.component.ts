@@ -202,6 +202,7 @@ export class MeetingComponent {
     dialogRef.afterClosed().subscribe({
       next: () => {
         this.closed$.next(null);
+        window.location.reload();
       }
     });
   }
