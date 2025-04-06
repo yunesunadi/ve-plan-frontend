@@ -20,6 +20,8 @@ import { EventAttendeesComponent } from './pages/organizer/event-attendees/event
 import { EventsComponent as OrganizerEventsComponent } from './pages/organizer/events/events.component';
 import { EventsComponent as AttendeeEventsComponent } from './pages/attendee/events/events.component';
 import { SettingComponent } from './pages/setting/setting.component';
+import { TermsAndConditionsComponent } from './pages/terms-and-conditions/terms-and-conditions.component';
+import { PrivacyPolicyComponent } from './pages/privacy-policy/privacy-policy.component';
 
 const publicRoutes: Routes = [
   {
@@ -40,6 +42,14 @@ const publicRoutes: Routes = [
     component: RoleComponent,
     canActivate: [authGuard, hasRoleGuard]
   },
+  {
+    path: "terms_and_conditions",
+    component: TermsAndConditionsComponent,
+  },
+  {
+    path: "privacy_policy",
+    component: PrivacyPolicyComponent,
+  }
 ];
 
 const organizerRoutes: Routes = [
