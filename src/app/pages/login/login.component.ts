@@ -49,6 +49,7 @@ export class LoginComponent {
       map(res => res.token)
     ).subscribe({
       next: (token) => {
+        this.commonService.openSnackBar("Login successfully.");
         localStorage.setItem("token", token);
 
         const decoded: UserPayload = jwtDecode(token);

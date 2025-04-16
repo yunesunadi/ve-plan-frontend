@@ -4,6 +4,7 @@ import { MeetingService } from '../../services/meeting.service';
 import { environment } from '../../../environments/environment';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MeetingParticipant } from '../../models/Participant';
+import { CommonService } from '../../services/common.service';
 
 declare var JitsiMeetExternalAPI: any;
 
@@ -19,6 +20,7 @@ export class OrganizerMeetingDialogComponent {
   private meetingService = inject(MeetingService);
   private dialog_data = inject(MAT_DIALOG_DATA);
   private dialog = inject(MatDialogRef<this>);
+  private commonService = inject(CommonService);
 
   options: any;
   api: any;
@@ -78,12 +80,19 @@ export class OrganizerMeetingDialogComponent {
 
   handleVideoConferenceJoined = async (participant: MeetingParticipant) => {
     this.meetingService.updateStartTime(this.dialog_data.event_id, { start_time: new Date().toISOString() })
-      .subscribe();
+      .subscribe({
+        next: () => {
+          this.commonService.openSnackBar("Start meeting successfully.");
+        }
+      });
   }
 
   handleVideoConferenceLeft = async (participant: any) => {
     this.meetingService.updateEndTime(this.dialog_data.event_id, { end_time: new Date().toISOString() })
-      .subscribe();
+      .subscribe({
+        next: () => {
+          this.commonService.openSnackBar("End meeting successfully.");
+        }
+      });
   }
-
 }

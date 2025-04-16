@@ -5,6 +5,7 @@ import { environment } from '../../../environments/environment';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MeetingParticipant, Participant } from '../../models/Participant';
 import { ParticipantService } from '../../services/participant.service';
+import { CommonService } from '../../services/common.service';
 
 declare var JitsiMeetExternalAPI: any;
 
@@ -21,6 +22,7 @@ export class AttendeeMeetingDialogComponent {
   private participantService = inject(ParticipantService);
   private dialog_data = inject(MAT_DIALOG_DATA);
   private dialog = inject(MatDialogRef<this>);
+  private commonService = inject(CommonService);
 
   options: any;
   api: any;
@@ -87,12 +89,20 @@ export class AttendeeMeetingDialogComponent {
       event: this.dialog_data.event_id,
       room_name: this.room_name,
       start_time: new Date().toISOString(),
-    }).subscribe();
+    }).subscribe({
+      next: () => {
+        this.commonService.openSnackBar("Join meeting successfully.");
+      }
+    });
   }
 
   handleVideoConferenceLeft = async (participant: any) => {
     this.participantService.update(this.dialog_data.event_id, { end_time: new Date().toISOString() })
-      .subscribe();
+      .subscribe({
+        next: () => {
+          this.commonService.openSnackBar("Leave meeting successfully.");
+        }
+      });
   }
 
 }
