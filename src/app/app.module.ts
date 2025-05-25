@@ -21,41 +21,25 @@ import { notFoundInterceptor } from './interceptors/not-found.interceptor';
 import { unauthenticatedInterceptor } from './interceptors/unauthenticated.interceptor';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { HomeComponent as OrganizerHomeComponent } from './pages/organizer/home/home.component';
-import { HomeComponent as AttendeeHomeComponent } from './pages/attendee/home/home.component';
-import { FullCalendarModule } from '@fullcalendar/angular';
 import { MatDialogModule } from '@angular/material/dialog';
 import { EventDialogComponent } from './components/event-dialog/event-dialog.component';
 import { MatTimepickerModule } from '@angular/material/timepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { EventDetailsDialogComponent } from './components/event-details-dialog/event-details-dialog.component';
-import { EventViewComponent as OrganizerEventViewComponent } from './pages/organizer/event-view/event-view.component';
 import { SessionDialogComponent } from './components/session-dialog/session-dialog.component';
 import { MatCardModule } from '@angular/material/card';
 import { unauthorizedInterceptor } from './interceptors/unauthorized.interceptor';
-import { EventViewComponent as AttendeeEventViewComponent } from './pages/attendee/event-view/event-view.component';
-import { RegisteredUsersComponent } from './pages/organizer/registered-users/registered-users.component';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatSortModule } from '@angular/material/sort';
-import { MatTableModule } from '@angular/material/table';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { RegisterApprovalDialogComponent } from './components/register-approval-dialog/register-approval-dialog.component';
 import { MatMenuModule } from '@angular/material/menu';
-import { InviteComponent } from './pages/organizer/invite/invite.component';
 import { InvitationSentDialogComponent } from './components/invitation-sent-dialog/invitation-sent-dialog.component';
 import { InvitedUsersDialogComponent } from './components/invited-users-dialog/invited-users-dialog.component';
 import { AcceptedUsersDialogComponent } from './components/accepted-users-dialog/accepted-users-dialog.component';
-import { InvitationsComponent } from './pages/attendee/invitations/invitations.component';
-import { JoinedEventsComponent } from './pages/attendee/joined-events/joined-events.component';
-import { MeetingComponent as OrganizerMeetingComponent } from './pages/organizer/meeting/meeting.component';
-import { EventAttendeesComponent } from './pages/organizer/event-attendees/event-attendees.component';
 import { MeetingStartedDialogComponent } from './components/meeting-started-dialog/meeting-started-dialog.component';
-import { EventsComponent as OrganizerEventsComponent } from './pages/organizer/events/events.component';
-import { EventsComponent as AttendeeEventsComponent } from './pages/attendee/events/events.component';
 import { MatDividerModule } from "@angular/material/divider";
 import { SettingComponent } from './pages/setting/setting.component';
 import { AttendeeMeetingDialogComponent } from './components/attendee-meeting-dialog/attendee-meeting-dialog.component';
 import { OrganizerMeetingDialogComponent } from './components/organizer-meeting-dialog/organizer-meeting-dialog.component';
+import { NotFoundComponent } from './pages/not-found/not-found.component';
 
 @NgModule({
   declarations: [
@@ -64,29 +48,18 @@ import { OrganizerMeetingDialogComponent } from './components/organizer-meeting-
     SignupComponent,
     RoleComponent,
     PrivateComponent,
-    OrganizerHomeComponent,
-    AttendeeHomeComponent,
     EventDialogComponent,
     EventDetailsDialogComponent,
-    OrganizerEventViewComponent,
     SessionDialogComponent,
-    AttendeeEventViewComponent,
-    RegisteredUsersComponent,
     RegisterApprovalDialogComponent,
-    InviteComponent,
     InvitationSentDialogComponent,
     InvitedUsersDialogComponent,
     AcceptedUsersDialogComponent,
-    InvitationsComponent,
-    JoinedEventsComponent,
-    OrganizerMeetingComponent,
-    EventAttendeesComponent,
     MeetingStartedDialogComponent,
-    OrganizerEventsComponent,
-    AttendeeEventsComponent,
-    SettingComponent,
     AttendeeMeetingDialogComponent,
     OrganizerMeetingDialogComponent,
+    SettingComponent,
+    NotFoundComponent,
   ],
   imports: [
     RouterModule,
@@ -103,14 +76,9 @@ import { OrganizerMeetingDialogComponent } from './components/organizer-meeting-
     MatSelectModule,
     MatSidenavModule,
     MatToolbarModule,
-    FullCalendarModule,
     MatDialogModule,
     MatTimepickerModule,
     MatCardModule,
-    MatTableModule,
-    MatSortModule,
-    MatPaginatorModule,
-    MatCheckboxModule,
     MatMenuModule,
     MatDividerModule,
   ],

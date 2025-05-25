@@ -1,16 +1,16 @@
 import { Component, inject } from '@angular/core';
-import { EventService } from '../../../services/event.service';
+import { EventService } from '../../services/event.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, catchError, EMPTY, map, shareReplay, switchMap } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
-import { SessionDialogComponent } from '../../../components/session-dialog/session-dialog.component';
-import { SessionService } from '../../../services/session.service';
-import { EventDialogComponent } from '../../../components/event-dialog/event-dialog.component';
+import { SessionDialogComponent } from '../../components/session-dialog/session-dialog.component';
+import { SessionService } from '../../services/session.service';
+import { EventDialogComponent } from '../../components/event-dialog/event-dialog.component';
 import { jwtDecode } from 'jwt-decode';
-import { UserPayload } from '../../../models/User';
-import { Event } from '../../../models/Event';
+import { UserPayload } from '../../models/User';
+import { Event } from '../../models/Event';
 import { Location } from '@angular/common';
-import { CommonService } from '../../../services/common.service';
+import { CommonService } from '../../services/common.service';
 
 @Component({
   standalone: false,

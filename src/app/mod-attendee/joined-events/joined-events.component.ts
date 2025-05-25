@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
-import { EventRegisterService } from '../../../services/event-register.service';
-import { EventInviteService } from '../../../services/event-invite.service';
+import { EventRegisterService } from '../../services/event-register.service';
+import { EventInviteService } from '../../services/event-invite.service';
 import { map, shareReplay } from 'rxjs';
 import { Location } from '@angular/common';
 

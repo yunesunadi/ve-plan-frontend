@@ -1,14 +1,14 @@
 import { Component, inject } from '@angular/core';
-import { EventService } from '../../../services/event.service';
-import { SessionService } from '../../../services/session.service';
+import { EventService } from '../../services/event.service';
+import { SessionService } from '../../services/session.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, catchError, concatMap, EMPTY, map, shareReplay, switchMap } from 'rxjs';
-import { CommonService } from '../../../services/common.service';
-import { EventRegisterService } from '../../../services/event-register.service';
-import { EventInviteService } from '../../../services/event-invite.service';
-import { MeetingService } from '../../../services/meeting.service';
+import { CommonService } from '../../services/common.service';
+import { EventRegisterService } from '../../services/event-register.service';
+import { EventInviteService } from '../../services/event-invite.service';
+import { MeetingService } from '../../services/meeting.service';
 import { MatDialog } from '@angular/material/dialog';
-import { AttendeeMeetingDialogComponent } from '../../../components/attendee-meeting-dialog/attendee-meeting-dialog.component';
+import { AttendeeMeetingDialogComponent } from '../../components/attendee-meeting-dialog/attendee-meeting-dialog.component';
 import { Location } from '@angular/common';
 
 @Component({

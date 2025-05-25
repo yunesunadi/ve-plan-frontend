@@ -3,10 +3,10 @@ import { CalendarOptions, EventClickArg } from '@fullcalendar/core';
 import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import { MatDialog } from '@angular/material/dialog';
-import { EventDialogComponent } from '../../../components/event-dialog/event-dialog.component';
-import { EventService } from '../../../services/event.service';
+import { EventDialogComponent } from '../../components/event-dialog/event-dialog.component';
+import { EventService } from '../../services/event.service';
 import { BehaviorSubject, concatMap, map, shareReplay, switchMap, take } from 'rxjs';
-import { EventDetailsDialogComponent } from '../../../components/event-details-dialog/event-details-dialog.component';
+import { EventDetailsDialogComponent } from '../../components/event-details-dialog/event-details-dialog.component';
 
 @Component({
   standalone: false,

@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { EventService } from '../../../services/event.service';
+import { EventService } from '../../services/event.service';
 import { map, shareReplay } from 'rxjs';
 
 @Component({

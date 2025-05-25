@@ -13,8 +13,6 @@ export class ParticipantService {
   constructor() { }
 
   create(participant: Partial<Participant>) {
-    console.log("this works");
-    
     const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/participants`;
     return this.http.post<GeneralResponse>(url, participant, {

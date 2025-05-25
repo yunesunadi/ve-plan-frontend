@@ -6,12 +6,12 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute } from '@angular/router';
 import { concatMap, debounceTime, iif, map, of, shareReplay, switchMap } from 'rxjs';
-import { UserService } from '../../../services/user.service';
+import { UserService } from '../../services/user.service';
 import { FormControl, FormGroup } from '@angular/forms';
-import { EventService } from '../../../services/event.service';
-import { InvitationSentDialogComponent } from '../../../components/invitation-sent-dialog/invitation-sent-dialog.component';
-import { InvitedUsersDialogComponent } from '../../../components/invited-users-dialog/invited-users-dialog.component';
-import { AcceptedUsersDialogComponent } from '../../../components/accepted-users-dialog/accepted-users-dialog.component';
+import { EventService } from '../../services/event.service';
+import { InvitationSentDialogComponent } from '../../components/invitation-sent-dialog/invitation-sent-dialog.component';
+import { InvitedUsersDialogComponent } from '../../components/invited-users-dialog/invited-users-dialog.component';
+import { AcceptedUsersDialogComponent } from '../../components/accepted-users-dialog/accepted-users-dialog.component';
 import { Location } from '@angular/common';
 
 @Component({

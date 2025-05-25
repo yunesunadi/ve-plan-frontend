@@ -2,12 +2,12 @@ import { Component, ElementRef, inject, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { EventRegisterService } from '../../../services/event-register.service';
+import { EventRegisterService } from '../../services/event-register.service';
 import { ActivatedRoute } from '@angular/router';
 import { map, switchMap } from 'rxjs';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatDialog } from '@angular/material/dialog';
-import { RegisterApprovalDialogComponent } from '../../../components/register-approval-dialog/register-approval-dialog.component';
+import { RegisterApprovalDialogComponent } from '../../components/register-approval-dialog/register-approval-dialog.component';
 import { Location } from '@angular/common';
 
 @Component({

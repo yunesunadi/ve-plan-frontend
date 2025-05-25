@@ -1,11 +1,11 @@
 import { ChangeDetectorRef, Component, inject, signal } from '@angular/core';
-import { EventService } from '../../../services/event.service';
+import { EventService } from '../../services/event.service';
 import { map, shareReplay } from 'rxjs';
 import { CalendarOptions, EventClickArg } from '@fullcalendar/core/index.js';
 import interactionPlugin from '@fullcalendar/interaction';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import { MatDialog } from '@angular/material/dialog';
-import { EventDetailsDialogComponent } from '../../../components/event-details-dialog/event-details-dialog.component';
+import { EventDetailsDialogComponent } from '../../components/event-details-dialog/event-details-dialog.component';
 
 @Component({
   standalone: false,

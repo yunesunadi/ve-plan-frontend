@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
-import { EventInviteService } from '../../../services/event-invite.service';
+import { EventInviteService } from '../../services/event-invite.service';
 import { BehaviorSubject, concatMap, map, shareReplay } from 'rxjs';
-import { CommonService } from '../../../services/common.service';
+import { CommonService } from '../../services/common.service';
 import { Location } from '@angular/common';
 
 @Component({

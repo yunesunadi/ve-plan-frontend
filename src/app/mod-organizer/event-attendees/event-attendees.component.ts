@@ -5,10 +5,10 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute } from '@angular/router';
-import { EventRegisterService } from '../../../services/event-register.service';
-import { EventInviteService } from '../../../services/event-invite.service';
+import { EventRegisterService } from '../../services/event-register.service';
+import { EventInviteService } from '../../services/event-invite.service';
 import { combineLatest, map, shareReplay, switchMap } from 'rxjs';
-import { MeetingStartedDialogComponent } from '../../../components/meeting-started-dialog/meeting-started-dialog.component';
+import { MeetingStartedDialogComponent } from '../../components/meeting-started-dialog/meeting-started-dialog.component';
 import { Location } from '@angular/common';
 
 @Component({
