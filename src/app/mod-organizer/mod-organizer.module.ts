@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 
 import { ModOrganizerRoutingModule } from './mod-organizer-routing.module';
 import { HomeComponent } from './home/home.component';
-import { EventsComponent } from './events/events.component';
 import { EventViewComponent } from './event-view/event-view.component';
 import { RegisteredUsersComponent } from './registered-users/registered-users.component';
 import { InviteComponent } from './invite/invite.component';
@@ -26,7 +25,6 @@ import { MatButtonModule } from '@angular/material/button';
 @NgModule({
   declarations: [
     HomeComponent,
-    EventsComponent,
     EventViewComponent,
     RegisteredUsersComponent,
     InviteComponent,

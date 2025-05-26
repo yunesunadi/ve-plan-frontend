@@ -1,6 +1,6 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Event, CreateEventResponse, GetEventsResponse, GetEventResponse } from '../models/Event';
+import { Event, CreateEventResponse, GetEventsResponse, GetEventResponse, EventQuery } from '../models/Event';
 import { environment } from '../../environments/environment';
 import { GeneralResponse } from '../models/Utils';
 
@@ -30,13 +30,28 @@ export class EventService {
     });
   }
 
-  getAll() {
+  getAll(query?: EventQuery) {
     const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/events`;
+    let params = new HttpParams();
+
+    if (query) {
+      if (query.search_value) {
+        params = params.set("search_value", query.search_value);
+      }
+      if (query.time) {
+        params = params.set("time", query.time);
+      }
+      if (query.category) {
+        params = params.set("category", query.category);
+      }
+    }
+
     return this.http.get<GetEventsResponse>(url, {
       headers: new HttpHeaders({
         Authorization: `Bearer ${token}`,
-      })
+      }),
+      params
     });
   }
 

@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component';
-import { EventsComponent } from './events/events.component';
+import { EventsComponent } from '../pages/events/events.component';
 import { EventViewComponent } from './event-view/event-view.component';
 import { RegisteredUsersComponent } from './registered-users/registered-users.component';
 import { InviteComponent } from './invite/invite.component';

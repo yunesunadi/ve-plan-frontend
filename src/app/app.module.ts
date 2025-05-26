@@ -40,6 +40,7 @@ import { SettingComponent } from './pages/setting/setting.component';
 import { AttendeeMeetingDialogComponent } from './components/attendee-meeting-dialog/attendee-meeting-dialog.component';
 import { OrganizerMeetingDialogComponent } from './components/organizer-meeting-dialog/organizer-meeting-dialog.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
+import { EventsComponent } from './pages/events/events.component';
 
 @NgModule({
   declarations: [
@@ -48,6 +49,7 @@ import { NotFoundComponent } from './pages/not-found/not-found.component';
     SignupComponent,
     RoleComponent,
     PrivateComponent,
+    EventsComponent,
     EventDialogComponent,
     EventDetailsDialogComponent,
     SessionDialogComponent,

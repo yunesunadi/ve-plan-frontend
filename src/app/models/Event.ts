@@ -1,6 +1,10 @@
 import { User } from "./User";
 import { Timestamp, GeneralResponse, Response } from "./Utils";
 
+export type EventTimeType = "upcoming" | "happening" | "past";
+
+export type EventCategoryType = "conference" | "meetup" | "webinar";
+
 export interface Event {
   _id: string;
   cover: string;
@@ -9,9 +13,15 @@ export interface Event {
   date: string;
   start_time: string;
   end_time: string;
-  category: "conference" | "meetup" | "webinar";
+  category: EventCategoryType;
   type: "public" | "private";
   user: User;
+}
+
+export interface EventQuery {
+  search_value?: string;
+  time?: EventTimeType;
+  category?: EventCategoryType;
 }
 
 export type CreateEventResponse = GeneralResponse & Response<"data", Timestamp & Event>;

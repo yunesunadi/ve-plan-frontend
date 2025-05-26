@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 
 import { ModAttendeeRoutingModule } from './mod-attendee-routing.module';
 import { HomeComponent } from './home/home.component';
-import { EventsComponent } from './events/events.component';
 import { EventViewComponent } from './event-view/event-view.component';
 import { InvitationsComponent } from './invitations/invitations.component';
 import { JoinedEventsComponent } from './joined-events/joined-events.component';
@@ -12,11 +11,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { SharedModule } from '../shared/shared.module';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import { MatButtonModule } from '@angular/material/button';
+import { MatSelectModule } from '@angular/material/select';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
     HomeComponent,
-    EventsComponent,
     EventViewComponent,
     InvitationsComponent,
     JoinedEventsComponent,
@@ -29,6 +29,8 @@ import { MatButtonModule } from '@angular/material/button';
     MatIconModule,
     FullCalendarModule,
     MatButtonModule,
+    FormsModule,
+    MatSelectModule,
   ]
 })
 export class ModAttendeeModule { }
