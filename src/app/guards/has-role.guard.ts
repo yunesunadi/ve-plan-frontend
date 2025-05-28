@@ -1,12 +1,12 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { UserService } from '../services/user.service';
+import { DashboardCacheService } from '../caches/dashboard-cache.service';
 
 export const hasRoleGuard: CanActivateFn = (route, state) => {
-  const userService = inject(UserService);
+  const cacheService = inject(DashboardCacheService);
   const router = inject(Router);
 
-  userService.hasRole().subscribe({
+  cacheService.has_role.subscribe({
     next: (res) => {
       if (res.has_role) {
         if (res.role === "organizer") {

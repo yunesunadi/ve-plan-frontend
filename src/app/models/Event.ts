@@ -22,6 +22,9 @@ export interface EventQuery {
   search_value?: string;
   time?: EventTimeType;
   category?: EventCategoryType;
+  date?: string;
+  limit?: number;
+  offset?: number;
 }
 
 export type CreateEventResponse = GeneralResponse & Response<"data", Timestamp & Event>;

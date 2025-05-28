@@ -30,9 +30,19 @@ export class EventService {
     });
   }
 
-  getAll(query?: EventQuery) {
+  getAll() {
     const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/events`;
+    return this.http.get<GetEventsResponse>(url, {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${token}`,
+      })
+    });
+  }
+
+  getAllByQuery(query?: EventQuery) {
+    const token = localStorage.getItem("token");
+    const url = `${environment.apiUrl}/events/events_by_query`;
     let params = new HttpParams();
 
     if (query) {
@@ -44,6 +54,15 @@ export class EventService {
       }
       if (query.category) {
         params = params.set("category", query.category);
+      }
+      if (query.date) {
+        params = params.set("date", query.date);
+      }
+      if (query.limit) {
+        params = params.set("limit", query.limit);
+      }
+      if (query.offset) {
+        params = params.set("offset", query.offset);
       }
     }
 

@@ -24,7 +24,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatDialogModule } from '@angular/material/dialog';
 import { EventDialogComponent } from './components/event-dialog/event-dialog.component';
 import { MatTimepickerModule } from '@angular/material/timepicker';
-import { provideNativeDateAdapter } from '@angular/material/core';
+import { MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
 import { EventDetailsDialogComponent } from './components/event-details-dialog/event-details-dialog.component';
 import { SessionDialogComponent } from './components/session-dialog/session-dialog.component';
 import { MatCardModule } from '@angular/material/card';
@@ -41,6 +41,8 @@ import { AttendeeMeetingDialogComponent } from './components/attendee-meeting-di
 import { OrganizerMeetingDialogComponent } from './components/organizer-meeting-dialog/organizer-meeting-dialog.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { EventsComponent } from './pages/events/events.component';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
 
 @NgModule({
   declarations: [
@@ -83,6 +85,8 @@ import { EventsComponent } from './pages/events/events.component';
     MatCardModule,
     MatMenuModule,
     MatDividerModule,
+    MatDatepickerModule,
+    InfiniteScrollDirective,
   ],
   providers: [
     appConfig.providers,
@@ -91,7 +95,11 @@ import { EventsComponent } from './pages/events/events.component';
       unauthenticatedInterceptor,
       unauthorizedInterceptor,
     ])),
-    provideNativeDateAdapter()
+    provideNativeDateAdapter(),
+    {
+      provide: MAT_DATE_LOCALE,
+      useValue: "en-GB"
+    },
   ],
   bootstrap: [AppComponent],
 })

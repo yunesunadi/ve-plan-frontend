@@ -4,7 +4,7 @@ import { EventService } from '../../services/event.service';
 import { map, shareReplay } from 'rxjs';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
-import { UserService } from '../../services/user.service';
+import { DashboardCacheService } from '../../caches/dashboard-cache.service';
 
 @Component({
   standalone: false,
@@ -15,7 +15,7 @@ import { UserService } from '../../services/user.service';
 export class EventDetailsDialogComponent {
   private dialog_data = inject(MAT_DIALOG_DATA);
   private eventService = inject(EventService);
-  private userService = inject(UserService);
+  private cacheService = inject(DashboardCacheService);
   private dialog = inject(MatDialogRef<this>);
   private route = inject(Router);
 
@@ -24,9 +24,8 @@ export class EventDetailsDialogComponent {
     shareReplay(1)
   );
 
-  role$ = this.userService.hasRole().pipe(
+  role$ = this.cacheService.has_role.pipe(
     map((res) => res.role),
-    shareReplay(1)
   );
 
   constructor() {}

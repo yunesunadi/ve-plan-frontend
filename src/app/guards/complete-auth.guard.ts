@@ -1,13 +1,13 @@
 import { inject } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
-import { UserService } from '../services/user.service';
+import { CanActivateFn } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { DashboardCacheService } from '../caches/dashboard-cache.service';
 
 export const completeAuthGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
-  const userService = inject(UserService);
+  const cacheService = inject(DashboardCacheService);
 
-  userService.hasRole().subscribe({
+  cacheService.has_role.subscribe({
     next: (res) => {
       if (!res.has_role && !authService.isLoggedIn()) {
         return false;

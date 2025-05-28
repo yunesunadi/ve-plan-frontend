@@ -1,11 +1,11 @@
 import { Component, inject, signal, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { CommonService } from '../../services/common.service';
-import { map } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { UserService } from '../../services/user.service';
 import { environment } from '../../../environments/environment';
 import { Location } from '@angular/common';
+import { DashboardCacheService } from '../../caches/dashboard-cache.service';
 
 const MIN_LENGTH = 6;
 
@@ -26,6 +26,7 @@ export class SettingComponent {
 
   private form_builder = inject(FormBuilder);
   private userService = inject(UserService);
+  private cacheService = inject(DashboardCacheService);
   private commonService = inject(CommonService);
   location = inject(Location);
 
@@ -58,9 +59,7 @@ export class SettingComponent {
   }
 
   ngOnInit() {
-    this.userService.getCurrentUser().pipe(
-      map(res => res.data)
-    ).subscribe({
+    this.cacheService.current_user.subscribe({
       next: (user) => {
         if (user.profile) {
           this.profile = environment.profileUrl + "/" + user.profile;
@@ -133,6 +132,7 @@ export class SettingComponent {
     this.userService.editProfile(this.edit_profile_form.value).subscribe({
       next: (res) => {
         this.commonService.openSnackBar(res.message);
+        this.cacheService.resetCurrentUser();
       },
       error: (err) => {
         if (err instanceof HttpErrorResponse) {
@@ -155,6 +155,7 @@ export class SettingComponent {
         this.currentPasswordControl.setErrors(null);
         this.newPasswordControl.setErrors(null);
         this.confirmPasswordControl.setErrors(null);
+        this.cacheService.resetCurrentUser();
       },
       error: (err) => {
         if (err instanceof HttpErrorResponse) {
