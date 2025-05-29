@@ -13,18 +13,22 @@
       <mat-form-field appearance="outline">
         <mat-label>Name</mat-label>
         <input matInput type="text" formControlName="name" placeholder="Enter name">
-        @if (nameControl.hasError('required')) {
+        @if (nameControl.touched && nameControl.errors && nameControl.hasError('required')) {
           <mat-error>Name is required.</mat-error>
         }
       </mat-form-field>
       <mat-form-field appearance="outline">
         <mat-label>Email</mat-label>
         <input type="email" matInput formControlName="email" placeholder="Enter email">
-        @if (emailControl.hasError('email') && !emailControl.hasError('required')) {
-          <mat-error>Please enter a valid email address.</mat-error>
-        }
-        @if (emailControl.hasError('required')) {
-          <mat-error>Email is required.</mat-error>
+        @if (emailControl.touched && emailControl.errors) {
+          <mat-error>
+            @if (emailControl.hasError('email') && !emailControl.hasError('required')) {
+              Please enter a valid email address.
+            }
+            @if (emailControl.hasError('required')) {
+              Email is required.
+            }
+          </mat-error>
         }
       </mat-form-field>
       <mat-form-field appearance="outline">
@@ -38,11 +42,15 @@
         >
           <mat-icon>{{ isPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
         </button>
-        @if (passwordControl.hasError('required')) {
-          <mat-error>Password is required.</mat-error>
-        }
-        @else if (passwordControl.hasError('minlength')) {
-          <mat-error>Password must be more than {{ passwordControl.errors && passwordControl.errors['minlength'].requiredLength }} characters.</mat-error>
+        @if (passwordControl.touched && passwordControl.errors) {
+          <mat-error>
+            @if (passwordControl.hasError('required')) {
+              Password is required.
+            }
+            @else if (passwordControl.hasError('minlength')) {
+              Password must be more than {{ passwordControl.errors && passwordControl.errors['minlength'].requiredLength }} characters.
+            }
+          </mat-error>
         }
       </mat-form-field>
       <mat-form-field appearance="outline">
@@ -56,13 +64,13 @@
         >
           <mat-icon>{{ isConfirmPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
         </button>
-        @if (confirmPasswordControl.hasError('required')) {
+        @if (confirmPasswordControl.touched && confirmPasswordControl.errors && confirmPasswordControl.hasError('required')) {
           <mat-error>Confirm password is required.</mat-error>
         }
-        @else if (confirmPasswordControl.hasError('minlength')) {
-          <mat-error>Confirm password must be more than {{ confirmPasswordControl.errors && confirmPasswordControl.errors['minlength'].requiredLength }} characters.</mat-error>
+        @else if (confirmPasswordControl.touched && confirmPasswordControl.errors && confirmPasswordControl.hasError('minlength')) {
+          <mat-error>Confirm password must be more than {{ confirmPasswordControl.errors['minlength'].requiredLength }} characters.</mat-error>
         }
-        @else if (signup_form.hasError('passwordsNotMatched')) {
+        @else if (passwordControl.value && confirmPasswordControl.value && signup_form.errors && signup_form.hasError('passwordsNotMatched')) {
           <mat-hint class="text-danger">Two passwords do not match.</mat-hint>
         }
       </mat-form-field>

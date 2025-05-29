@@ -43,6 +43,8 @@ export class LoginComponent {
   }
 
   submit() {
+    this.login_form.markAllAsTouched();
+    
     if (this.login_form.invalid) return;
     
     this.authService.login(this.login_form.value).pipe(

@@ -1,10 +1,11 @@
 import { Component, inject } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { CommonService } from '../../services/common.service';
 import { MatDialogRef } from '@angular/material/dialog';
 import { DIALOG_DATA } from '@angular/cdk/dialog';
 import { SessionService } from '../../services/session.service';
-import { concatMap, iif, of } from 'rxjs';
+import { concatMap, iif, map, of, shareReplay } from 'rxjs';
+import { EventService } from '../../services/event.service';
 
 @Component({
   standalone: false,
@@ -17,9 +18,15 @@ export class SessionDialogComponent {
 
   private form_builder = inject(FormBuilder);
   private sessionService = inject(SessionService);
+  private eventService = inject(EventService);
   private commonService = inject(CommonService);
-  private dialog_data = inject(DIALOG_DATA);
+  dialog_data = inject(DIALOG_DATA);
   private dialog = inject(MatDialogRef<this>);
+
+  event$ = this.eventService.getOneById(this.dialog_data.event_id).pipe(
+    map(res => res.data),
+    shareReplay(1)
+  );
 
   constructor() {
     this.create_form = this.form_builder.group({
@@ -29,7 +36,21 @@ export class SessionDialogComponent {
       start_time: [this.dialog_data.start_time || '', Validators.required],
       end_time: [this.dialog_data.end_time || '', Validators.required],
       event: [this.dialog_data.event_id, Validators.required]
+    },
+    {
+      validators: this.checkTimeValidator()
     });
+  }
+
+  checkTimeValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const start_time = new Date(control.value['start_time']).getTime();
+      const end_time = new Date(control.value['end_time']).getTime();
+
+      if (start_time > end_time) return { invalidTime: true };
+
+      return null;
+    };
   }
 
   get titleControl() {
@@ -53,6 +74,8 @@ export class SessionDialogComponent {
   }
 
   submit() {
+    this.create_form.markAllAsTouched();
+
     if (this.create_form.invalid) return;
 
     of(true).pipe(

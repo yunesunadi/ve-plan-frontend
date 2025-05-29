@@ -87,6 +87,8 @@ export class SignupComponent {
   }
 
   submit() {
+    this.signup_form.markAllAsTouched();
+
     if (this.signup_form.invalid) return;
     delete this.signup_form.value['confirm_password'];
     

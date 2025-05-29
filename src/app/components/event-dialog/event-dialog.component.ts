@@ -1,5 +1,5 @@
 import { Component, inject, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { format } from "date-fns";
 import { EventService } from '../../services/event.service';
@@ -21,7 +21,7 @@ export class EventDialogComponent {
   types = ["public", "private"];
 
   private form_builder = inject(FormBuilder);
-  private dialog_data = inject(MAT_DIALOG_DATA);
+  dialog_data = inject(MAT_DIALOG_DATA);
   private eventService = inject(EventService);
   private commonService = inject(CommonService);
   private dialog = inject(MatDialogRef<this>);
@@ -36,7 +36,21 @@ export class EventDialogComponent {
       end_time: [this.dialog_data.end_time || '', Validators.required],
       category: [this.dialog_data.category || '', Validators.required],
       type: [this.dialog_data.type || '', Validators.required],
+    },
+    {
+      validators: this.checkTimeValidator()
     });
+  }
+
+  checkTimeValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const start_time = new Date(control.value['start_time']).getTime();
+      const end_time = new Date(control.value['end_time']).getTime();
+
+      if (start_time > end_time) return { invalidTime: true };
+
+      return null;
+    };
   }
 
   ngAfterViewInit() {
@@ -88,6 +102,8 @@ export class EventDialogComponent {
   }
 
   submit() {
+    this.create_form.markAllAsTouched();
+
     if (this.create_form.invalid) return;
 
     of(true).pipe(

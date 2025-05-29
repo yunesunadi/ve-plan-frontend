@@ -10,9 +10,9 @@ export interface Event {
   cover: string;
   title: string;
   description: string;
-  date: string;
-  start_time: string;
-  end_time: string;
+  date: any;
+  start_time: any;
+  end_time: any;
   category: EventCategoryType;
   type: "public" | "private";
   user: User;

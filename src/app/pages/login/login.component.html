@@ -6,11 +6,15 @@
       <mat-form-field appearance="outline">
         <mat-label>Email</mat-label>
         <input type="email" matInput formControlName="email" placeholder="Enter email">
-        @if (emailControl.hasError('email') && !emailControl.hasError('required')) {
-          <mat-error>Please enter a valid email address.</mat-error>
-        }
-        @if (emailControl.hasError('required')) {
-          <mat-error>Email is required.</mat-error>
+        @if (emailControl.touched && emailControl.errors) {
+          <mat-error>
+            @if (emailControl.hasError('email') && !emailControl.hasError('required')) {
+              Please enter a valid email address.
+            }
+            @if (emailControl.hasError('required')) {
+              Email is required.
+            }
+          </mat-error>
         }
       </mat-form-field>
       <mat-form-field appearance="outline">
@@ -24,7 +28,7 @@
         >
           <mat-icon>{{ isPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
         </button>
-        @if (passwordControl.hasError('required')) {
+        @if (passwordControl.touched && passwordControl.errors && passwordControl.hasError('required')) {
           <mat-error>Password is required.</mat-error>
         }
       </mat-form-field>

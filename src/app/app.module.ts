@@ -24,7 +24,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatDialogModule } from '@angular/material/dialog';
 import { EventDialogComponent } from './components/event-dialog/event-dialog.component';
 import { MatTimepickerModule } from '@angular/material/timepicker';
-import { MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
+import { provideNativeDateAdapter } from '@angular/material/core';
 import { EventDetailsDialogComponent } from './components/event-details-dialog/event-details-dialog.component';
 import { SessionDialogComponent } from './components/session-dialog/session-dialog.component';
 import { MatCardModule } from '@angular/material/card';
@@ -95,11 +95,7 @@ import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
       unauthenticatedInterceptor,
       unauthorizedInterceptor,
     ])),
-    provideNativeDateAdapter(),
-    {
-      provide: MAT_DATE_LOCALE,
-      useValue: "en-GB"
-    },
+    provideNativeDateAdapter()
   ],
   bootstrap: [AppComponent],
 })

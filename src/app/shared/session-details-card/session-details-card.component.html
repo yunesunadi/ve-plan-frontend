@@ -19,12 +19,12 @@
       <div class="col-sm-6 session-info">
         <b class="mb-0 text-primary-clr">From:</b>
         <mat-icon class="text-primary-clr">access_time</mat-icon>
-        <span>{{ session.start_time | formatTime }}</span>
+        <span>{{ session.start_time | date: "hh:mm a" }}</span>
       </div>
       <div class="col-sm-6 session-info">
         <b class="mb-0 text-primary-clr">To:</b>
         <mat-icon class="text-primary-clr">access_time</mat-icon>
-        <span>{{ session.end_time | formatTime }}</span>
+        <span>{{ session.end_time | date: "hh:mm a" }}</span>
       </div>
     </div>
   </mat-card-content>

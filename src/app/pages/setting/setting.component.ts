@@ -127,6 +127,8 @@ export class SettingComponent {
   }
 
   editProfile() {
+    this.edit_profile_form.markAllAsTouched();
+
     if (this.edit_profile_form.invalid) return;
     
     this.userService.editProfile(this.edit_profile_form.value).subscribe({
@@ -143,6 +145,8 @@ export class SettingComponent {
   }
 
   changePassword() {
+    this.change_password_form.markAllAsTouched();
+    
     if (this.change_password_form.invalid) return;
 
     const current_password = this.change_password_form.value.current_password;

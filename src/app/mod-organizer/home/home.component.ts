@@ -62,6 +62,15 @@ export class HomeComponent {
   constructor() {}
 
   handleDateClick(arg: DateClickArg) {
+    const clicked_date = new Date(arg.date).getTime();
+    const current_date = new Date().getTime();
+    const one_day = 24 * 60 * 60 * 1000;
+    
+    if (clicked_date < (current_date - one_day)) {
+      alert("Can't create an event in past days.");
+      return;
+    }
+
     const dialogRef = this.dialog.open(EventDialogComponent, {
       data: {
         date: arg.date,

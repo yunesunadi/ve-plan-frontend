@@ -1,5 +1,5 @@
 <h6 mat-dialog-title class="text-primary-clr">
-  Create/Edit Event ({{ eventDate }})
+  {{ dialog_data._id ? "Edit" : "Create" }} Event ({{ eventDate }})
 </h6>
 <mat-dialog-content>
   <form id="createForm" [formGroup]="create_form" (ngSubmit)="submit()" class="d-flex flex-column create-form">
@@ -13,7 +13,7 @@
     <mat-form-field appearance="outline">
       <mat-label>Title</mat-label>
       <input matInput type="text" formControlName="title" placeholder="Enter title">
-      @if (titleControl.hasError('required')) {
+      @if (titleControl.touched && titleControl.errors && titleControl.hasError('required')) {
         <mat-error>Title is required.</mat-error>
       }
     </mat-form-field>
@@ -26,7 +26,7 @@
         formControlName="description"
         placeholder="Enter description"
       ></textarea>
-      @if (descriptionControl.hasError('required')) {
+      @if (descriptionControl.touched && descriptionControl.errors && descriptionControl.hasError('required')) {
         <mat-error>Description is required.</mat-error>
       }
     </mat-form-field>
@@ -35,7 +35,7 @@
       <input matInput [matTimepicker]="timepicker1" formControlName="start_time">
       <mat-timepicker #timepicker1/>
       <mat-timepicker-toggle [for]="timepicker1" matSuffix/>
-      @if (startTimeControl.hasError('required')) {
+      @if (startTimeControl.touched && startTimeControl.errors && startTimeControl.hasError('required')) {
         <mat-error>Start time is required.</mat-error>
       }
     </mat-form-field>
@@ -44,10 +44,13 @@
       <input matInput [matTimepicker]="timepicker2" formControlName="end_time">
       <mat-timepicker #timepicker2/>
       <mat-timepicker-toggle [for]="timepicker2" matSuffix/>
-      @if (endTimeControl.hasError('required')) {
+      @if (endTimeControl.touched && endTimeControl.errors && endTimeControl.hasError('required')) {
         <mat-error>End time is required.</mat-error>
       }
     </mat-form-field>
+    @if (startTimeControl.value && endTimeControl.value && create_form.errors && create_form.hasError('invalidTime')) {
+      <small class="text-danger mb-3" style="margin-top: -1.3rem;">End time mustn't be ahead of start time.</small>
+    }
     <mat-form-field appearance="outline">
       <mat-label>Category</mat-label>
       <mat-select formControlName="category">
@@ -57,7 +60,7 @@
           </mat-option>
         }
       </mat-select>
-      @if (categoryControl.hasError("required")) {
+      @if (categoryControl.touched && categoryControl.errors && categoryControl.hasError("required")) {
         <mat-error>Category is required.</mat-error>
       }
     </mat-form-field>
@@ -70,7 +73,7 @@
           </mat-option>
         }
       </mat-select>
-      @if (typeControl.hasError("required")) {
+      @if (typeControl.touched && typeControl.errors && typeControl.hasError("required")) {
         <mat-error>Type is required.</mat-error>
       }
     </mat-form-field>

@@ -20,18 +20,22 @@
     <mat-form-field appearance="outline">
       <mat-label>Name</mat-label>
       <input matInput type="text" formControlName="name" placeholder="Enter name">
-      @if (nameControl.hasError('required')) {
+      @if (nameControl.touched && nameControl.errors && nameControl.hasError('required')) {
         <mat-error>Name is required.</mat-error>
       }
     </mat-form-field>
     <mat-form-field appearance="outline">
       <mat-label>Email</mat-label>
       <input type="email" matInput formControlName="email" placeholder="Enter email">
-      @if (emailControl.hasError('email') && !emailControl.hasError('required')) {
-        <mat-error>Please enter a valid email address.</mat-error>
-      }
-      @if (emailControl.hasError('required')) {
-        <mat-error>Email is required.</mat-error>
+      @if (emailControl.touched && emailControl.errors) {
+        <mat-error>
+          @if (emailControl.hasError('email') && !emailControl.hasError('required')) {
+            Please enter a valid email address.
+          }
+          @if (emailControl.hasError('required')) {
+            Email is required.
+          }
+        </mat-error>
       }
     </mat-form-field>
     <button
@@ -56,11 +60,15 @@
       >
         <mat-icon>{{ isCurrentPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
       </button>
-      @if (currentPasswordControl.hasError('required')) {
-        <mat-error>Current password is required.</mat-error>
-      }
-      @else if (currentPasswordControl.hasError('minlength')) {
-        <mat-error>Current password must be more than {{ currentPasswordControl.errors && currentPasswordControl.errors['minlength'].requiredLength }} characters.</mat-error>
+      @if (currentPasswordControl.touched && currentPasswordControl.errors) {
+        <mat-error>
+          @if (currentPasswordControl.hasError('required')) {
+            Current password is required.
+          }
+          @else if (currentPasswordControl.hasError('minlength')) {
+            Current password must be more than {{ currentPasswordControl.errors && currentPasswordControl.errors['minlength'].requiredLength }} characters.
+          }
+        </mat-error>
       }
     </mat-form-field>
 
@@ -75,11 +83,15 @@
       >
         <mat-icon>{{ isNewPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
       </button>
-      @if (newPasswordControl.hasError('required')) {
-        <mat-error>New password is required.</mat-error>
-      }
-      @else if (newPasswordControl.hasError('minlength')) {
-        <mat-error>New password must be more than {{ newPasswordControl.errors && newPasswordControl.errors['minlength'].requiredLength }} characters.</mat-error>
+      @if (newPasswordControl.touched && newPasswordControl.errors) {
+        <mat-error>
+          @if (newPasswordControl.hasError('required')) {
+            New password is required.
+          }
+          @else if (newPasswordControl.hasError('minlength')) {
+            New password must be more than {{ newPasswordControl.errors && newPasswordControl.errors['minlength'].requiredLength }} characters.
+          }
+        </mat-error>
       }
     </mat-form-field>
 
@@ -94,13 +106,13 @@
       >
         <mat-icon>{{ isConfirmPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
       </button>
-      @if (confirmPasswordControl.hasError('required')) {
+      @if (confirmPasswordControl.touched && confirmPasswordControl.errors && confirmPasswordControl.hasError('required')) {
         <mat-error>Confirm new password is required.</mat-error>
       }
-      @else if (confirmPasswordControl.hasError('minlength')) {
-        <mat-error>Confirm new password must be more than {{ confirmPasswordControl.errors && confirmPasswordControl.errors['minlength'].requiredLength }} characters.</mat-error>
+      @else if (confirmPasswordControl.touched && confirmPasswordControl.errors && confirmPasswordControl.hasError('minlength')) {
+        <mat-error>Confirm new password must be more than {{ confirmPasswordControl.errors['minlength'].requiredLength }} characters.</mat-error>
       }
-      @else if (change_password_form.hasError('passwordsNotMatched')) {
+      @else if (newPasswordControl.value && confirmPasswordControl.value && change_password_form.errors && change_password_form.hasError('passwordsNotMatched')) {
         <mat-hint class="text-danger">Two passwords do not match.</mat-hint>
       }
     </mat-form-field>

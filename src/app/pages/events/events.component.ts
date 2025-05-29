@@ -3,6 +3,7 @@ import { EventService } from '../../services/event.service';
 import { BehaviorSubject, map, shareReplay, switchMap } from 'rxjs';
 import { Event, EventQuery } from '../../models/Event';
 import { DashboardCacheService } from '../../caches/dashboard-cache.service';
+import { MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
 
 const LIMIT = 5; 
 
@@ -10,7 +11,14 @@ const LIMIT = 5;
   standalone: false,
   selector: 'app-events',
   templateUrl: './events.component.html',
-  styleUrl: './events.component.scss'
+  styleUrl: './events.component.scss',
+  providers: [
+    provideNativeDateAdapter(),
+    {
+      provide: MAT_DATE_LOCALE,
+      useValue: "en-GB"
+    },
+  ]
 })
 export class EventsComponent {
   private eventService = inject(EventService);
