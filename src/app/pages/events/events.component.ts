@@ -1,11 +1,10 @@
 import { Component, inject } from '@angular/core';
-import { EventService } from '../../services/event.service';
-import { BehaviorSubject, map, shareReplay, switchMap } from 'rxjs';
-import { Event, EventQuery } from '../../models/Event';
+import { EventQuery } from '../../models/Event';
 import { DashboardCacheService } from '../../caches/dashboard-cache.service';
 import { MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
-
-const LIMIT = 5; 
+import { Router } from '@angular/router';
+import { EventCacheService } from '../../caches/event-cache.service';
+import { ViewportScroller } from '@angular/common';
 
 @Component({
   standalone: false,
@@ -21,62 +20,44 @@ const LIMIT = 5;
   ]
 })
 export class EventsComponent {
-  private eventService = inject(EventService);
-  private cacheService = inject(DashboardCacheService);
+  private dashboardCache = inject(DashboardCacheService);
+  private router = inject(Router);
+  cache = inject(EventCacheService);
 
-  query$ = new BehaviorSubject<EventQuery>(<EventQuery>{ limit: LIMIT });
-  events$ = new BehaviorSubject<Event[]>([]);
   times = ["upcoming", "happening", "past"];
   categories = ["conference", "meetup", "webinar"];
+  role!: string;
 
-  role$ = this.cacheService.has_role.pipe(
-    map((res) => res.role),
-  );
+  viewportScroller = inject(ViewportScroller);
 
-  constructor() {}
+  constructor() { }
 
   ngOnInit() {
-    this.query$.pipe(
-      switchMap((query) => this.eventService.getAllByQuery(query).pipe(
-        map(res => res.data),
-        map((res): [EventQuery, Event[]] => [query, res]),
-        shareReplay(1)
-      ))
-    ).subscribe({
-      next: ([query, events]) => {
-        if (query.offset) {
-          this.events$.next([
-            ...this.events$.value,
-            ...events
-          ]);
-        } else {
-          this.events$.next(events);
-        }
+    this.dashboardCache.has_role.subscribe({
+      next: (res) => {
+        this.role = res.role;
       }
     });
   }
 
-  changeFilter(type: string, value: string) {
-    this.query$.next({
-      ...this.query$.value,
-      [type]: value,
-      offset: 0,
+  changeFilter(type: string, value: string, query: Partial<EventQuery>) {
+    this.router.navigate([`/${this.role}/dashboard/events`], {
+      queryParams: { ...query, [type]: value, offset: 0 }
     });
   }
 
-  clearFilter(type: string) {
-    this.query$.next({
-      ...this.query$.value,
-      [type]: "",
-      offset: 0,
+  clearFilter(type: string, query: Partial<EventQuery>) {
+    this.cache.resetQuery$.next(true);
+    
+    delete query[type as keyof EventQuery];
+    this.router.navigate([`/${this.role}/dashboard/events`], {
+      queryParams: { ...query, offset: 0 }
     });
   }
   
-  onScroll() {
-    this.query$.next({
-      ...this.query$.value,
-      limit: LIMIT,
-      offset: this.events$.value.length,
+  onScroll(query: Partial<EventQuery>, result_length: number) {
+    this.router.navigate([`/${this.role}/dashboard/events`], {
+      queryParams: { ...query, offset: result_length }
     });
   }
 

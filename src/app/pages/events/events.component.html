@@ -1,4 +1,5 @@
-@let events = events$ | async;
+@let events = cache.events | async;
+@let query = (cache.query$ | async) || {};
 
 <div 
   class="p-3 p-md-4 h-100 overflow-auto"
@@ -6,7 +7,7 @@
   [infiniteScrollDistance]="2"
   [infiniteScrollThrottle]="50"
   [scrollWindow]="false"
-  (scrolled)="onScroll()"
+  (scrolled)="onScroll(query, events!.length)"
 >
   <section>
     <h3 class="text-primary-clr mb-3">Events</h3>
@@ -17,15 +18,15 @@
           <input
             matInput
             type="text"
-            [(ngModel)]="query$.value.search_value"
+            [(ngModel)]="query.search_value"
             placeholder="Enter event name"
-            (keyup.enter)="changeFilter('search_value', $any($event.target).value)"
+            (keyup.enter)="changeFilter('search_value', $any($event.target).value, query)"
             class="ms-1"
           >
           <span matPrefix class="ms-2">
             <mat-icon>search</mat-icon>
           </span>
-          <button (click)="clearFilter('search_value')" *ngIf="query$.value.search_value" matSuffix mat-icon-button aria-label="Clear" type="button">
+          <button (click)="clearFilter('search_value', query)" *ngIf="query.search_value" matSuffix mat-icon-button aria-label="Clear" type="button">
             <mat-icon>close</mat-icon>
           </button>
         </mat-form-field>
@@ -33,14 +34,14 @@
       <div class="col-md-6">
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Search by Time</mat-label>
-          <mat-select [(ngModel)]="query$.value.time" (selectionChange)="changeFilter('time', $event.value)">
+          <mat-select [(ngModel)]="query.time" (selectionChange)="changeFilter('time', $event.value, query)">
             @for (time of times; track time) {
               <mat-option [value]="time" class="text-capitalize">
                 {{ time }}
               </mat-option>
             }
           </mat-select>
-          <button (click)="clearFilter('time')" *ngIf="query$.value.time" matSuffix mat-icon-button aria-label="Clear" type="button">
+          <button (click)="clearFilter('time', query)" *ngIf="query.time" matSuffix mat-icon-button aria-label="Clear" type="button">
             <mat-icon>close</mat-icon>
           </button>
         </mat-form-field>
@@ -48,14 +49,14 @@
       <div class="col-md-6">
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Search by Category</mat-label>
-          <mat-select [(ngModel)]="query$.value.category" (selectionChange)="changeFilter('category', $event.value)">
+          <mat-select [(ngModel)]="query.category" (selectionChange)="changeFilter('category', $event.value, query)">
             @for (category of categories; track category) {
               <mat-option [value]="category" class="text-capitalize">
                 {{ category }}
               </mat-option>
             }
           </mat-select>
-          <button (click)="clearFilter('category')" *ngIf="query$.value.category" matSuffix mat-icon-button aria-label="Clear" type="button">
+          <button (click)="clearFilter('category', query)" *ngIf="query.category" matSuffix mat-icon-button aria-label="Clear" type="button">
             <mat-icon>close</mat-icon>
           </button>
         </mat-form-field>
@@ -63,11 +64,11 @@
       <div class="col-md-6">
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Search by Date</mat-label>
-          <input matInput [matDatepicker]="picker" [(ngModel)]="query$.value.date" (dateChange)="changeFilter('date', $event.target.value)">
+          <input matInput [matDatepicker]="picker" [(ngModel)]="query.date" (dateChange)="changeFilter('date', $event.target.value, query)">
           <mat-hint>DD/MM/YYYY</mat-hint>
           <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>
-          <button (click)="clearFilter('date')" *ngIf="query$.value.date" matSuffix mat-icon-button aria-label="Clear" type="button">
+          <button (click)="clearFilter('date', query)" *ngIf="query.date" matSuffix mat-icon-button aria-label="Clear" type="button">
             <mat-icon>close</mat-icon>
           </button>
         </mat-form-field>
@@ -85,7 +86,7 @@
             <button
               mat-stroked-button
               class="text-secondary-clr bg-primary-clr"
-              [routerLink]="'/' + (role$ | async) + '/dashboard/events/' + item._id + '/view'"
+              [routerLink]="'/' + role + '/dashboard/events/' + item._id + '/view'"
             >
               <span>See Details</span>
               <mat-icon>arrow_forward</mat-icon>
