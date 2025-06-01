@@ -11,3 +11,8 @@ export interface EventRegister {
 }
 
 export type GetEventRegistersResponse = GeneralResponse & Response<"data", Array<Timestamp & EventRegister>>;
+
+export interface Query {
+  offset?: number; 
+  limit: number;
+};

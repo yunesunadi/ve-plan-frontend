@@ -1,8 +1,8 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { GeneralResponse, Response } from '../models/Utils';
-import { GetEventRegistersResponse } from '../models/EventRegister';
+import { GetEventRegistersResponse, Query } from '../models/EventRegister';
 
 @Injectable({
   providedIn: 'root'
@@ -52,13 +52,25 @@ export class EventRegisterService {
     });
   }
 
-  getAllByEventId(event_id: string) {
+  getAllByEventId(event_id: string, query?: Partial<Query>) {
     const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/event_registers/${event_id}/users`;
+    let params = new HttpParams();
+
+    if (query) {
+      if (query.limit) {
+        params = params.set("limit", query.limit);
+      }
+      if (query.offset) {
+        params = params.set("offset", query.offset);
+      }
+    }
+
     return this.http.get<GetEventRegistersResponse>(url, {
       headers: new HttpHeaders({
         Authorization: `Bearer ${token}`,
-      })
+      }),
+      params
     });
   }
 
