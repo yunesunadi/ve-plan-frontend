@@ -1,30 +1,70 @@
-@let registered_events = registered_events$ | async;
-@let accepted_events = accepted_events$ | async;
+@let joined_events = $any(joined_events$ | async);
+@let query = $any(query$ | async);
 
 <app-outlet-inner>
   <section>
-    <button
-      mat-stroked-button
-      type="button"
-      (click)="location.back()"
-      class="mb-3"
-    >
-      <mat-icon class="text-primary-clr m-0">keyboard_backspace</mat-icon>
-    </button>
-    <h3 class="text-primary-clr mb-3">Registered Events</h3>
-    @if (registered_events && registered_events.length > 0) {
+    <div class="d-flex justify-content-between align-items-center mb-3" style="gap: 1rem;">
+      <div class="d-flex align-items-center" style="gap: 1rem;">
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="location.back()"
+        >
+          <mat-icon class="text-primary-clr m-0">keyboard_backspace</mat-icon>
+        </button>
+        <h3 class="text-primary-clr mb-0">{{ label }} Events</h3>
+      </div>
+      <button 
+        mat-stroked-button 
+        [matMenuTriggerFor]="menu"
+        class="bg-secondary-clr text-primary-clr"
+      >
+        <mat-icon>filter_list</mat-icon> Filter
+      </button>
+      <mat-menu #menu="matMenu">
+        <button 
+          mat-menu-item 
+          (click)="changeFilter('all')"
+          [ngClass]="query.category === 'all' ? 'bg-secondary-clr' : ''"
+        >
+          All
+        </button>
+        <button
+          mat-menu-item
+          (click)="changeFilter('registered')"
+          [ngClass]="query.category === 'registered' ? 'bg-secondary-clr' : ''"
+        >
+          Registered
+        </button>
+        <button
+          mat-menu-item
+          (click)="changeFilter('register_approved')"
+          [ngClass]="query.category === 'register_approved' ? 'bg-secondary-clr' : ''"
+        >
+          Register Approved
+        </button>
+        <button
+          mat-menu-item
+          (click)="changeFilter('invitation_accepted')"
+          [ngClass]="query.category === 'invitation_accepted' ? 'bg-secondary-clr' : ''"
+        >
+          Invitation Accepted
+        </button>
+      </mat-menu>
+    </div>
+    @if (joined_events && joined_events.length > 0) {
       <div class="d-flex flex-column align-items-center" style="gap: 1rem;">
-        @for (registered of registered_events; track registered._id) {
+        @for (joined of joined_events; track joined._id) {
           <mat-card appearance="outlined" class="event-card">
             <div class="px-3 pt-3">
-              <mat-card-title class="text-primary-clr">{{ registered.event.title }}</mat-card-title>
-              <mat-card-subtitle class="text-primary-clr">{{ registered.event.description }}</mat-card-subtitle>
+              <mat-card-title class="text-primary-clr">{{ joined.event.title }}</mat-card-title>
+              <mat-card-subtitle class="text-primary-clr">{{ joined.event.description }}</mat-card-subtitle>
             </div>
             <mat-card-actions [align]="'end'" class="px-3 pb-3">
               <button
                 mat-stroked-button
                 class="text-secondary-clr bg-primary-clr"
-                [routerLink]="'/attendee/dashboard/events/' + registered.event._id + '/view'"
+                [routerLink]="'/attendee/dashboard/events/' + joined.event._id + '/view'"
               >
                 <span>See Details</span>
                 <mat-icon>arrow_forward</mat-icon>
@@ -34,10 +74,10 @@
         }
       </div>
     } @else {
-      <p class="text-center mt-3">There is no registered event.</p>
+      <p class="text-center mt-3">There is no event.</p>
     }
   </section>
-  <section class="mt-3">
+  <!-- <section class="mt-3">
     <h3 class="text-primary-clr mb-3">Invitation Accepted Events</h3>
     @if (accepted_events && accepted_events.length > 0) {
       <div class="d-flex flex-column align-items-center" style="gap: 1rem;">
@@ -63,5 +103,5 @@
     } @else {
       <p class="text-center mt-3">There is no invitation accepted event.</p>
     }
-  </section>
+  </section> -->
 </app-outlet-inner>

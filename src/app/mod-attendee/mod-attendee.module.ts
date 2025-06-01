@@ -13,6 +13,7 @@ import { FullCalendarModule } from '@fullcalendar/angular';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
+import { MatMenuModule } from '@angular/material/menu';
 
 @NgModule({
   declarations: [
@@ -31,6 +32,7 @@ import { FormsModule } from '@angular/forms';
     MatButtonModule,
     FormsModule,
     MatSelectModule,
+    MatMenuModule,
   ]
 })
 export class ModAttendeeModule { }
