@@ -10,6 +10,7 @@ import { MeetingService } from '../../services/meeting.service';
 import { MatDialog } from '@angular/material/dialog';
 import { AttendeeMeetingDialogComponent } from '../../components/attendee-meeting-dialog/attendee-meeting-dialog.component';
 import { Location } from '@angular/common';
+import { UtilService } from '../../services/util.service';
 
 @Component({
   standalone: false,
@@ -29,6 +30,7 @@ export class EventViewComponent {
   private refresh$ = new BehaviorSubject(null);
   private dialog = inject(MatDialog);
   location = inject(Location);
+  util = inject(UtilService);
 
   private is_expired = false;
 
@@ -136,26 +138,4 @@ export class EventViewComponent {
     });
   }
 
-  is_event_expired(event_date: any, event_time: any) {
-    const date = new Date(event_date);
-    const time = new Date(event_time);
-    
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    const day = date.getDate();
-
-    const hours = time.getHours();
-    const minutes = time.getMinutes();
-    const seconds = time.getSeconds();
-    const milliseconds = time.getMilliseconds();
-
-    const event_datetime = new Date(year, month, day, hours, minutes, seconds, milliseconds).getTime();
-    const current_datetime = new Date().getTime();
-
-    if (event_datetime < current_datetime) {
-      return true;
-    }
-
-    return false;
-  }
 }

@@ -13,6 +13,7 @@ import { InvitationSentDialogComponent } from '../../components/invitation-sent-
 import { InvitedUsersDialogComponent } from '../../components/invited-users-dialog/invited-users-dialog.component';
 import { AcceptedUsersDialogComponent } from '../../components/accepted-users-dialog/accepted-users-dialog.component';
 import { Location } from '@angular/common';
+import { UtilService } from '../../services/util.service';
 
 @Component({
   standalone: false,
@@ -37,6 +38,7 @@ export class InviteComponent {
   private aroute = inject(ActivatedRoute);
   private dialog = inject(MatDialog);
   location = inject(Location);
+  util = inject(UtilService);
 
   event$ = this.aroute.params.pipe(
     switchMap((params: any) => this.eventService.getOneById(params.id).pipe(

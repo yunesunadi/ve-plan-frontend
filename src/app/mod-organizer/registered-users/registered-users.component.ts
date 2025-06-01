@@ -4,11 +4,13 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { EventRegisterService } from '../../services/event-register.service';
 import { ActivatedRoute } from '@angular/router';
-import { map, switchMap } from 'rxjs';
+import { map, shareReplay, switchMap } from 'rxjs';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatDialog } from '@angular/material/dialog';
 import { RegisterApprovalDialogComponent } from '../../components/register-approval-dialog/register-approval-dialog.component';
 import { Location } from '@angular/common';
+import { EventService } from '../../services/event.service';
+import { UtilService } from '../../services/util.service';
 
 @Component({
   standalone: false,
@@ -26,9 +28,18 @@ export class RegisteredUsersComponent {
   selection = new SelectionModel<any>(true, []);
 
   private eventRegisterService = inject(EventRegisterService);
+  private eventService = inject(EventService);
+  util = inject(UtilService);
   private aroute = inject(ActivatedRoute);
   private dialog = inject(MatDialog);
   location = inject(Location);
+
+  event$ = this.aroute.params.pipe(
+    switchMap((params: any) => this.eventService.getOneById(params.id).pipe(
+      map(res => res.data)
+    )),
+    shareReplay(1)
+  );
 
   constructor() {}
 

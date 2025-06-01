@@ -20,6 +20,8 @@ import { EventInvite } from '../../models/EventInvite';
 import { Participant } from '../../models/Participant';
 import { Location } from '@angular/common';
 import Chart from "chart.js/auto";
+import { EventService } from '../../services/event.service';
+import { UtilService } from '../../services/util.service';
 
 @Component({
   standalone: false,
@@ -36,6 +38,7 @@ export class MeetingComponent {
   private meetingService = inject(MeetingService);
   private eventRegisterService = inject(EventRegisterService);
   private eventInviteService = inject(EventInviteService);
+  private eventService = inject(EventService);
   private participantService = inject(ParticipantService);
   private aroute = inject(ActivatedRoute);
   private commonService = inject(CommonService);
@@ -43,6 +46,7 @@ export class MeetingComponent {
   private dialog = inject(MatDialog);
   private closed$ = new BehaviorSubject(null);
   location = inject(Location);
+  util = inject(UtilService);
 
   event_id = "";
   private is_expired = false;
@@ -62,6 +66,13 @@ export class MeetingComponent {
 
   doughnut_chart: any;
   line_chart: any;
+
+  event$ = this.aroute.params.pipe(
+    switchMap((params: any) => this.eventService.getOneById(params.id).pipe(
+      map(res => res.data)
+    )),
+    shareReplay(1)
+  );
 
   ngOnInit() {
     this.aroute.params.subscribe({

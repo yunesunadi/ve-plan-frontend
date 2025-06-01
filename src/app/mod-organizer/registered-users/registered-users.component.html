@@ -1,3 +1,5 @@
+@let event = event$ | async;
+
 <app-outlet-inner>
   <div class="d-flex align-items-center mb-4" style="gap: 1rem;">
     <button
@@ -23,6 +25,7 @@
         type="button"
         class="bg-secondary-clr text-primary-clr mt-2"
         (click)="sendApproval()"
+        [disabled]="util.is_event_expired(event?.date, event?.end_time)"
       >
         <mat-icon>mail</mat-icon>
         Send Approval

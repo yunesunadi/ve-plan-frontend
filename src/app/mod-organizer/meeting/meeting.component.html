@@ -1,4 +1,5 @@
 @let is_created = is_created$ | async;
+@let event = event$ | async;
 
 <app-outlet-inner>
   <div class="d-flex flex-column flex-md-row justify-content-md-between mb-4" style="gap: 1rem;">
@@ -19,6 +20,7 @@
         mat-raised-button
         class="bg-primary-clr text-secondary-clr"
         (click)="join()"
+        [disabled]="util.is_event_expired(event?.date, event?.end_time)"
       >
         Join Meeting
       </button>
@@ -28,6 +30,7 @@
         mat-raised-button
         class="bg-primary-clr text-secondary-clr"
         (click)="create()"
+        [disabled]="util.is_event_expired(event?.date, event?.end_time)"
       >
         Start Meeting
       </button>

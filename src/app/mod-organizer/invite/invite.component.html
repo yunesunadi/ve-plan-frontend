@@ -26,6 +26,7 @@
         type="button"
         class="bg-secondary-clr text-primary-clr"
         (click)="sendInvitation()"
+        [disabled]="util.is_event_expired(event?.date, event?.end_time)"
       >
         <mat-icon>mail</mat-icon>
         Send Invitation

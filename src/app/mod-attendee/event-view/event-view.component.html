@@ -52,7 +52,7 @@
             type="button"
             class="bg-secondary-clr text-primary-clr"
             (click)="unregister(event._id)"
-            [disabled]="is_event_expired(event.date, event.end_time)"
+            [disabled]="util.is_event_expired(event.date, event.end_time)"
           >
             <mat-icon>how_to_reg</mat-icon>
             Registered
@@ -63,7 +63,7 @@
             type="button"
             class="bg-secondary-clr text-primary-clr"
             (click)="register(event._id)"
-            [disabled]="is_event_expired(event.date, event.end_time)"
+            [disabled]="util.is_event_expired(event.date, event.end_time)"
           >
             <mat-icon>how_to_reg</mat-icon>
             Register
@@ -76,7 +76,7 @@
           type="button"
           class="bg-secondary-clr text-primary-clr"
           (click)="joinMeeting(event._id)"
-          [disabled]="is_event_expired(event.date, event.end_time)"
+          [disabled]="util.is_event_expired(event.date, event.end_time)"
         >
           <mat-icon>meeting_room</mat-icon>
           Join Meeting
