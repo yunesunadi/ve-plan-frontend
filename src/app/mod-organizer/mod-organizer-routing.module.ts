@@ -9,6 +9,7 @@ import { MeetingComponent } from './meeting/meeting.component';
 import { EventAttendeesComponent } from './event-attendees/event-attendees.component';
 import { SettingComponent } from '../pages/setting/setting.component';
 import { NotFoundComponent } from '../pages/not-found/not-found.component';
+import { MyEventsComponent } from './my-events/my-events.component';
 
 const routes: Routes = [
   {
@@ -18,6 +19,10 @@ const routes: Routes = [
   {
     path: "events",
     component: EventsComponent,
+  },
+  {
+    path: "my_events",
+    component: MyEventsComponent,
   },
   {
     path: "events/:id/view",

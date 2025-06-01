@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Event, CreateEventResponse, GetEventsResponse, GetEventResponse, EventQuery } from '../models/Event';
+import { Event, CreateEventResponse, GetEventsResponse, GetEventResponse, EventQuery, MyEventQuery } from '../models/Event';
 import { environment } from '../../environments/environment';
 import { GeneralResponse } from '../models/Utils';
 
@@ -40,7 +40,32 @@ export class EventService {
     });
   }
 
-  getAllByQuery(query?: EventQuery) {
+  getMyEvents(query: MyEventQuery) {
+    const token = localStorage.getItem("token");
+    const url = `${environment.apiUrl}/events/own`;
+    let params = new HttpParams();
+
+    if (query) {
+      if (query.type) {
+        params = params.set("type", query.type);
+      }
+      if (query.limit) {
+        params = params.set("limit", query.limit);
+      }
+      if (query.offset) {
+        params = params.set("offset", query.offset);
+      }
+    }
+
+    return this.http.get<GetEventsResponse>(url, {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${token}`,
+      }),
+      params
+    });
+  }
+
+  getAllByQuery(query: EventQuery) {
     const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/events/events_by_query`;
     let params = new HttpParams();

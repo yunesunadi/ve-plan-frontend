@@ -42,7 +42,7 @@ import { OrganizerMeetingDialogComponent } from './components/organizer-meeting-
 import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { EventsComponent } from './pages/events/events.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 @NgModule({
   declarations: [
@@ -86,7 +86,7 @@ import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
     MatMenuModule,
     MatDividerModule,
     MatDatepickerModule,
-    InfiniteScrollDirective,
+    MatExpansionModule
   ],
   providers: [
     appConfig.providers,

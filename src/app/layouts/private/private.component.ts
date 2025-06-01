@@ -28,6 +28,12 @@ export class PrivateComponent {
     return decoded.role === "attendee";
   }
 
+  get isOrganizer() {
+    const token = localStorage.getItem("token") || "";
+    const decoded: UserPayload = jwtDecode(token);
+    return decoded.role === "organizer";
+  }
+
   get profile_url() {
     const token = localStorage.getItem("token") || "";
     const decoded: UserPayload = jwtDecode(token);

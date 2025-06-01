@@ -27,6 +27,12 @@ export interface EventQuery {
   offset?: number;
 }
 
+export interface MyEventQuery {
+  type?: "public" | "private" | "all";
+  limit?: number;
+  offset?: number;
+}
+
 export type CreateEventResponse = GeneralResponse & Response<"data", Timestamp & Event>;
 
 export type GetEventsResponse = GeneralResponse & Response<"data", Array<Timestamp & Event>>;

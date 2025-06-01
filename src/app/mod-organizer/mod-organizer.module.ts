@@ -18,9 +18,11 @@ import { MatCardModule } from '@angular/material/card';
 import { SharedModule } from '../shared/shared.module';
 import { MatMenuModule } from '@angular/material/menu';
 import { FullCalendarModule } from '@fullcalendar/angular';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-
+import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
+import { MyEventsComponent } from './my-events/my-events.component';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 @NgModule({
   declarations: [
@@ -30,6 +32,7 @@ import { MatButtonModule } from '@angular/material/button';
     InviteComponent,
     MeetingComponent,
     EventAttendeesComponent,
+    MyEventsComponent,
   ],
   imports: [
     CommonModule,
@@ -46,6 +49,9 @@ import { MatButtonModule } from '@angular/material/button';
     MatInputModule,
     MatCardModule,
     MatButtonModule,
+    InfiniteScrollDirective,
+    MatButtonToggleModule,
+    FormsModule,
   ]
 })
 export class ModOrganizerModule { }

@@ -1,79 +1,89 @@
 @let events = cache.events | async;
 @let query = (cache.query$ | async) || {};
+@let offset = +(query.offset || 0);
 
-<div 
-  class="p-3 p-md-4 h-100 overflow-auto"
-  infiniteScroll
-  [infiniteScrollDistance]="2"
-  [infiniteScrollThrottle]="50"
-  [scrollWindow]="false"
-  (scrolled)="onScroll(query, events!.length)"
->
+<app-outlet-inner>
   <section>
-    <h3 class="text-primary-clr mb-3">Events</h3>
-    <div class="row">
-      <div class="col-md-6">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Search by Event Name</mat-label>
-          <input
-            matInput
-            type="text"
-            [(ngModel)]="query.search_value"
-            placeholder="Enter event name"
-            (keyup.enter)="changeFilter('search_value', $any($event.target).value, query)"
-            class="ms-1"
-          >
-          <span matPrefix class="ms-2">
-            <mat-icon>search</mat-icon>
-          </span>
-          <button (click)="clearFilter('search_value', query)" *ngIf="query.search_value" matSuffix mat-icon-button aria-label="Clear" type="button">
-            <mat-icon>close</mat-icon>
-          </button>
-        </mat-form-field>
-      </div>
-      <div class="col-md-6">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Search by Time</mat-label>
-          <mat-select [(ngModel)]="query.time" (selectionChange)="changeFilter('time', $event.value, query)">
-            @for (time of times; track time) {
-              <mat-option [value]="time" class="text-capitalize">
-                {{ time }}
-              </mat-option>
-            }
-          </mat-select>
-          <button (click)="clearFilter('time', query)" *ngIf="query.time" matSuffix mat-icon-button aria-label="Clear" type="button">
-            <mat-icon>close</mat-icon>
-          </button>
-        </mat-form-field>
-      </div>
-      <div class="col-md-6">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Search by Category</mat-label>
-          <mat-select [(ngModel)]="query.category" (selectionChange)="changeFilter('category', $event.value, query)">
-            @for (category of categories; track category) {
-              <mat-option [value]="category" class="text-capitalize">
-                {{ category }}
-              </mat-option>
-            }
-          </mat-select>
-          <button (click)="clearFilter('category', query)" *ngIf="query.category" matSuffix mat-icon-button aria-label="Clear" type="button">
-            <mat-icon>close</mat-icon>
-          </button>
-        </mat-form-field>
-      </div>
-      <div class="col-md-6">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Search by Date</mat-label>
-          <input matInput [matDatepicker]="picker" [(ngModel)]="query.date" (dateChange)="changeFilter('date', $event.target.value, query)">
-          <mat-hint>DD/MM/YYYY</mat-hint>
-          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-          <mat-datepicker #picker></mat-datepicker>
-          <button (click)="clearFilter('date', query)" *ngIf="query.date" matSuffix mat-icon-button aria-label="Clear" type="button">
-            <mat-icon>close</mat-icon>
-          </button>
-        </mat-form-field>
-      </div>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h3 class="text-primary-clr mb-0">Events</h3>
+      <button 
+        mat-stroked-button
+        type="button"
+        class="bg-secondary-clr text-primary-clr"
+        (click)="toggleAccordion()"
+      >
+        <mat-icon>filter_list</mat-icon> Filter
+      </button>
     </div>
+
+    <mat-accordion multi>
+      <mat-expansion-panel class="custom-mat-expansion">
+        <div class="row">
+          <div class="col-md-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Search by Event Name</mat-label>
+              <input
+                matInput
+                type="text"
+                [(ngModel)]="query.search_value"
+                placeholder="Enter event name"
+                (keyup.enter)="changeFilter('search_value', $any($event.target).value, query)"
+                class="ms-1"
+              >
+              <span matPrefix class="ms-2">
+                <mat-icon>search</mat-icon>
+              </span>
+              <button (click)="clearFilter('search_value', query)" *ngIf="query.search_value" matSuffix mat-icon-button aria-label="Clear" type="button">
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+          <div class="col-md-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Search by Time</mat-label>
+              <mat-select [(ngModel)]="query.time" (selectionChange)="changeFilter('time', $event.value, query)">
+                @for (time of times; track time) {
+                  <mat-option [value]="time" class="text-capitalize">
+                    {{ time }}
+                  </mat-option>
+                }
+              </mat-select>
+              <button (click)="clearFilter('time', query)" *ngIf="query.time" matSuffix mat-icon-button aria-label="Clear" type="button">
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+          <div class="col-md-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Search by Category</mat-label>
+              <mat-select [(ngModel)]="query.category" (selectionChange)="changeFilter('category', $event.value, query)">
+                @for (category of categories; track category) {
+                  <mat-option [value]="category" class="text-capitalize">
+                    {{ category }}
+                  </mat-option>
+                }
+              </mat-select>
+              <button (click)="clearFilter('category', query)" *ngIf="query.category" matSuffix mat-icon-button aria-label="Clear" type="button">
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+          <div class="col-md-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Search by Date</mat-label>
+              <input matInput [matDatepicker]="picker" [(ngModel)]="query.date" (dateChange)="changeFilter('date', $event.target.value, query)">
+              <mat-hint>DD/MM/YYYY</mat-hint>
+              <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+              <button (click)="clearFilter('date', query)" *ngIf="query.date" matSuffix mat-icon-button aria-label="Clear" type="button">
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+
     <div class="mt-3">
     @if (events && events.length > 0) {
       @for (item of events; track item._id) {
@@ -98,5 +108,26 @@
       <p class="text-center mt-3">There is no events.</p>
     }
     </div>
+    
+    <div class="d-flex justify-content-end mt-3" style="gap: .5rem;" *ngIf="events">
+      <button
+        mat-raised-button
+        type="button"
+        class="bg-secondary-clr text-primary-clr"
+        (click)="goPrev(query)"
+        [disabled]="!offset"
+      >
+        Prev
+      </button>
+      <button
+        mat-raised-button
+        type="button"
+        class="bg-secondary-clr text-primary-clr"
+        (click)="goNext(query)"
+        [disabled]="events.length < LIMIT"
+        >
+        Next
+      </button>
+    </div>
   </section>
-</div>
+</app-outlet-inner>

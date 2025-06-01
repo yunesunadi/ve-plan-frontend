@@ -1,10 +1,10 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ViewChild } from '@angular/core';
 import { EventQuery } from '../../models/Event';
 import { DashboardCacheService } from '../../caches/dashboard-cache.service';
 import { MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
 import { Router } from '@angular/router';
 import { EventCacheService } from '../../caches/event-cache.service';
-import { ViewportScroller } from '@angular/common';
+import { MatAccordion } from '@angular/material/expansion';
 
 @Component({
   standalone: false,
@@ -20,15 +20,18 @@ import { ViewportScroller } from '@angular/common';
   ]
 })
 export class EventsComponent {
+  @ViewChild(MatAccordion) accordion!: MatAccordion;
+  private isAccordionOpened = false;
+
   private dashboardCache = inject(DashboardCacheService);
   private router = inject(Router);
   cache = inject(EventCacheService);
 
+  readonly LIMIT = 5;
+
   times = ["upcoming", "happening", "past"];
   categories = ["conference", "meetup", "webinar"];
   role!: string;
-
-  viewportScroller = inject(ViewportScroller);
 
   constructor() { }
 
@@ -54,11 +57,22 @@ export class EventsComponent {
       queryParams: { ...query, offset: 0 }
     });
   }
-  
-  onScroll(query: Partial<EventQuery>, result_length: number) {
+
+  goPrev(query: Partial<EventQuery>) {
     this.router.navigate([`/${this.role}/dashboard/events`], {
-      queryParams: { ...query, offset: result_length }
+      queryParams: { ...query, offset: +(query.offset || 0) - this.LIMIT }
     });
+  }
+
+  goNext(query: Partial<EventQuery>) {
+    this.router.navigate([`/${this.role}/dashboard/events`], {
+      queryParams: { ...query, offset: +(query.offset || 0) + this.LIMIT }
+    });
+  }
+
+  toggleAccordion() {
+    this.isAccordionOpened ? this.accordion.closeAll() : this.accordion.openAll();
+    this.isAccordionOpened = !this.isAccordionOpened;
   }
 
 }

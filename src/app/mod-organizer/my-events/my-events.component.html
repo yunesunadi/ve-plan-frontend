@@ -1,0 +1,50 @@
+@let my_events = cache.my_events | async;
+@let my_query = (cache.my_query$ | async) || {};
+
+<div
+  class="p-3 p-md-4 h-100 overflow-auto"
+  infiniteScroll
+  [infiniteScrollDistance]="2"
+  [infiniteScrollThrottle]="50"
+  [scrollWindow]="false"
+  (scrolled)="onScroll(my_query, my_events!.length)"
+>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="text-primary-clr mb-0">My Events</h3>
+    <mat-button-toggle-group 
+      [(ngModel)]="my_query.type" 
+      (change)="changeFilter($event.value, my_query)"
+    >
+      @for (type of types; track type) {
+        <mat-button-toggle [value]="type">
+          <span class="text-capitalize">{{ type }}</span>
+        </mat-button-toggle>
+      }
+    </mat-button-toggle-group>
+  </div>
+
+  <div class="mt-4">
+  @if (my_events && my_events.length > 0) {
+    @for (item of my_events; track item._id) {
+      <mat-card appearance="outlined" class="event-card">
+        <div class="px-3 pt-3">
+          <mat-card-title class="text-primary-clr">{{ item.title }}</mat-card-title>
+          <mat-card-subtitle class="text-primary-clr">{{ item.description }}</mat-card-subtitle>
+        </div>
+        <mat-card-actions [align]="'end'" class="px-3 pb-3">
+          <button
+            mat-stroked-button
+            class="text-secondary-clr bg-primary-clr"
+            [routerLink]="'/' + role + '/dashboard/events/' + item._id + '/view'"
+          >
+            <span>See Details</span>
+            <mat-icon>arrow_forward</mat-icon>
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    }
+  } @else {
+    <p class="text-center mt-3">There is no events.</p>
+  }
+  </div>
+</div>

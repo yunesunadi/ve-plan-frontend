@@ -6,6 +6,7 @@ import { EventService } from '../../services/event.service';
 import { CommonService } from '../../services/common.service';
 import { concatMap, iif, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { EventCacheService } from '../../caches/event-cache.service';
 
 @Component({
   standalone: false,
@@ -25,6 +26,7 @@ export class EventDialogComponent {
   private eventService = inject(EventService);
   private commonService = inject(CommonService);
   private dialog = inject(MatDialogRef<this>);
+  cache = inject(EventCacheService);
 
   constructor() {
     this.create_form = this.form_builder.group({
@@ -116,6 +118,9 @@ export class EventDialogComponent {
       next: (res) => {
         this.commonService.openSnackBar(res.message);
         this.dialog.close();
+        this.cache.reset();
+        this.cache.resetQuery$.next(true);
+        this.cache.resetMyEventsQuery$.next(true);
       },
       error: (err) => {
         this.commonService.openSnackBar("Error creating event.");
