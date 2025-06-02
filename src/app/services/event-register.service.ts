@@ -1,8 +1,8 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { GeneralResponse, Response } from '../models/Utils';
-import { GetEventRegistersResponse, Query } from '../models/EventRegister';
+import { GeneralResponse, PageQuery, Response } from '../models/Utils';
+import { GetEventRegistersResponse } from '../models/EventRegister';
 
 @Injectable({
   providedIn: 'root'
@@ -52,7 +52,7 @@ export class EventRegisterService {
     });
   }
 
-  getAllByEventId(event_id: string, query?: Partial<Query>) {
+  getAllByEventId(event_id: string, query?: Partial<PageQuery>) {
     const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/event_registers/${event_id}/users`;
     let params = new HttpParams();

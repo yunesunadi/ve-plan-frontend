@@ -1,5 +1,11 @@
 @let is_created = is_created$ | async;
-@let event = event$ | async;
+@let event = $any(event$ | async);
+@let query = $any(query$ | async);
+@let is_expired = $any(is_expired$ | async);
+@let meeting = $any(meeting$ | async);
+@let event_attendees = $any(event_attendees$ | async);
+@let registered_users = $any(registered_users$ | async);
+@let invitation_accepted_users = $any(invitation_accepted_users$ | async);
 
 <app-outlet-inner>
   <div class="d-flex flex-column flex-md-row justify-content-md-between mb-4" style="gap: 1rem;">
@@ -19,7 +25,7 @@
         type="button"
         mat-raised-button
         class="bg-primary-clr text-secondary-clr"
-        (click)="join()"
+        (click)="join(event._id, is_expired)"
         [disabled]="util.is_event_expired(event?.date, event?.end_time)"
       >
         Join Meeting
@@ -79,7 +85,7 @@
       <mat-card appearance="outlined">
         <div class="text-center py-3">
           <mat-card-title class="fw-bold text-primary-clr">
-            {{ event_attendees.length }}
+            {{ event_attendees?.length }}
           </mat-card-title>
           <mat-card-subtitle class="text-primary-clr">
             Event Attendees
@@ -91,7 +97,7 @@
       <mat-card appearance="outlined">
         <div class="text-center py-3">
           <mat-card-title class="fw-bold text-primary-clr">
-            {{ joined_participants.length }}
+            {{ all_joined_participants?.length }}
           </mat-card-title>
           <mat-card-subtitle class="text-primary-clr">
             Joined Participants
@@ -103,7 +109,7 @@
       <mat-card appearance="outlined">
         <div class="text-center py-3">
           <mat-card-title class="fw-bold text-primary-clr">
-            {{ registered_users.length }}
+            {{ registered_users?.length }}
           </mat-card-title>
           <mat-card-subtitle class="text-primary-clr">
             Registered Users
@@ -115,7 +121,7 @@
       <mat-card appearance="outlined">
         <div class="text-center py-3">
           <mat-card-title class="fw-bold text-primary-clr">
-            {{ invitation_accepted_users.length }}
+            {{ invitation_accepted_users?.length }}
           </mat-card-title>
           <mat-card-subtitle class="text-primary-clr">
             Invitation Accepted Users
@@ -148,13 +154,13 @@
   </mat-form-field>
 
   <div class="mat-elevation-z8">
-    <table mat-table [dataSource]="dataSource" matSort>
+    <table mat-table [dataSource]="dataSource">
       <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+        <th mat-header-cell *matHeaderCellDef>ID</th>
         <td mat-cell *matCellDef="let row">{{row.id}}</td>
       </ng-container>
       <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+        <th mat-header-cell *matHeaderCellDef>Name</th>
         <td mat-cell *matCellDef="let row">{{row.user.name}}</td>
       </ng-container>
       <ng-container matColumnDef="start_time">
@@ -174,10 +180,15 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selection.toggle(row)"></tr>
 
       <tr class="mat-row" *matNoDataRow>
-        <td class="mat-cell text-center py-3" colspan="4">No data matching the filter "{{input.value}}"</td>
+        <td class="mat-cell text-center py-3" colspan="4">No data matching searched value "{{input.value}}"</td>
       </tr>
     </table>
 
-    <mat-paginator [pageSizeOptions]="[5, 10, 25]" aria-label="Select page of users"></mat-paginator>
+    <mat-paginator
+      [length]="all_joined_participants?.length"
+      [pageIndex]="query.offset / PAGE_LIMIT"
+      [pageSize]="PAGE_LIMIT"
+      (page)="handlePageChange($event, query, event._id)"
+    ></mat-paginator>
   </div>
 </app-outlet-inner>

@@ -16,3 +16,8 @@ export interface Timestamp {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface PageQuery {
+  offset?: number; 
+  limit: number;
+};

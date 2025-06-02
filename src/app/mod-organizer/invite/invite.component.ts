@@ -1,8 +1,6 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import { Component, ElementRef, inject, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute } from '@angular/router';
 import { concatMap, debounceTime, iif, map, of, shareReplay, switchMap } from 'rxjs';
@@ -22,8 +20,6 @@ import { UtilService } from '../../services/util.service';
   styleUrl: './invite.component.scss'
 })
 export class InviteComponent {
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
   @ViewChild("input") input!: ElementRef;
   
   displayedColumns: string[] = ['select', 'id', 'name'];
@@ -72,8 +68,6 @@ export class InviteComponent {
     ).subscribe({
       next: (users) => {
         this.dataSource = new MatTableDataSource(users);
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
       }
     });
   }
@@ -114,8 +108,6 @@ export class InviteComponent {
         this.input.nativeElement.value = "";
 
         this.dataSource = new MatTableDataSource([] as any);
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
       }
     });
   }

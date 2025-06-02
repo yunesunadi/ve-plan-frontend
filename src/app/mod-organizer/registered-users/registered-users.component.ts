@@ -10,7 +10,7 @@ import { Location } from '@angular/common';
 import { EventService } from '../../services/event.service';
 import { UtilService } from '../../services/util.service';
 import { DashboardCacheService } from '../../caches/dashboard-cache.service';
-import { Query } from '../../models/EventRegister';
+import { PageQuery } from '../../models/Utils';
 
 @Component({
   standalone: false,
@@ -46,7 +46,7 @@ export class RegisteredUsersComponent {
 
   query$ =  this.aroute.queryParams.pipe(
     switchMap((query) => {
-      let qry = <Partial<Query>>{};
+      let qry = <Partial<PageQuery>>{};
 
       if (Object.keys(query).length > 0) {
         qry = Object.fromEntries(new URLSearchParams(query));
@@ -153,7 +153,7 @@ export class RegisteredUsersComponent {
     });
   }
 
-  handlePageChange(event: any, query: Partial<Query>, event_id: string) {
+  handlePageChange(event: any, query: Partial<PageQuery>, event_id: string) {
     const offset = event.pageIndex ? (event.pageIndex * this.PAGE_LIMIT) : undefined;
     this.router.navigate([`/${this.role}/dashboard/events/${event_id}/registered_users`], {
       queryParams:{ ...query, offset, limit: this.PAGE_LIMIT }
