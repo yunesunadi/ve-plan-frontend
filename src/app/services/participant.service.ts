@@ -32,6 +32,16 @@ export class ParticipantService {
     });
   }
 
+  updateNoEndTime(event_id: string) {
+    const token = localStorage.getItem("token");
+    const url = `${environment.apiUrl}/participants/${event_id}/no_end_time`;
+    return this.http.put<GeneralResponse>(url, {}, {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${token}`,
+      })
+    });
+  }
+
   getAllByEventId(event_id: string) {
     const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/participants/${event_id}`;

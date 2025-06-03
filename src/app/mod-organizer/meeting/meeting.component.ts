@@ -223,7 +223,7 @@ export class MeetingComponent {
   }
 
   join(event_id: string, is_expired: boolean) {
-    const dialogRef = this.dialog.open(OrganizerMeetingDialogComponent, {
+    this.dialog.open(OrganizerMeetingDialogComponent, {
       width: "calc(100% - 10px)",
       maxWidth: "100%",
       height: "calc(100% - 10px)",
@@ -232,12 +232,6 @@ export class MeetingComponent {
       data: {
         event_id: event_id,
         is_expired: is_expired
-      }
-    });
-
-    dialogRef.afterClosed().subscribe({
-      next: () => {
-        window.location.reload();
       }
     });
   }

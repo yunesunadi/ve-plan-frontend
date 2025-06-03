@@ -4,6 +4,8 @@ import { environment } from '../../environments/environment';
 import { CreateMeetingResponse, GetMeetingResponse, Meeting } from '../models/Meeting';
 import { GeneralResponse, Response } from '../models/Utils';
 
+declare var JitsiMeetExternalAPI: any;
+
 @Injectable({
   providedIn: 'root'
 })
@@ -11,6 +13,27 @@ export class MeetingService {
   private http = inject(HttpClient);
 
   constructor() { }
+
+  createJitsiMeeting(data: { room_name: string; token: string; }, jitsi_iframe: any) {
+    const options = {
+      roomName: `${environment.appId}/${data.room_name}`,
+      configOverwrite: {
+        prejoinPageEnabled: true,
+        disableInviteFunctions: true,
+        disableKick: true,
+      },
+      interfaceConfigOverwrite: {
+        startAudioMuted: true,
+        startVideoMuted: true,
+      },
+      parentNode: jitsi_iframe.nativeElement,
+      jwt: data.token
+    };
+
+    const api = new JitsiMeetExternalAPI(environment.meeting_domain, options);
+
+    return api;
+  }
 
   createToken(is_moderator: boolean) {
     const token = localStorage.getItem("token");

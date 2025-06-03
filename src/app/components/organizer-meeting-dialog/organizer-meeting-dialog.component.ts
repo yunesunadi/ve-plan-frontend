@@ -1,12 +1,10 @@
 import { Component, inject, ViewChild } from '@angular/core';
-import { map } from 'rxjs';
+import { concatMap, delay, map, tap } from 'rxjs';
 import { MeetingService } from '../../services/meeting.service';
-import { environment } from '../../../environments/environment';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MeetingParticipant } from '../../models/Participant';
 import { CommonService } from '../../services/common.service';
-
-declare var JitsiMeetExternalAPI: any;
+import { ParticipantService } from '../../services/participant.service';
 
 @Component({
   standalone: false,
@@ -18,6 +16,7 @@ export class OrganizerMeetingDialogComponent {
   @ViewChild("jitsi_iframe") jitsi_iframe: any;
 
   private meetingService = inject(MeetingService);
+  private participantService = inject(ParticipantService);
   private dialog_data = inject(MAT_DIALOG_DATA);
   private dialog = inject(MatDialogRef<this>);
   private commonService = inject(CommonService);
@@ -38,23 +37,7 @@ export class OrganizerMeetingDialogComponent {
     ).subscribe({
       next: (data) => {
         this.room_name = data.room_name;
-
-        this.options = {
-          roomName: `${environment.appId}/${data.room_name}`,
-          configOverwrite: {
-            prejoinPageEnabled: true,
-            disableInviteFunctions: true,
-            disableKick: true,
-          },
-          interfaceConfigOverwrite: {
-            startAudioMuted: true,
-            startVideoMuted: true,
-          },
-          parentNode: this.jitsi_iframe.nativeElement,
-          jwt: data.token
-        };
-
-        this.api = new JitsiMeetExternalAPI(environment.meeting_domain, this.options);
+        this.api = this.meetingService.createJitsiMeeting(data, this.jitsi_iframe);
 
         this.api.addEventListeners({
           readyToClose: this.handleClose,
@@ -88,10 +71,15 @@ export class OrganizerMeetingDialogComponent {
   }
 
   handleVideoConferenceLeft = async (participant: any) => {
-    this.meetingService.updateEndTime(this.dialog_data.event_id, { end_time: new Date().toISOString() })
-      .subscribe({
+    this.meetingService.updateEndTime(this.dialog_data.event_id, { end_time: new Date().toISOString() }).pipe(
+      concatMap(() => this.participantService.updateNoEndTime(this.dialog_data.event_id)),
+      tap(() => {
+        this.commonService.openSnackBar("End meeting successfully.");
+      }),
+      delay(1500)
+    ).subscribe({
         next: () => {
-          this.commonService.openSnackBar("End meeting successfully.");
+          window.location.reload();
         }
       });
   }

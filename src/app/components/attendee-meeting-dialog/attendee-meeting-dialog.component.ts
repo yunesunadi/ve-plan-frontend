@@ -1,13 +1,10 @@
 import { Component, inject, ViewChild } from '@angular/core';
 import { MeetingService } from '../../services/meeting.service';
 import { concatMap, map, tap } from 'rxjs';
-import { environment } from '../../../environments/environment';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MeetingParticipant, Participant } from '../../models/Participant';
+import { MeetingParticipant } from '../../models/Participant';
 import { ParticipantService } from '../../services/participant.service';
 import { CommonService } from '../../services/common.service';
-
-declare var JitsiMeetExternalAPI: any;
 
 @Component({
   standalone: false,
@@ -45,22 +42,7 @@ export class AttendeeMeetingDialogComponent {
       )),
     ).subscribe({
       next: (data) => {
-        this.options = {
-          roomName: `${environment.appId}/${data.room_name}`,
-          configOverwrite: {
-            prejoinPageEnabled: true,
-            disableInviteFunctions: true,
-            disableKick: true,
-          },
-          interfaceConfigOverwrite: {
-            startAudioMuted: true,
-            startVideoMuted: true,
-          },
-          parentNode: this.jitsi_iframe.nativeElement,
-          jwt: data.token
-        };
-
-        this.api = new JitsiMeetExternalAPI(environment.meeting_domain, this.options);
+        this.api = this.meetingService.createJitsiMeeting(data, this.jitsi_iframe);
 
         this.api.addEventListeners({
           readyToClose: this.handleClose,
