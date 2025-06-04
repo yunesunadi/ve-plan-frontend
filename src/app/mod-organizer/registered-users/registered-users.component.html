@@ -1,5 +1,6 @@
 @let event = $any(event$ | async);
 @let query = $any(query$ | async);
+@let dataSource = $any(registered_users$ | async);
 
 <app-outlet-inner>
   <div class="d-flex align-items-center mb-4" style="gap: 1rem;">
@@ -17,7 +18,7 @@
     <mat-form-field appearance="outline" class="w-100" style="max-width: 300px;">
       <mat-icon matPrefix>search</mat-icon>
       <mat-label>Search Users</mat-label>
-      <input matInput (keyup)="applyFilter($event)" placeholder="Enter name" #input>
+      <input matInput (keyup)="applyFilter($event, dataSource)" placeholder="Enter name" #input>
     </mat-form-field>
     
     <div class="align-self-end align-self-md-auto">
@@ -25,7 +26,7 @@
         mat-stroked-button
         type="button"
         class="bg-secondary-clr text-primary-clr mt-2"
-        (click)="sendApproval()"
+        (click)="sendApproval(dataSource)"
         [disabled]="util.is_event_expired(event?.date, event?.end_time)"
       >
         <mat-icon>mail</mat-icon>
@@ -38,12 +39,12 @@
     <table mat-table [dataSource]="dataSource">
       <ng-container matColumnDef="select">
         <th mat-header-cell *matHeaderCellDef>
-          @if (!isDisabled()) {
+          @if (!isDisabled(dataSource)) {
             <mat-checkbox
-              (change)="$event ? toggleAllRows() : null"
-              [checked]="selection.hasValue() && isAllSelected()"
-              [indeterminate]="selection.hasValue() && !isAllSelected()"
-              [aria-label]="checkboxLabel()"
+              (change)="$event ? toggleAllRows(dataSource) : null"
+              [checked]="selection.hasValue() && isAllSelected(dataSource)"
+              [indeterminate]="selection.hasValue() && !isAllSelected(dataSource)"
+              [aria-label]="checkboxLabel(dataSource)"
             >
             </mat-checkbox>
           }

@@ -2,7 +2,7 @@ import { Component, ElementRef, inject, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { EventRegisterService } from '../../services/event-register.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { map, of, shareReplay, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, map, of, shareReplay, switchMap } from 'rxjs';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatDialog } from '@angular/material/dialog';
 import { RegisterApprovalDialogComponent } from '../../components/register-approval-dialog/register-approval-dialog.component';
@@ -22,11 +22,12 @@ export class RegisteredUsersComponent {
   @ViewChild("input") input!: ElementRef;
   
   displayedColumns: string[] = ['select', 'id', 'name', 'register_approved'];
-  dataSource = new MatTableDataSource<any>([]);
   selection = new SelectionModel<any>(true, []);
   role!: string;
 
   readonly PAGE_LIMIT = 10;
+
+  refresh$ = new BehaviorSubject(null);
 
   private eventRegisterService = inject(EventRegisterService);
   private eventService = inject(EventService);
@@ -61,23 +62,23 @@ export class RegisteredUsersComponent {
     shareReplay(1)
   );
 
-  registered_users$ = this.query$.pipe(
-    switchMap((query) => this.event$.pipe(
-      switchMap((event) => this.eventRegisterService.getAllByEventId(event._id, query).pipe(
-        map((res) => res.data.map((item, index) => ({
-          id: index + 1 * ((+(query.offset as any) + 1) || 1),
-          name: item.user.name,
-          email: item.user.email,
-          event_title: item.event.title,
-          user_id: item.user._id,
-          event_id: item.event._id,
-          register_approved: item.register_approved,
-        }))
-      )))
+  registered_users$ = this.refresh$.pipe(
+    switchMap(() => this.query$.pipe(
+      switchMap((query) => this.event$.pipe(
+        switchMap((event) => this.eventRegisterService.getAllByEventId(event._id, query).pipe(
+          map((res) => res.data.map((item, index) => ({
+            id: index + 1 * ((+(query.offset as any) + 1) || 1),
+            name: item.user.name,
+            email: item.user.email,
+            event_title: item.event.title,
+            user_id: item.user._id,
+            event_id: item.event._id,
+            register_approved: item.register_approved,
+          }))
+        )))
+      )),
+      map((event_registers) => (new MatTableDataSource(event_registers)))
     )),
-    tap((event_registers) => {
-      this.dataSource = new MatTableDataSource(event_registers);
-    }),
     shareReplay(1)
   );
 
@@ -90,8 +91,6 @@ export class RegisteredUsersComponent {
   constructor() {}
 
   ngOnInit() {
-    this.registered_users$.subscribe();
-
     this.dashboardCache.has_role.subscribe({
       next: (res) => {
         this.role = res.role;
@@ -99,42 +98,42 @@ export class RegisteredUsersComponent {
     });
   }
 
-  isDisabled() {
-    return this.dataSource.data.every((item) => item.register_approved);
+  isDisabled(dataSource: any) {
+    return dataSource?.data?.every((item: any) => item.register_approved);
   }
 
-  applyFilter(event: Event) {
+  applyFilter(event: Event, dataSource: any) {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+    dataSource.filter = filterValue.trim().toLowerCase();
 
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
+    if (dataSource.paginator) {
+      dataSource.paginator.firstPage();
     }
   }
 
-  isAllSelected() {
+  isAllSelected(dataSource: any) {
     const numSelected = this.selection.selected.length;
-    const numRows = this.dataSource.data.length;
+    const numRows = dataSource?.data?.length;
     return numSelected === numRows;
   }
 
-  toggleAllRows() {
-    if (this.isAllSelected()) {
+  toggleAllRows(dataSource: any) {
+    if (this.isAllSelected(dataSource)) {
       this.selection.clear();
       return;
     }
 
-    this.selection.select(...this.dataSource.data.filter(item => !item.register_approved));
+    this.selection.select(...dataSource?.data?.filter((item: any) => !item.register_approved));
   }
 
-  checkboxLabel(row?: any): string {
+  checkboxLabel(dataSource: any, row?: any): string {
     if (!row) {
-      return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
+      return `${this.isAllSelected(dataSource) ? 'deselect' : 'select'} all`;
     }
     return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.position + 1}`;
   }
 
-  sendApproval() {
+  sendApproval(dataSource: any) {
     const dialogRef = this.dialog.open(RegisterApprovalDialogComponent, {
       data: this.selection.selected.filter(item => !item.register_approved),
       width: "500px",
@@ -144,8 +143,8 @@ export class RegisteredUsersComponent {
     dialogRef.afterClosed().subscribe({
       next: (fetched) => {
         if (fetched) {
-          this.registered_users$.subscribe();
-          this.selection.deselect(...this.dataSource.data);
+          this.refresh$.next(null);
+          this.selection.deselect(...dataSource.data);
           this.selection.clear();
           this.input.nativeElement.value = "";
         }

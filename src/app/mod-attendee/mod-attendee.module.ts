@@ -14,6 +14,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatBadgeModule } from '@angular/material/badge';
 
 @NgModule({
   declarations: [
@@ -33,6 +34,7 @@ import { MatMenuModule } from '@angular/material/menu';
     FormsModule,
     MatSelectModule,
     MatMenuModule,
+    MatBadgeModule,
   ]
 })
 export class ModAttendeeModule { }

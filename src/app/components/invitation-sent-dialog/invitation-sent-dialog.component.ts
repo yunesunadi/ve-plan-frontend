@@ -24,8 +24,8 @@ export class InvitationSentDialogComponent {
   send() {
     of(...this.dialog_data).pipe(
       mergeMap(
-        (item: any) => this.emailService.send("invitation_sent", item.email, item.name, item.event_title).pipe(
-          concatMap(() => this.eventInviteService.invite(item.user_id, item.event_id))
+        (item: any) => this.eventInviteService.invite(item.user_id, item.event_id).pipe(
+          concatMap(() => this.emailService.send("invitation_sent", item.email, item.name, item.event_title))
         )
       )
     ).subscribe({

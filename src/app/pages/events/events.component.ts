@@ -43,7 +43,34 @@ export class EventsComponent {
     });
   }
 
+  getBadgeCount(query: Partial<EventQuery>) {
+    let count = 0;
+    const values = Object.keys(query);
+
+    if (values.includes("search_value")) {
+      count++;
+    }
+
+    if (values.includes("time")) {
+      count++;
+    }
+
+    if (values.includes("category")) {
+      count++;
+    }
+
+    if (values.includes("date")) {
+      count++;
+    }
+
+    return count;
+  }
+
   changeFilter(type: string, value: string, query: Partial<EventQuery>) {
+    if (type === "date") {
+      value = new Date(value).toISOString();
+    }
+
     this.router.navigate([`/${this.role}/dashboard/events`], {
       queryParams: { ...query, [type]: value, offset: 0 }
     });

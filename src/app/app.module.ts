@@ -43,6 +43,7 @@ import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { EventsComponent } from './pages/events/events.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatBadgeModule } from '@angular/material/badge';
 
 @NgModule({
   declarations: [
@@ -86,7 +87,8 @@ import { MatExpansionModule } from '@angular/material/expansion';
     MatMenuModule,
     MatDividerModule,
     MatDatepickerModule,
-    MatExpansionModule
+    MatExpansionModule,
+    MatBadgeModule,
   ],
   providers: [
     appConfig.providers,
