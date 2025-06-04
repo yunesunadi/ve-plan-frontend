@@ -1,8 +1,8 @@
 export const environment = {
   production: true,
-  apiUrl: "",
-  profileUrl: "",
-  coverUrl: "",
-  appId: "",
-  meeting_domain: "",
+  apiUrl: "https://veplanapi.yunesunadi.com/api/v1",
+  profileUrl: "https://veplanapi.yunesunadi.com/api/v1/static/profiles",
+  coverUrl: "https://veplanapi.yunesunadi.com/api/v1/static/covers",
+  appId: "vpaas-magic-cookie-0e894e017ee743f6a9324a95d07ad582",
+  meeting_domain: "8x8.vc",
 };
