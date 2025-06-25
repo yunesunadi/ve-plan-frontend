@@ -92,12 +92,9 @@ export class SignupComponent {
     if (this.signup_form.invalid) return;
     delete this.signup_form.value['confirm_password'];
     
-    this.authService.register(this.signup_form.value).pipe(
-      map(res => res.token)
-    ).subscribe({
-      next: (token) => {
-        localStorage.setItem("token", token);
-        this.router.navigateByUrl("role");
+    this.authService.register(this.signup_form.value).subscribe({
+      next: () => {
+        this.router.navigateByUrl("verify_email");
       },
       error: (err) => {
         if (err instanceof HttpErrorResponse) {

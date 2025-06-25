@@ -44,6 +44,7 @@ import { EventsComponent } from './pages/events/events.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatBadgeModule } from '@angular/material/badge';
+import { VerifyEmailComponent } from './pages/verify-email/verify-email.component';
 
 @NgModule({
   declarations: [
@@ -65,6 +66,7 @@ import { MatBadgeModule } from '@angular/material/badge';
     OrganizerMeetingDialogComponent,
     SettingComponent,
     NotFoundComponent,
+    VerifyEmailComponent,
   ],
   imports: [
     RouterModule,

@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { GeneralResponse, Response } from '../models/Utils';
 import { SignUpData } from '../models/User';
 
@@ -18,7 +18,7 @@ export class AuthService {
     formData.append("email", data.email);
     formData.append("password", data.password);
 
-    return this.http.post<Response<"token", string>>(url, formData);
+    return this.http.post<GeneralResponse>(url, formData);
   }
 
   setRole(role: string) {
@@ -44,5 +44,12 @@ export class AuthService {
   login(data: { email: string; password: string; }) {
     const url = `${environment.apiUrl}/auth/login`;
     return this.http.post<Response<"token", string>>(url, data);
+  }
+
+  verifyEmail(token: string) {
+    const url = `${environment.apiUrl}/auth/verify_email`;
+    let params = new HttpParams();
+    params = params.set("token", token);
+    return this.http.post<Response<"token", string>>(url, {}, { params });
   }
 }

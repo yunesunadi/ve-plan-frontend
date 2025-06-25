@@ -8,6 +8,7 @@ import { PrivateComponent } from './layouts/private/private.component';
 import { completeAuthGuard } from './guards/complete-auth.guard';
 import { TermsAndConditionsComponent } from './pages/terms-and-conditions/terms-and-conditions.component';
 import { PrivacyPolicyComponent } from './pages/privacy-policy/privacy-policy.component';
+import { VerifyEmailComponent } from './pages/verify-email/verify-email.component';
 
 const publicRoutes: Routes = [
   {
@@ -35,7 +36,11 @@ const publicRoutes: Routes = [
   {
     path: "privacy_policy",
     component: PrivacyPolicyComponent,
-  }
+  },
+  {
+    path: "verify_email",
+    component: VerifyEmailComponent,
+  },
 ];
 
 export const routes: Routes = [
