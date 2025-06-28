@@ -9,6 +9,8 @@ import { completeAuthGuard } from './guards/complete-auth.guard';
 import { TermsAndConditionsComponent } from './pages/terms-and-conditions/terms-and-conditions.component';
 import { PrivacyPolicyComponent } from './pages/privacy-policy/privacy-policy.component';
 import { VerifyEmailComponent } from './pages/verify-email/verify-email.component';
+import { ForgotPasswordComponent } from './pages/forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
 
 const publicRoutes: Routes = [
   {
@@ -40,6 +42,14 @@ const publicRoutes: Routes = [
   {
     path: "verify_email",
     component: VerifyEmailComponent,
+  },
+  {
+    path: "forgot_password",
+    component: ForgotPasswordComponent,
+  },
+  {
+    path: "reset_password",
+    component: ResetPasswordComponent,
   },
 ];
 

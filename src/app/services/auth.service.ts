@@ -52,4 +52,17 @@ export class AuthService {
     params = params.set("token", token);
     return this.http.post<Response<"token", string>>(url, {}, { params });
   }
+
+  forgotPassword(email: string) {
+    const url = `${environment.apiUrl}/auth/forgot_password`;
+    return this.http.post<GeneralResponse>(url, { email });
+  }
+
+  resetPassword(token: string, password: string) {
+    const url = `${environment.apiUrl}/auth/reset_password`;
+    let params = new HttpParams();
+    params = params.set("token", token);
+    return this.http.post<GeneralResponse>(url, { password }, { params });
+  }
+  
 }
