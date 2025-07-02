@@ -24,7 +24,7 @@ export class AuthService {
   setRole(role: string) {
     const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/auth/role`;
-    return this.http.post<GeneralResponse>(
+    return this.http.post<Response<"token", string>>(
       url,
       { role },
       {

@@ -13,6 +13,12 @@ export interface User {
   name: string;
   email: string;
   role: string;
+  isVerified: boolean;
+  verificationToken?: string;
+  verificationTokenExpires?: Date;
+  resetPasswordToken?: string;
+  resetPasswordExpires?: Date;
+  googleId?: string;
 }
 
 export type UserPayload = User & Timestamp & JWTPayload;

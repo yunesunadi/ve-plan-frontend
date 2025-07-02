@@ -47,6 +47,7 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { VerifyEmailComponent } from './pages/verify-email/verify-email.component';
 import { ForgotPasswordComponent } from './pages/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
+import { SocialLoginRedirectComponent } from './pages/social-login-redirect/social-login-redirect.component';
 
 @NgModule({
   declarations: [
@@ -71,6 +72,7 @@ import { ResetPasswordComponent } from './pages/reset-password/reset-password.co
     VerifyEmailComponent,
     ForgotPasswordComponent,
     ResetPasswordComponent,
+    SocialLoginRedirectComponent,
   ],
   imports: [
     RouterModule,

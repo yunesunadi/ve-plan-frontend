@@ -62,7 +62,11 @@ export class SettingComponent {
     this.cacheService.current_user.subscribe({
       next: (user) => {
         if (user.profile) {
-          this.profile = environment.profileUrl + "/" + user.profile;
+          if (user.googleId) {
+            this.profile = user.profile;
+          } else {
+            this.profile = environment.profileUrl + "/" + user.profile;
+          }
         } else {
           this.profile = "assets/images/placeholder_person.png";
         }

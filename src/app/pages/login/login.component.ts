@@ -7,6 +7,7 @@ import { jwtDecode } from "jwt-decode";
 import { UserPayload } from '../../models/User';
 import { CommonService } from '../../services/common.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 @Component({
   standalone: false,
@@ -70,5 +71,9 @@ export class LoginComponent {
         }
       }
     });
+  }
+
+  loginWithGoogle() {
+    window.location.href = environment.google_oauth_url;
   }
 }

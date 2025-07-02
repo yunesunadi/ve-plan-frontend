@@ -2,6 +2,12 @@
   <ng-container form>
     <h1 class="text-primary-clr mb-3 d-md-none text-center">VE-Plan</h1>
     <h3 class="text-primary-clr mb-4 text-center">Login</h3>
+    <div class="">
+      <button mat-stroked-button color="primary" (click)="loginWithGoogle()" style="margin-bottom: 16px; width: 100%;">
+        <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google logo" style="width: 20px; margin-right: 8px;" />
+        Sign in with Google
+      </button>
+    </div>
     <form [formGroup]="login_form" (ngSubmit)="submit()" class="d-flex flex-column login-form">
       <mat-form-field appearance="outline">
         <mat-label>Email</mat-label>

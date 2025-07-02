@@ -11,6 +11,7 @@ import { PrivacyPolicyComponent } from './pages/privacy-policy/privacy-policy.co
 import { VerifyEmailComponent } from './pages/verify-email/verify-email.component';
 import { ForgotPasswordComponent } from './pages/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
+import { SocialLoginRedirectComponent } from './pages/social-login-redirect/social-login-redirect.component';
 
 const publicRoutes: Routes = [
   {
@@ -51,6 +52,10 @@ const publicRoutes: Routes = [
     path: "reset_password",
     component: ResetPasswordComponent,
   },
+  {
+    path: "social_login_redirect",
+    component: SocialLoginRedirectComponent,
+  }
 ];
 
 export const routes: Routes = [

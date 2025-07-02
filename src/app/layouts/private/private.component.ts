@@ -38,7 +38,11 @@ export class PrivateComponent {
     const token = localStorage.getItem("token") || "";
     const decoded: UserPayload = jwtDecode(token);
     if (decoded.profile) {
-      return environment.profileUrl + "/" + decoded.profile;
+      if (decoded.googleId) {
+        return decoded.profile;
+      } else {
+        return environment.profileUrl + "/" + decoded.profile;
+      }
     }
 
     return "assets/images/placeholder_person.png";
