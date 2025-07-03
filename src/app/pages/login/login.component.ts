@@ -76,4 +76,8 @@ export class LoginComponent {
   loginWithGoogle() {
     window.location.href = environment.google_oauth_url;
   }
+
+  loginWithFacebook() {
+    window.location.href = environment.facebook_oauth_url;
+  }
 }

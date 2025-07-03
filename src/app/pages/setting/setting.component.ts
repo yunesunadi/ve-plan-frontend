@@ -62,7 +62,7 @@ export class SettingComponent {
     this.cacheService.current_user.subscribe({
       next: (user) => {
         if (user.profile) {
-          if (user.googleId) {
+          if (user.googleId || user.facebookId) {
             this.profile = user.profile;
           } else {
             this.profile = environment.profileUrl + "/" + user.profile;

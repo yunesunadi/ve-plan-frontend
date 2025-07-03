@@ -2,10 +2,14 @@
   <ng-container form>
     <h1 class="text-primary-clr mb-3 d-md-none text-center">VE-Plan</h1>
     <h3 class="text-primary-clr mb-4 text-center">Login</h3>
-    <div class="">
-      <button mat-stroked-button color="primary" (click)="loginWithGoogle()" style="margin-bottom: 16px; width: 100%;">
+    <div class="d-flex flex-column gap-3 border-black border-bottom pb-4 mb-4" style="width: 100%; max-width: 300px;">
+      <button mat-stroked-button class="text-primary-clr" (click)="loginWithGoogle()">
         <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google logo" style="width: 20px; margin-right: 8px;" />
         Sign in with Google
+      </button>
+      <button mat-stroked-button class="text-primary-clr" (click)="loginWithFacebook()">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_%282019%29.png" alt="Facebook logo" style="width: 20px; margin-right: 8px; background: white; border-radius: 50%;" />
+        Sign in with Facebook
       </button>
     </div>
     <form [formGroup]="login_form" (ngSubmit)="submit()" class="d-flex flex-column login-form">

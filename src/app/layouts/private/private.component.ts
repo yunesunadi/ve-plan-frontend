@@ -38,7 +38,7 @@ export class PrivateComponent {
     const token = localStorage.getItem("token") || "";
     const decoded: UserPayload = jwtDecode(token);
     if (decoded.profile) {
-      if (decoded.googleId) {
+      if (decoded.googleId || decoded.facebookId) {
         return decoded.profile;
       } else {
         return environment.profileUrl + "/" + decoded.profile;

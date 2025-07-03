@@ -19,6 +19,7 @@ export interface User {
   resetPasswordToken?: string;
   resetPasswordExpires?: Date;
   googleId?: string;
+  facebookId?: string;
 }
 
 export type UserPayload = User & Timestamp & JWTPayload;
