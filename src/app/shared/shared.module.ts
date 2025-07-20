@@ -7,6 +7,8 @@ import { EventDetailsCardComponent } from './event-details-card/event-details-ca
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { SessionDetailsCardComponent } from './session-details-card/session-details-card.component';
+import { NotificationsComponent } from '../pages/notifications/notifications.component';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @NgModule({
   declarations: [
@@ -14,18 +16,21 @@ import { SessionDetailsCardComponent } from './session-details-card/session-deta
     OutletInnerComponent,
     EventDetailsCardComponent,
     SessionDetailsCardComponent,
+    NotificationsComponent,
   ],
   imports: [
     CommonModule,
     MatButtonModule,
     MatCardModule,
     MatIconModule,
+    MatCheckboxModule,
   ],
   exports: [
     RegisterWrapperComponent,
     OutletInnerComponent,
     EventDetailsCardComponent,
     SessionDetailsCardComponent,
+    NotificationsComponent,
   ]
 })
 export class SharedModule { }

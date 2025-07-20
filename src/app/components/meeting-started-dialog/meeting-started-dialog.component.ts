@@ -1,10 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { EmailService } from '../../services/email.service';
 import { CommonService } from '../../services/common.service';
 import { EventRegisterService } from '../../services/event-register.service';
 import { EventInviteService } from '../../services/event-invite.service';
-import { concatMap, EMPTY, iif, mergeMap, of } from 'rxjs';
+import { combineLatest } from 'rxjs';
 
 @Component({
   standalone: false,
@@ -15,7 +14,6 @@ import { concatMap, EMPTY, iif, mergeMap, of } from 'rxjs';
 export class MeetingStartedDialogComponent {
   dialog_data = inject(MAT_DIALOG_DATA);
   private dialog = inject(MatDialogRef<this>);
-  private emailService = inject(EmailService);
   private commonService = inject(CommonService);
   private eventRegisterService = inject(EventRegisterService);
   private eventInviteService = inject(EventInviteService);
@@ -23,17 +21,13 @@ export class MeetingStartedDialogComponent {
   constructor() {}
 
   send() {
-    of(...this.dialog_data).pipe(
-      concatMap((item: any) => 
-        this.emailService.send("meeting_started", item.email, item.name, item.event_title).pipe(
-          concatMap(() => iif(
-            () => item.type === "registered",
-            this.eventRegisterService.startMeeting(item.user_id, item.event_id),
-            this.eventInviteService.startMeeting(item.user_id, item.event_id)
-          ))
-        )
-      )
-    ).subscribe({
+    const registered_user_id_list = this.dialog_data.filter((item: any) => item.type === "register_approved").map((item: any) => item.user_id);
+    const invited_user_id_list = this.dialog_data.filter((item: any) => item.type === "invitation_approved").map((item: any) => item.user_id);
+
+    combineLatest([
+      this.eventRegisterService.startMeeting(registered_user_id_list, this.dialog_data[0].event_id),
+      this.eventInviteService.startMeeting(invited_user_id_list, this.dialog_data[0].event_id)
+    ]).subscribe({
       error: (err) => {
         console.log(err);
         

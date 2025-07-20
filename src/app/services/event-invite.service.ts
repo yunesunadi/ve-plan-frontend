@@ -12,13 +12,13 @@ export class EventInviteService {
 
   constructor() { }
 
-  invite(user_id: string, event_id: string) {
+  invite(user_id_list: string[], event_id: string) {
     const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/event_invites`;
     return this.http.post<GeneralResponse>(
       url, 
       {
-        user_id,
+        user_id_list,
         event_id
       },
       {
@@ -85,13 +85,13 @@ export class EventInviteService {
     );
   }
 
-  startMeeting(user_id: string, event_id: string) {
+  startMeeting(user_id_list: string[], event_id: string) {
     const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/event_invites/meeting_started`;
     return this.http.put<GeneralResponse>(
       url,
       {
-        user_id,
+        user_id_list,
         event_id
       },
       {

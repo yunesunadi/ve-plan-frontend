@@ -70,7 +70,7 @@ export class EventAttendeesComponent {
       switchMap((query: any) => combineLatest([
         this.aroute.params.pipe(
           switchMap((params: any) => this.eventRegisterService.getAllApprovedByEventId(params.id)),
-          map((res) => res.data.map((item => ({ ...item, type: "registered" }))))
+          map((res) => res.data.map((item => ({ ...item, type: "register_approved" }))))
         ),
         this.aroute.params.pipe(
           switchMap((params: any) => this.eventInviteService.getAllAcceptedByEventId(params.id)),

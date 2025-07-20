@@ -104,13 +104,13 @@ export class EventRegisterService {
     });
   }
 
-  approve(user_id: string, event_id: string) {
+  approve(user_id_list: string[], event_id: string) {
     const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/event_registers/approve`;
     return this.http.put<GeneralResponse>(
       url,
       {
-        user_id,
+        user_id_list,
         event_id
       },
       {
@@ -121,13 +121,13 @@ export class EventRegisterService {
     );
   }
 
-  startMeeting(user_id: string, event_id: string) {
+  startMeeting(user_id_list: string[], event_id: string) {
     const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/event_registers/meeting_started`;
     return this.http.put<GeneralResponse>(
       url,
       {
-        user_id,
+        user_id_list,
         event_id
       },
       {

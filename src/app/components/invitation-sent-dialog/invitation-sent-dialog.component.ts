@@ -1,9 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { EmailService } from '../../services/email.service';
 import { CommonService } from '../../services/common.service';
 import { EventInviteService } from '../../services/event-invite.service';
-import { concatMap, mergeMap, of } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
@@ -15,20 +13,14 @@ import { HttpErrorResponse } from '@angular/common/http';
 export class InvitationSentDialogComponent {
   dialog_data = inject(MAT_DIALOG_DATA);
   private dialog = inject(MatDialogRef<this>);
-  private emailService = inject(EmailService);
   private commonService = inject(CommonService);
   private eventInviteService = inject(EventInviteService);
 
   constructor() {}
 
   send() {
-    of(...this.dialog_data).pipe(
-      mergeMap(
-        (item: any) => this.eventInviteService.invite(item.user_id, item.event_id).pipe(
-          concatMap(() => this.emailService.send("invitation_sent", item.email, item.name, item.event_title))
-        )
-      )
-    ).subscribe({
+    const user_id_list = this.dialog_data.map((item: any) => item.user_id);
+    this.eventInviteService.invite(user_id_list, this.dialog_data[0].event_id).subscribe({
       error: (err) => {
         this.dialog.close();
 

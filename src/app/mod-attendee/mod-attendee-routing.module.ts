@@ -7,6 +7,7 @@ import { InvitationsComponent } from './invitations/invitations.component';
 import { JoinedEventsComponent } from './joined-events/joined-events.component';
 import { SettingComponent } from '../pages/setting/setting.component';
 import { NotFoundComponent } from '../pages/not-found/not-found.component';
+import { NotificationsComponent } from '../pages/notifications/notifications.component';
 
 const routes: Routes = [
   {
@@ -32,6 +33,10 @@ const routes: Routes = [
   {
     path: "setting",
     component: SettingComponent,
+  },
+  {
+    path: "notifications",
+    component: NotificationsComponent,
   },
   {
     path: "**",

@@ -1,0 +1,32 @@
+<app-outlet-inner>
+  <h3 class="text-primary-clr mb-3">Notifications</h3>
+
+  <div class="d-flex justify-content-end mb-4" style="gap: .5rem;">
+    <button mat-raised-button class="text-primary-clr bg-secondary-clr" (click)="markAsRead()">
+      <mat-icon class="text-primary-clr">done_all</mat-icon>
+      <span>Mark as read</span>
+    </button>
+    <button mat-stroked-button (click)="deleteSelected()">
+      <mat-icon class="text-danger">delete</mat-icon>
+      <span class="text-danger">Delete</span>
+    </button>
+  </div>
+  <ng-container *ngIf="notifications$ | async as notifications">
+    <div *ngIf="notifications.length === 0" class="text-center py-4">
+      <h3>There is no notification.</h3>
+    </div>
+    <div *ngIf="notifications.length > 0" class="d-flex flex-column w-100 mx-auto" style="gap: 1rem; max-width: 600px;">  
+      <mat-card *ngFor="let notification of notifications" appearance="outlined" [ngClass]="{ 'bg-secondary-clr': !notification.isRead }">
+        <mat-card-content>
+          <div class="d-flex" style="gap: .5rem;">
+            <mat-checkbox (change)="onChange(notification._id)" color="primary"></mat-checkbox>
+            <div class="d-flex flex-column">
+              <h4 class="text-primary-clr">{{ notification.title }}</h4>
+              <p class="text-primary-clr mb-0">{{ notification.message }}</p>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </ng-container>
+</app-outlet-inner>

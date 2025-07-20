@@ -10,6 +10,7 @@ import { EventAttendeesComponent } from './event-attendees/event-attendees.compo
 import { SettingComponent } from '../pages/setting/setting.component';
 import { NotFoundComponent } from '../pages/not-found/not-found.component';
 import { MyEventsComponent } from './my-events/my-events.component';
+import { NotificationsComponent } from '../pages/notifications/notifications.component';
 
 const routes: Routes = [
   {
@@ -47,6 +48,10 @@ const routes: Routes = [
   {
     path: "setting",
     component: SettingComponent,
+  },
+  {
+    path: "notifications",
+    component: NotificationsComponent,
   },
   {
     path: "**",

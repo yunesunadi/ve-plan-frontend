@@ -4,6 +4,16 @@
   </button>
   <p class="text-secondary-clr mb-0 ms-3">VE-Plan</p>
   <span class="spacer"></span>
+  <button 
+    mat-icon-button 
+    class="text-secondary-clr me-3" 
+    routerLink="notifications" 
+    [matBadge]="notifications_count$ | async"
+    matBadgeColor="primary" 
+    [matBadgeHidden]="(notifications_count$ | async) === 0"
+  >
+    <mat-icon>notifications_active</mat-icon>
+  </button>
   <div mat-button [matMenuTriggerFor]="menu" class="d-flex align-items-center cursor-pointer">
     <img [src]="profile_url" width="45" height="45" class="rounded-circle" alt="User profile">
     <mat-icon class="text-secondary-clr">keyboard_arrow_down</mat-icon>
