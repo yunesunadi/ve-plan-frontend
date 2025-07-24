@@ -35,9 +35,11 @@
               <span matPrefix class="ms-2">
                 <mat-icon>search</mat-icon>
               </span>
-              <button (click)="clearFilter('search_value', query)" *ngIf="query.search_value" matSuffix mat-icon-button aria-label="Clear" type="button">
+              @if (query.search_value) {
+              <button (click)="clearFilter('search_value', query)" matSuffix mat-icon-button aria-label="Clear" type="button">
                 <mat-icon>close</mat-icon>
               </button>
+              }
             </mat-form-field>
           </div>
           <div class="col-md-6">
@@ -50,9 +52,11 @@
                   </mat-option>
                 }
               </mat-select>
-              <button (click)="clearFilter('time', query)" *ngIf="query.time" matSuffix mat-icon-button aria-label="Clear" type="button">
+              @if (query.time) {
+              <button (click)="clearFilter('time', query)" matSuffix mat-icon-button aria-label="Clear" type="button">
                 <mat-icon>close</mat-icon>
               </button>
+              }
             </mat-form-field>
           </div>
           <div class="col-md-6">
@@ -65,9 +69,11 @@
                   </mat-option>
                 }
               </mat-select>
-              <button (click)="clearFilter('category', query)" *ngIf="query.category" matSuffix mat-icon-button aria-label="Clear" type="button">
+              @if (query.category) {
+              <button (click)="clearFilter('category', query)" matSuffix mat-icon-button aria-label="Clear" type="button">
                 <mat-icon>close</mat-icon>
               </button>
+              }
             </mat-form-field>
           </div>
           <div class="col-md-6">
@@ -77,9 +83,11 @@
               <mat-hint>DD/MM/YYYY</mat-hint>
               <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
               <mat-datepicker #picker></mat-datepicker>
-              <button (click)="clearFilter('date', query)" *ngIf="query.date" matSuffix mat-icon-button aria-label="Clear" type="button">
+              @if (query.date) {
+              <button (click)="clearFilter('date', query)" matSuffix mat-icon-button aria-label="Clear" type="button">
                 <mat-icon>close</mat-icon>
               </button>
+              }
             </mat-form-field>
           </div>
         </div>
@@ -111,25 +119,29 @@
     }
     </div>
     
-    <div class="d-flex justify-content-end mt-3" style="gap: .5rem;" *ngIf="events && events.length > LIMIT">
-      <button
-        mat-raised-button
-        type="button"
-        class="bg-secondary-clr text-primary-clr"
-        (click)="goPrev(query)"
-        [disabled]="!offset"
-      >
-        Prev
-      </button>
-      <button
-        mat-raised-button
-        type="button"
-        class="bg-secondary-clr text-primary-clr"
-        (click)="goNext(query)"
-        [disabled]="events.length < LIMIT"
+    @if(events) {
+      @if (!(!offset && events && events.length < LIMIT)) {
+      <div class="d-flex justify-content-end mt-3" style="gap: .5rem;">
+        <button
+          mat-raised-button
+          type="button"
+          class="bg-secondary-clr text-primary-clr"
+          (click)="goPrev(query)"
+          [disabled]="!offset"
         >
-        Next
-      </button>
-    </div>
+          Prev
+        </button>
+        <button
+          mat-raised-button
+          type="button"
+          class="bg-secondary-clr text-primary-clr"
+          (click)="goNext(query)"
+          [disabled]="events.length < LIMIT"
+          >
+          Next
+        </button>
+      </div>
+      }
+    }
   </section>
 </app-outlet-inner>
