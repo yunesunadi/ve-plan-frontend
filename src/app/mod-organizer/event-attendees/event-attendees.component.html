@@ -1,6 +1,6 @@
-@let event = $any(event$ | async);
-@let query = $any(query$ | async);
-@let dataSource = $any(event_attendees$ | async);
+@let event = (event$ | async)!;
+@let query = (query$ | async)!;
+@let dataSource = (event_attendees$ | async)!;
 
 <app-outlet-inner>
   <div class="d-flex align-items-center mb-4" style="gap: 1rem;">
@@ -85,7 +85,7 @@
 
     <mat-paginator
       [length]="data_length"
-      [pageIndex]="query.offset / PAGE_LIMIT"
+      [pageIndex]="(query?.offset ?? 0) / PAGE_LIMIT"
       [pageSize]="PAGE_LIMIT"
       (page)="handlePageChange($event, query, event._id)"
     ></mat-paginator>

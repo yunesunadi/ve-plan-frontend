@@ -1,10 +1,14 @@
 import { Component, inject } from '@angular/core';
 import { EventRegisterService } from '../../services/event-register.service';
 import { EventInviteService } from '../../services/event-invite.service';
-import { combineLatest, map, of, shareReplay, switchMap } from 'rxjs';
+import { combineLatest, map, Observable, of, shareReplay, switchMap } from 'rxjs';
 import { Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DashboardCacheService } from '../../caches/dashboard-cache.service';
+import { Event } from '../../models/Event';
+import { Timestamp } from '../../models/Utils';
+import { EventRegister } from '../../models/EventRegister';
+import { EventInvite } from '../../models/EventInvite';
 
 interface Query { 
   category?: string; 
@@ -70,7 +74,7 @@ export class JoinedEventsComponent {
 
   joined_events$ = this.query$.pipe(
     switchMap((query) => {
-      let result$;
+      let result$ = null;
 
       switch (query.category) {
         case "all": {
@@ -100,7 +104,7 @@ export class JoinedEventsComponent {
         }
         break;
       }
-      return result$ as any;
+      return result$ as unknown as Observable<Array<Timestamp & (EventRegister | EventInvite)>>;
     })
   );
 

@@ -1,11 +1,11 @@
 @let is_created = is_created$ | async;
-@let event = $any(event$ | async);
-@let query = $any(query$ | async);
-@let is_expired = $any(is_expired$ | async);
-@let meeting = $any(meeting$ | async);
-@let event_attendees = $any(event_attendees$ | async);
-@let registered_users = $any(registered_users$ | async);
-@let invitation_accepted_users = $any(invitation_accepted_users$ | async);
+@let event = (event$ | async)!;
+@let query = (query$ | async)!;
+@let is_expired = (is_expired$ | async)!;
+@let meeting = meeting$ | async;
+@let event_attendees = event_attendees$ | async;
+@let registered_users = registered_users$ | async;
+@let invitation_accepted_users = invitation_accepted_users$ | async;
 
 <app-outlet-inner>
   <div class="d-flex flex-column flex-md-row justify-content-md-between mb-4" style="gap: 1rem;">
@@ -97,7 +97,7 @@
       <mat-card appearance="outlined">
         <div class="text-center py-3">
           <mat-card-title class="fw-bold text-primary-clr">
-            {{ all_joined_participants?.length }}
+            {{ all_joined_participants.length }}
           </mat-card-title>
           <mat-card-subtitle class="text-primary-clr">
             Joined Participants
@@ -185,8 +185,8 @@
     </table>
 
     <mat-paginator
-      [length]="all_joined_participants?.length"
-      [pageIndex]="query.offset / PAGE_LIMIT"
+      [length]="all_joined_participants.length"
+      [pageIndex]="(query?.offset ?? 0) / PAGE_LIMIT"
       [pageSize]="PAGE_LIMIT"
       (page)="handlePageChange($event, query, event._id)"
     ></mat-paginator>

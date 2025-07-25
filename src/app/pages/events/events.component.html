@@ -29,7 +29,8 @@
                 type="text"
                 [(ngModel)]="query.search_value"
                 placeholder="Enter event name"
-                (keyup.enter)="changeFilter('search_value', $any($event.target).value, query)"
+                (keyup.enter)="changeFilter('search_value', searchInput.value, query)"
+                #searchInput
                 class="ms-1"
               >
               <span matPrefix class="ms-2">
