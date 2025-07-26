@@ -85,6 +85,7 @@
 
     <mat-paginator
       [length]="(all_registered_users$ | async)?.length"
+      [pageIndex]="(query?.offset ?? 0) / PAGE_LIMIT"
       [pageSize]="PAGE_LIMIT"
       (page)="handlePageChange($event, query, event._id)"
     ></mat-paginator>

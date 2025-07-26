@@ -35,7 +35,7 @@ export class EventDetailsDialogComponent {
   }
 
   navigate(url: string) {
-    this.route.navigateByUrl(url);
+    this.route.navigateByUrl(url, { replaceUrl: true });
     this.dialog.close();
   }
 

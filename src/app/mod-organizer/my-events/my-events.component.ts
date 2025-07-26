@@ -34,13 +34,15 @@ export class MyEventsComponent {
     this.cache.resetMyEventsQuery$.next(true);
     
     this.router.navigate([`/${this.role}/dashboard/my_events`], {
-      queryParams: { ...query, type: value, offset: 0 }
+      queryParams: { ...query, type: value, offset: 0 },
+      replaceUrl: true
     });
   }
 
   onScroll(query: Partial<MyEventQuery>, result_length: number) {
     this.router.navigate([`/${this.role}/dashboard/my_events`], {
-       queryParams: { ...query, offset: result_length }
+       queryParams: { ...query, offset: result_length },
+       replaceUrl: true
      });
   }
 }

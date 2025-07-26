@@ -155,7 +155,8 @@ export class RegisteredUsersComponent {
   handlePageChange(event: any, query: Partial<PageQuery>, event_id: string) {
     const offset = event.pageIndex ? (event.pageIndex * this.PAGE_LIMIT) : undefined;
     this.router.navigate([`/${this.role}/dashboard/events/${event_id}/registered_users`], {
-      queryParams:{ ...query, offset, limit: this.PAGE_LIMIT }
+      queryParams:{ ...query, offset, limit: this.PAGE_LIMIT },
+      replaceUrl: true
     });
   }
 

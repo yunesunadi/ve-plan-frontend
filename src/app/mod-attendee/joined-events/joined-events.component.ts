@@ -110,7 +110,8 @@ export class JoinedEventsComponent {
 
   changeFilter(category: string) {
     this.router.navigate([`/${this.role}/dashboard/joined_events`], {
-      queryParams: { category }
+      queryParams: { category },
+      replaceUrl: true
     });
   }
 }

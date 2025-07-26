@@ -72,7 +72,8 @@ export class EventsComponent {
     }
 
     this.router.navigate([`/${this.role}/dashboard/events`], {
-      queryParams: { ...query, [type]: value, offset: 0 }
+      queryParams: { ...query, [type]: value, offset: 0 },
+      replaceUrl: true
     });
   }
 
@@ -81,19 +82,22 @@ export class EventsComponent {
     
     delete query[type as keyof EventQuery];
     this.router.navigate([`/${this.role}/dashboard/events`], {
-      queryParams: { ...query, offset: 0 }
+      queryParams: { ...query, offset: 0 },
+      replaceUrl: true
     });
   }
 
   goPrev(query: Partial<EventQuery>) {
     this.router.navigate([`/${this.role}/dashboard/events`], {
-      queryParams: { ...query, offset: +(query.offset || 0) - this.LIMIT }
+      queryParams: { ...query, offset: +(query.offset || 0) - this.LIMIT },
+      replaceUrl: true
     });
   }
 
   goNext(query: Partial<EventQuery>) {
     this.router.navigate([`/${this.role}/dashboard/events`], {
-      queryParams: { ...query, offset: +(query.offset || 0) + this.LIMIT }
+      queryParams: { ...query, offset: +(query.offset || 0) + this.LIMIT },
+      replaceUrl: true
     });
   }
 
