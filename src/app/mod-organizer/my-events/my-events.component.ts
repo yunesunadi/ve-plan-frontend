@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { DashboardCacheService } from '../../caches/dashboard-cache.service';
-import { Router } from '@angular/router';
+import { Router, NavigationStart, NavigationEnd } from '@angular/router';
 import { EventCacheService } from '../../caches/event-cache.service';
 import { MyEventQuery } from '../../models/Event';
 
@@ -20,7 +20,28 @@ export class MyEventsComponent {
   types = ["all", "public", "private"];
   role!: string;
 
-  constructor() {}
+  constructor() {
+    this.router.events.subscribe(event => {
+      const container = document.querySelector('.my-events-container') as HTMLElement;
+
+      if (event instanceof NavigationStart) {
+        if (container) {
+          localStorage.setItem('my_events_scroll', `${container.scrollTop}`);
+        }
+      }
+
+      if (event instanceof NavigationEnd) {
+        const scrollY = localStorage.getItem('my_events_scroll');
+
+        if (container && scrollY) {
+          setTimeout(() => {
+            container.scrollTop = +scrollY;
+            localStorage.removeItem('my_events_scroll');
+          }, 0);
+        }
+      }
+    });
+  }
 
   ngOnInit() {
     this.dashboardCache.has_role.subscribe({
@@ -28,6 +49,10 @@ export class MyEventsComponent {
         this.role = res.role;
       }
     });
+  }
+
+  ngOnDestroy() {
+    this.cache.changeRoute$.next(true);
   }
   
   changeFilter(value: string, query: Partial<MyEventQuery>) {
@@ -40,9 +65,7 @@ export class MyEventsComponent {
   }
 
   onScroll(query: Partial<MyEventQuery>, result_length: number) {
-    this.router.navigate([`/${this.role}/dashboard/my_events`], {
-       queryParams: { ...query, offset: result_length },
-       replaceUrl: true
-     });
+    const new_query = { ...query, offset: result_length };
+    this.cache.loadMoreMyEvents(new_query);
   }
 }
