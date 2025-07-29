@@ -1,4 +1,4 @@
-import { Component, inject, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, ViewChild } from '@angular/core';
 import { MeetingService } from '../../services/meeting.service';
 import { concatMap, map, tap } from 'rxjs';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -13,7 +13,7 @@ import { CommonService } from '../../services/common.service';
   styleUrl: './attendee-meeting-dialog.component.scss'
 })
 export class AttendeeMeetingDialogComponent {
-  @ViewChild("jitsi_iframe") jitsi_iframe: any;
+  @ViewChild("jitsi_iframe") jitsi_iframe!: ElementRef;
 
   private meetingService = inject(MeetingService);
   private participantService = inject(ParticipantService);
@@ -21,7 +21,6 @@ export class AttendeeMeetingDialogComponent {
   private dialog = inject(MatDialogRef<this>);
   private commonService = inject(CommonService);
 
-  options: any;
   api: any;
   room_name = "";
 
@@ -78,7 +77,7 @@ export class AttendeeMeetingDialogComponent {
     });
   }
 
-  handleVideoConferenceLeft = async (participant: any) => {
+  handleVideoConferenceLeft = async (participant: MeetingParticipant) => {
     this.participantService.update(this.dialog_data.event_id, { end_time: new Date().toISOString() })
       .subscribe({
         next: () => {

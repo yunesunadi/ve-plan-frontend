@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { catchError, combineLatest, map, of, scan, startWith, switchMap } from 'rxjs';
+import { catchError, combineLatest, map, of, scan, startWith, switchMap, tap } from 'rxjs';
 import { Notification } from '../../models/Notification';
 import { SocketService } from '../../services/socket.service';
 import { NotificationService } from '../../services/notification.service';
@@ -17,6 +17,7 @@ export class NotificationsComponent {
   private commonService = inject(CommonService);
 
   readNotifications: string[] = [];
+  isLoading = true;
 
   realtime_notifications$ = this.socketService.onNotification().pipe(
     scan((acc, curr) => [curr, ...acc], [] as Notification[]),
@@ -25,6 +26,7 @@ export class NotificationsComponent {
   );
 
   notifications_data$ = this.notificationService.getNotifications().pipe(
+    tap(() => this.isLoading = false),
     map(res => res.data),
     startWith([] as Notification[]),
     catchError(() => of([] as Notification[]))

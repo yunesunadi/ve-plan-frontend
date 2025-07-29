@@ -5,16 +5,20 @@ export type EventTimeType = "upcoming" | "happening" | "past";
 
 export type EventCategoryType = "conference" | "meetup" | "webinar";
 
+export type EventType = "public" | "private";
+
+export type MyEventType = "all" | "public" | "private";
+
 export interface Event {
   _id: string;
   cover: string;
   title: string;
   description: string;
-  date: any;
-  start_time: any;
-  end_time: any;
+  date: string;
+  start_time: string;
+  end_time: string;
   category: EventCategoryType;
-  type: "public" | "private";
+  type: EventType;
   user: User;
 }
 
@@ -28,7 +32,7 @@ export interface EventQuery {
 }
 
 export interface MyEventQuery {
-  type?: "public" | "private" | "all";
+  type?: MyEventType;
   limit?: number;
   offset?: number;
 }

@@ -1,5 +1,8 @@
 @let invitations = invitations$ | async;
 
+@if (isLoading) {
+  <app-page-loading></app-page-loading>
+} @else {
 <app-outlet-inner>
   <div class="d-flex align-items-center mb-3" style="gap: 1rem;">
     <button
@@ -42,3 +45,4 @@
   }
   </section>
 </app-outlet-inner>
+}

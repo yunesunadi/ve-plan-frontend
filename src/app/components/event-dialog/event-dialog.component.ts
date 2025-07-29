@@ -1,4 +1,4 @@
-import { Component, inject, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { format } from "date-fns";
@@ -7,6 +7,7 @@ import { CommonService } from '../../services/common.service';
 import { concatMap, iif, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { EventCacheService } from '../../caches/event-cache.service';
+import { EventCategoryType, EventType } from '../../models/Event';
 
 @Component({
   standalone: false,
@@ -15,11 +16,11 @@ import { EventCacheService } from '../../caches/event-cache.service';
   styleUrl: './event-dialog.component.scss'
 })
 export class EventDialogComponent {
-  @ViewChild("imgView") imgView: any;
+  @ViewChild("imgView") imgView!: ElementRef;
 
   create_form: FormGroup;
-  categories = ["conference", "meetup", "webinar"];
-  types = ["public", "private"];
+  categories: EventCategoryType[] = ["conference", "meetup", "webinar"];
+  types: EventType[] = ["public", "private"];
 
   private form_builder = inject(FormBuilder);
   dialog_data = inject(MAT_DIALOG_DATA);
@@ -87,8 +88,8 @@ export class EventDialogComponent {
     return format(this.dialog_data.date, "dd/MM/yyyy");
   }
 
-  changeCover(event: any) {
-    const file = event.target?.files[0];
+  changeCover(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0];
     
     if (file) {
       if (!file.type.startsWith("image")) return;

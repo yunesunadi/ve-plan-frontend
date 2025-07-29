@@ -1,5 +1,5 @@
 import { Component, inject, ViewChild } from '@angular/core';
-import { EventQuery } from '../../models/Event';
+import { EventCategoryType, EventQuery, EventTimeType } from '../../models/Event';
 import { DashboardCacheService } from '../../caches/dashboard-cache.service';
 import { MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
 import { Router } from '@angular/router';
@@ -29,8 +29,8 @@ export class EventsComponent {
 
   readonly LIMIT = 5;
 
-  times = ["upcoming", "happening", "past"];
-  categories = ["conference", "meetup", "webinar"];
+  times: EventTimeType[] = ["upcoming", "happening", "past"];
+  categories: EventCategoryType[] = ["conference", "meetup", "webinar"];
   role!: string;
 
   constructor() { }
@@ -67,6 +67,8 @@ export class EventsComponent {
   }
 
   changeFilter(type: string, value: string, query: Partial<EventQuery>) {
+    value = value.trim();
+    
     if (type === "date") {
       value = new Date(value).toISOString();
     }

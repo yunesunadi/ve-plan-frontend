@@ -1,8 +1,10 @@
-@let event = event$ | async;
+@let event = (event$ | async)!;
 @let sessions = sessions$ | async;
 
+@if (isLoading) {
+  <app-page-loading></app-page-loading>
+} @else {
 <app-outlet-inner>
-@if (event) {
   <section>
     <div class="d-flex flex-column flex-md-row justify-content-md-between align-items-md-center mb-3" style="gap: .5rem;">
       <div class="d-flex align-items-center" style="gap: 1rem;">
@@ -102,5 +104,5 @@
       }
     </ng-container>
   </section>
-}
 </app-outlet-inner>
+}

@@ -1,4 +1,4 @@
-@let event = event$ | async;
+@let event = (event$ | async)!;
 @let sessions = sessions$ | async;
 @let has_registered = has_registered$ | async;
 @let is_invited = is_invited$ | async;
@@ -6,8 +6,10 @@
 @let has_meeting_started = has_meeting_started$ | async;
 @let is_register_approved = is_register_approved$ | async;
 
+@if (isLoading) {
+  <app-page-loading></app-page-loading>
+} @else {
 <app-outlet-inner>
-@if (event) {
   <section>
     <div class="d-flex flex-column flex-lg-row justify-content-lg-between align-items-lg-center mb-3" style="gap: .5rem;">
       <div class="d-flex align-items-center" style="gap: 1rem;">
@@ -104,5 +106,5 @@
       }
     </ng-container>
   </section>
-}
 </app-outlet-inner>
+}

@@ -7,7 +7,7 @@ export class UtilService {
 
   constructor() { }
 
-  is_event_expired(event_date: any, event_time: any) {
+  is_event_expired(event_date: string, event_time: string) {
     const date = new Date(event_date);
     const time = new Date(event_time);
     

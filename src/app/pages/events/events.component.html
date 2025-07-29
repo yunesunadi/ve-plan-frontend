@@ -2,6 +2,9 @@
 @let query = (cache.query$ | async) || {};
 @let offset = +(query.offset || 0);
 
+@if (cache.isEventsLoading) {
+  <app-page-loading></app-page-loading>
+}
 <app-outlet-inner>
   <section>
     <div class="d-flex justify-content-between align-items-center mb-3">

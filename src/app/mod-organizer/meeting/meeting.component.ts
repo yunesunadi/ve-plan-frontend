@@ -1,4 +1,4 @@
-import { Component, inject, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, combineLatest, concatMap, map, of, shareReplay, switchMap, tap } from 'rxjs';
 import { MeetingService } from '../../services/meeting.service';
@@ -19,6 +19,7 @@ import { EventService } from '../../services/event.service';
 import { UtilService } from '../../services/util.service';
 import { PageQuery } from '../../models/Utils';
 import { DashboardCacheService } from '../../caches/dashboard-cache.service';
+import { PageEvent } from '@angular/material/paginator';
 
 @Component({
   standalone: false,
@@ -27,8 +28,8 @@ import { DashboardCacheService } from '../../caches/dashboard-cache.service';
   styleUrl: './meeting.component.scss'
 })
 export class MeetingComponent {
-  @ViewChild("doughnut_canvas") doughnut_canvas: any;
-  @ViewChild("line_canvas") line_canvas: any;
+  @ViewChild("doughnut_canvas") doughnut_canvas!: ElementRef;
+  @ViewChild("line_canvas") line_canvas!: ElementRef;
 
   private meetingService = inject(MeetingService);
   private eventRegisterService = inject(EventRegisterService);
@@ -51,9 +52,10 @@ export class MeetingComponent {
   readonly PAGE_LIMIT = 10;
   role!: string;
   all_joined_participants!: Participant[];
+  isLoading = true;
 
-  doughnut_chart: any;
-  line_chart: any;
+  doughnut_chart!: Chart;
+  line_chart!: Chart;
 
   query$ =  this.aroute.queryParams.pipe(
     switchMap((query) => {
@@ -74,6 +76,7 @@ export class MeetingComponent {
 
   event$ = this.aroute.params.pipe(
     switchMap((params: any) => this.eventService.getOneById(params.id).pipe(
+      tap(() => this.isLoading = false),
       map(res => res.data)
     )),
     shareReplay(1)
@@ -106,13 +109,13 @@ export class MeetingComponent {
   );
 
   joined_participants$ = this.query$.pipe(
-    switchMap((query: any) => this.aroute.params.pipe(
+    switchMap((query) => this.aroute.params.pipe(
       switchMap((params: any) => this.participantService.getAllByEventId(params.id)),
       map(res => res.data),
       tap((result) => {
         this.all_joined_participants = result;
         const participants = result.map((data: Participant, index: number) => ({ id: index + 1, ...data }));
-        const paginated_result = participants.slice(query.offset || 0, (query.offset || 0) + query.limit);
+        const paginated_result = participants.slice(query.offset || 0, (query.offset || 0) + (query.limit || 0));
         this.dataSource = new MatTableDataSource(paginated_result);
         return paginated_result;
       })
@@ -159,7 +162,7 @@ export class MeetingComponent {
       this.joined_participants$
     ]).subscribe({
       next: ([event_attendees, joined_participants]) => {
-        if (!this.doughnut_chart) {
+        if (!this.doughnut_chart && !this.isLoading) {
           this.doughnut_chart = new Chart(this.doughnut_canvas.nativeElement, {
             type: "doughnut",
             data: {
@@ -183,7 +186,7 @@ export class MeetingComponent {
 
     this.line_chart_data$.subscribe({
       next: (line_chart_data) => {
-        if (!this.line_chart) {
+        if (!this.line_chart && !this.isLoading) {
           this.line_chart = new Chart(this.line_canvas.nativeElement, {
             type: "line",
             data: {
@@ -245,7 +248,7 @@ export class MeetingComponent {
     }
   }
 
-  handlePageChange(event: any, query: Partial<PageQuery>, event_id: string) {
+  handlePageChange(event: PageEvent, query: Partial<PageQuery>, event_id: string) {
     const offset = event.pageIndex ? (event.pageIndex * this.PAGE_LIMIT) : undefined;
     this.router.navigate([`/${this.role}/dashboard/events/${event_id}/meeting`], {
       queryParams:{ ...query, offset, limit: this.PAGE_LIMIT },

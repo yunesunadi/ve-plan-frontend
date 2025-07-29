@@ -3,7 +3,7 @@ import { Component, ElementRef, inject, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute } from '@angular/router';
-import { concatMap, debounceTime, iif, map, of, shareReplay, switchMap } from 'rxjs';
+import { concatMap, debounceTime, iif, map, of, shareReplay, switchMap, tap } from 'rxjs';
 import { UserService } from '../../services/user.service';
 import { FormControl, FormGroup } from '@angular/forms';
 import { EventService } from '../../services/event.service';
@@ -36,8 +36,11 @@ export class InviteComponent {
   location = inject(Location);
   util = inject(UtilService);
 
+  isLoading = true;
+
   event$ = this.aroute.params.pipe(
     switchMap((params: any) => this.eventService.getOneById(params.id).pipe(
+      tap(() => this.isLoading = false),
       map((res) => res.data)
     )),
     shareReplay(1)

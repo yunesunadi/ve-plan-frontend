@@ -9,6 +9,8 @@ import { MatCardModule } from '@angular/material/card';
 import { SessionDetailsCardComponent } from './session-details-card/session-details-card.component';
 import { NotificationsComponent } from '../pages/notifications/notifications.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { PageLoadingComponent } from './page-loading/page-loading.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
   declarations: [
@@ -17,6 +19,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     EventDetailsCardComponent,
     SessionDetailsCardComponent,
     NotificationsComponent,
+    PageLoadingComponent,
   ],
   imports: [
     CommonModule,
@@ -24,6 +27,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     MatCardModule,
     MatIconModule,
     MatCheckboxModule,
+    MatProgressSpinnerModule,
   ],
   exports: [
     RegisterWrapperComponent,
@@ -31,6 +35,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     EventDetailsCardComponent,
     SessionDetailsCardComponent,
     NotificationsComponent,
+    PageLoadingComponent,
   ]
 })
 export class SharedModule { }

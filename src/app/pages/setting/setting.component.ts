@@ -1,4 +1,4 @@
-import { Component, inject, signal, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, signal, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { CommonService } from '../../services/common.service';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -16,7 +16,7 @@ const MIN_LENGTH = 6;
   styleUrl: './setting.component.scss'
 })
 export class SettingComponent {
-  @ViewChild("imgView") imgView: any;
+  @ViewChild("imgView") imgView!: ElementRef;
   isCurrentPassword = signal(true);
   isNewPassword = signal(true);
   isConfirmPassword = signal(true);
@@ -114,8 +114,8 @@ export class SettingComponent {
     this.isConfirmPassword.set(!this.isConfirmPassword());
   }
 
-  changeProfile(event: any) {
-    const file = event.target?.files[0];
+  changeProfile(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0];
     
     if (file) {
       if (!file.type.startsWith("image")) return;

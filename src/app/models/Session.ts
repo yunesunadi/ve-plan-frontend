@@ -6,8 +6,8 @@ export interface Session {
   title: string;
   description: string;
   speaker_info: string;
-  start_time: any;
-  end_time: any;
+  start_time: string;
+  end_time: string;
   event: Event;
 }
 

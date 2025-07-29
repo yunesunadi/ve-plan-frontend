@@ -12,6 +12,7 @@ import { PageQuery } from '../../models/Utils';
 import { DashboardCacheService } from '../../caches/dashboard-cache.service';
 import { UtilService } from '../../services/util.service';
 import { EventService } from '../../services/event.service';
+import { PageEvent } from '@angular/material/paginator';
 
 @Component({
   standalone: false,
@@ -26,6 +27,7 @@ export class EventAttendeesComponent {
   selection = new SelectionModel<any>(true, []);
   role!: string;
   data_length!: number;
+  isLoading = true;
 
   readonly PAGE_LIMIT = 10;
 
@@ -43,6 +45,7 @@ export class EventAttendeesComponent {
 
   event$ = this.aroute.params.pipe(
     switchMap((params: any) => this.eventService.getOneById(params.id).pipe(
+      tap(() => this.isLoading = false),
       map(res => res.data)
     )),
     shareReplay(1)
@@ -67,7 +70,7 @@ export class EventAttendeesComponent {
 
   event_attendees$ = this.refresh$.pipe(
     switchMap(() => this.query$.pipe(
-      switchMap((query: any) => combineLatest([
+      switchMap((query) => combineLatest([
         this.aroute.params.pipe(
           switchMap((params: any) => this.eventRegisterService.getAllApprovedByEventId(params.id)),
           map((res) => res.data.map((item => ({ ...item, type: "register_approved" }))))
@@ -93,7 +96,7 @@ export class EventAttendeesComponent {
 
           this.data_length = result.length;
 
-          const paginated_result = result.slice(query.offset || 0, (query.offset || 0) + query.limit);
+          const paginated_result = result.slice(query.offset || 0, (query.offset || 0) + (query.limit || 0));
 
           return paginated_result;
         }))
@@ -113,11 +116,11 @@ export class EventAttendeesComponent {
     });
   }
 
-  isDisabled(dataSource: any) {
+  isDisabled(dataSource: MatTableDataSource<any>) {
     return dataSource?.data?.every((item: any) => item.meeting_started);
   }
 
-  applyFilter(event: Event, dataSource: any) {
+  applyFilter(event: Event, dataSource: MatTableDataSource<any>) {
     const filterValue = (event.target as HTMLInputElement).value;
     dataSource.filter = filterValue.trim().toLowerCase();
 
@@ -126,13 +129,13 @@ export class EventAttendeesComponent {
     }
   }
 
-  isAllSelected(dataSource: any) {
+  isAllSelected(dataSource: MatTableDataSource<any>) {
     const numSelected = this.selection.selected.length;
     const numRows = dataSource?.data?.length;
     return numSelected === numRows;
   }
 
-  toggleAllRows(dataSource: any) {
+  toggleAllRows(dataSource: MatTableDataSource<any>) {
     if (this.isAllSelected(dataSource)) {
       this.selection.clear();
       return;
@@ -141,14 +144,14 @@ export class EventAttendeesComponent {
     this.selection.select(...dataSource.data.filter((item: any) => !item.meeting_started));
   }
 
-  checkboxLabel(dataSource: any, row?: any): string {
+  checkboxLabel(dataSource: MatTableDataSource<any>, row?: any): string {
     if (!row) {
       return `${this.isAllSelected(dataSource) ? 'deselect' : 'select'} all`;
     }
     return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.position + 1}`;
   }
 
-  send(dataSource: any) {
+  send(dataSource: MatTableDataSource<any>) {
     const dialogRef = this.dialog.open(MeetingStartedDialogComponent, {
       data: this.selection.selected.filter(item => !item.meeting_started),
       width: "500px",
@@ -167,7 +170,7 @@ export class EventAttendeesComponent {
     });
   }
 
-  handlePageChange(event: any, query: Partial<PageQuery>, event_id: string) {
+  handlePageChange(event: PageEvent, query: Partial<PageQuery>, event_id: string) {
     const offset = event.pageIndex ? (event.pageIndex * this.PAGE_LIMIT) : undefined;
     this.router.navigate([`/${this.role}/dashboard/events/${event_id}/meeting/attendees`], {
       queryParams:{ ...query, offset, limit: this.PAGE_LIMIT },

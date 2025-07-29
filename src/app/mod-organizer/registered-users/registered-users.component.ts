@@ -2,7 +2,7 @@ import { Component, ElementRef, inject, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { EventRegisterService } from '../../services/event-register.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BehaviorSubject, map, of, shareReplay, switchMap } from 'rxjs';
+import { BehaviorSubject, map, of, shareReplay, switchMap, tap } from 'rxjs';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatDialog } from '@angular/material/dialog';
 import { RegisterApprovalDialogComponent } from '../../components/register-approval-dialog/register-approval-dialog.component';
@@ -11,6 +11,7 @@ import { EventService } from '../../services/event.service';
 import { UtilService } from '../../services/util.service';
 import { DashboardCacheService } from '../../caches/dashboard-cache.service';
 import { PageQuery } from '../../models/Utils';
+import { PageEvent } from '@angular/material/paginator';
 
 @Component({
   standalone: false,
@@ -24,6 +25,7 @@ export class RegisteredUsersComponent {
   displayedColumns: string[] = ['select', 'id', 'name', 'register_approved'];
   selection = new SelectionModel<any>(true, []);
   role!: string;
+  isLoading = true;
 
   readonly PAGE_LIMIT = 10;
 
@@ -40,6 +42,7 @@ export class RegisteredUsersComponent {
 
   event$ = this.aroute.params.pipe(
     switchMap((params: any) => this.eventService.getOneById(params.id).pipe(
+      tap(() => this.isLoading = false),
       map(res => res.data)
     )),
     shareReplay(1)
@@ -98,11 +101,11 @@ export class RegisteredUsersComponent {
     });
   }
 
-  isDisabled(dataSource: any) {
+  isDisabled(dataSource: MatTableDataSource<any>) {
     return dataSource?.data?.every((item: any) => item.register_approved);
   }
 
-  applyFilter(event: Event, dataSource: any) {
+  applyFilter(event: Event, dataSource: MatTableDataSource<any>) {
     const filterValue = (event.target as HTMLInputElement).value;
     dataSource.filter = filterValue.trim().toLowerCase();
 
@@ -111,13 +114,13 @@ export class RegisteredUsersComponent {
     }
   }
 
-  isAllSelected(dataSource: any) {
+  isAllSelected(dataSource: MatTableDataSource<any>) {
     const numSelected = this.selection.selected.length;
     const numRows = dataSource?.data?.length;
     return numSelected === numRows;
   }
 
-  toggleAllRows(dataSource: any) {
+  toggleAllRows(dataSource: MatTableDataSource<any>) {
     if (this.isAllSelected(dataSource)) {
       this.selection.clear();
       return;
@@ -126,14 +129,14 @@ export class RegisteredUsersComponent {
     this.selection.select(...dataSource?.data?.filter((item: any) => !item.register_approved));
   }
 
-  checkboxLabel(dataSource: any, row?: any): string {
+  checkboxLabel(dataSource: MatTableDataSource<any>, row?: any): string {
     if (!row) {
       return `${this.isAllSelected(dataSource) ? 'deselect' : 'select'} all`;
     }
     return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.position + 1}`;
   }
 
-  sendApproval(dataSource: any) {
+  sendApproval(dataSource: MatTableDataSource<any>) {
     const dialogRef = this.dialog.open(RegisterApprovalDialogComponent, {
       data: this.selection.selected.filter(item => !item.register_approved),
       width: "500px",
@@ -152,7 +155,7 @@ export class RegisteredUsersComponent {
     });
   }
 
-  handlePageChange(event: any, query: Partial<PageQuery>, event_id: string) {
+  handlePageChange(event: PageEvent, query: Partial<PageQuery>, event_id: string) {
     const offset = event.pageIndex ? (event.pageIndex * this.PAGE_LIMIT) : undefined;
     this.router.navigate([`/${this.role}/dashboard/events/${event_id}/registered_users`], {
       queryParams:{ ...query, offset, limit: this.PAGE_LIMIT },

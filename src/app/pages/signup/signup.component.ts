@@ -1,4 +1,4 @@
-import { Component, inject, signal, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, signal, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
@@ -14,7 +14,7 @@ const MIN_LENGTH = 6;
   styleUrl: './signup.component.scss',
 })
 export class SignupComponent {
-  @ViewChild("imgView") imgView: any;
+  @ViewChild("imgView") imgView!: ElementRef;
   isPassword = signal(true);
   isConfirmPassword = signal(true);
   signup_form: FormGroup;
@@ -70,8 +70,8 @@ export class SignupComponent {
     this.isConfirmPassword.set(!this.isConfirmPassword());
   }
 
-  changeProfile(event: any) {
-    const file = event.target?.files[0];
+  changeProfile(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0];
     
     if (file) {
       if (!file.type.startsWith("image")) return;

@@ -2,6 +2,9 @@
 @let query = (query$ | async)!;
 @let dataSource = (registered_users$ | async)!;
 
+@if (isLoading) {
+  <app-page-loading></app-page-loading>
+} @else {
 <app-outlet-inner>
   <div class="d-flex align-items-center mb-4" style="gap: 1rem;">
     <button
@@ -27,7 +30,7 @@
         type="button"
         class="bg-secondary-clr text-primary-clr mt-2"
         (click)="sendApproval(dataSource)"
-        [disabled]="util.is_event_expired(event?.date, event?.end_time)"
+        [disabled]="util.is_event_expired(event.date, event.end_time)"
       >
         <mat-icon>mail</mat-icon>
         Send Approval
@@ -91,3 +94,4 @@
     ></mat-paginator>
   </div>
 </app-outlet-inner>
+}

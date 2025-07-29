@@ -1,5 +1,7 @@
 import { Timestamp, JWTPayload } from "./Utils";
 
+export type RoleType = "organizer" | "attendee";
+
 export interface SignUpData {
   profile?: File;
   name: string;
@@ -12,7 +14,7 @@ export interface User {
   profile?: string;
   name: string;
   email: string;
-  role: string;
+  role: RoleType;
   isVerified: boolean;
   verificationToken?: string;
   verificationTokenExpires?: Date;

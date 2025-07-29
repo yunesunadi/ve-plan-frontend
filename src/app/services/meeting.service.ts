@@ -1,5 +1,5 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { ElementRef, inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { CreateMeetingResponse, GetMeetingResponse, Meeting } from '../models/Meeting';
 import { GeneralResponse, Response } from '../models/Utils';
@@ -14,7 +14,7 @@ export class MeetingService {
 
   constructor() { }
 
-  createJitsiMeeting(data: { room_name: string; token: string; }, jitsi_iframe: any) {
+  createJitsiMeeting(data: { room_name: string; token: string; }, jitsi_iframe: ElementRef) {
     const options = {
       roomName: `${environment.appId}/${data.room_name}`,
       configOverwrite: {

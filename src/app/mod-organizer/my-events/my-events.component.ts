@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { DashboardCacheService } from '../../caches/dashboard-cache.service';
 import { Router, NavigationStart, NavigationEnd } from '@angular/router';
 import { EventCacheService } from '../../caches/event-cache.service';
-import { MyEventQuery } from '../../models/Event';
+import { MyEventQuery, MyEventType } from '../../models/Event';
 
 @Component({
   standalone: false,
@@ -17,7 +17,7 @@ export class MyEventsComponent {
 
   readonly LIMIT = 5;
 
-  types = ["all", "public", "private"];
+  types: MyEventType[] = ["all", "public", "private"];
   role!: string;
 
   constructor() {

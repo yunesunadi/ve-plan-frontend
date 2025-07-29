@@ -1,11 +1,10 @@
 import { Component, inject } from '@angular/core';
 import { EventRegisterService } from '../../services/event-register.service';
 import { EventInviteService } from '../../services/event-invite.service';
-import { combineLatest, map, Observable, of, shareReplay, switchMap } from 'rxjs';
+import { combineLatest, map, Observable, of, shareReplay, switchMap, tap } from 'rxjs';
 import { Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DashboardCacheService } from '../../caches/dashboard-cache.service';
-import { Event } from '../../models/Event';
 import { Timestamp } from '../../models/Utils';
 import { EventRegister } from '../../models/EventRegister';
 import { EventInvite } from '../../models/EventInvite';
@@ -29,6 +28,7 @@ export class JoinedEventsComponent {
   location = inject(Location);
   role!: string;
   label!: string;
+  isLoading = true;
 
   constructor() {}
 
@@ -83,6 +83,7 @@ export class JoinedEventsComponent {
             this.register_approved_events$,
             this.invitation_accepted_events$
           ]).pipe(
+            tap(() => this.isLoading = false),
             map(([registered, approved, accepted]) => ([...registered, ...approved, ...accepted]))
           );
           this.label = "Joined";

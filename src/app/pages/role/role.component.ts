@@ -3,7 +3,7 @@ import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { CommonService } from '../../services/common.service';
 import { map } from 'rxjs';
-import { UserPayload } from '../../models/User';
+import { RoleType, UserPayload } from '../../models/User';
 import { jwtDecode } from 'jwt-decode';
 import { HttpErrorResponse } from '@angular/common/http';
 
@@ -14,7 +14,7 @@ import { HttpErrorResponse } from '@angular/common/http';
   styleUrl: './role.component.scss'
 })
 export class RoleComponent {
-  roles = ["organizer", "attendee"];
+  roles: RoleType[] = ["organizer", "attendee"];
   chosen_role = "";
 
   private authService = inject(AuthService);

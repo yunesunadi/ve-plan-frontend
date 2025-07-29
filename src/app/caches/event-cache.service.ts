@@ -25,6 +25,9 @@ export class EventCacheService {
   changeRoute$ = new BehaviorSubject(false);
   myEventsPagination$ = new BehaviorSubject<Partial<MyEventQuery> | null>(null);
 
+  isEventsLoading = true;
+  isMyEventsLoading = true;
+
   query$ = this.activatedRoute.queryParams.pipe(
     filter(() => location.href.includes("dashboard/events")),
     switchMap((query) => {
@@ -68,6 +71,7 @@ export class EventCacheService {
     if (!this.cache.events$) {
       this.cache.events$ = this.query$.pipe(
         switchMap((query) => this.eventService.getAllByQuery(query).pipe(
+          tap(() => this.isEventsLoading = false),
           map((res) => res.data)
         )),
         tap(() => {
@@ -89,6 +93,7 @@ export class EventCacheService {
 
       this.cache.my_events$ = allQueries$.pipe(
         switchMap((query) => this.eventService.getMyEvents(query).pipe(
+          tap(() => this.isMyEventsLoading = false),
           map(res => ({ data: res.data, query })),
         )),
         scan((acc: Event[], { data, query }) => {
