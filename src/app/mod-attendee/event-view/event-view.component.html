@@ -6,7 +6,7 @@
 @let has_meeting_started = has_meeting_started$ | async;
 @let is_register_approved = is_register_approved$ | async;
 
-@if (isLoading) {
+@if (isLoading()) {
   <app-page-loading></app-page-loading>
 } @else {
 <app-outlet-inner>

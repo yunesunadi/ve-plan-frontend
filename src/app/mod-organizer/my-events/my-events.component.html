@@ -1,7 +1,7 @@
 @let my_events = cache.my_events | async;
 @let my_query = (cache.my_query$ | async) || {};
 
-@if (cache.isMyEventsLoading) {
+@if (cache.isMyEventsLoading()) {
   <app-page-loading></app-page-loading>
 }
 <div
@@ -38,7 +38,7 @@
           <button
             mat-stroked-button
             class="text-secondary-clr bg-primary-clr"
-            [routerLink]="'/' + role + '/dashboard/events/' + item._id + '/view'"
+            [routerLink]="'/' + role() + '/dashboard/events/' + item._id + '/view'"
           >
             <span>See Details</span>
             <mat-icon>arrow_forward</mat-icon>

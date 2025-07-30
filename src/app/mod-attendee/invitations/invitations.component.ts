@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { EventInviteService } from '../../services/event-invite.service';
 import { BehaviorSubject, concatMap, map, shareReplay, tap } from 'rxjs';
 import { CommonService } from '../../services/common.service';
@@ -16,11 +16,11 @@ export class InvitationsComponent {
   private accept$ = new BehaviorSubject(false);
   location = inject(Location);
 
-  isLoading = true;
+  isLoading = signal(true);
 
   invitations$ = this.accept$.pipe(
     concatMap(() => this.eventInviteService.getAllByUserId().pipe(
-      tap(() => this.isLoading = false),
+      tap(() => this.isLoading.set(false)),
       map((res) => res.data)
     )),
     shareReplay(1)

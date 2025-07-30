@@ -1,6 +1,6 @@
 @let notifications = notifications$ | async;
 
-@if (isLoading) {
+@if (isLoading()) {
   <app-page-loading></app-page-loading>
 } @else {
 <app-outlet-inner>

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { DashboardCacheService } from '../../caches/dashboard-cache.service';
 import { Router, NavigationStart, NavigationEnd } from '@angular/router';
 import { EventCacheService } from '../../caches/event-cache.service';
@@ -18,7 +18,7 @@ export class MyEventsComponent {
   readonly LIMIT = 5;
 
   types: MyEventType[] = ["all", "public", "private"];
-  role!: string;
+  role = signal("");
 
   constructor() {
     this.router.events.subscribe(event => {
@@ -46,7 +46,7 @@ export class MyEventsComponent {
   ngOnInit() {
     this.dashboardCache.has_role.subscribe({
       next: (res) => {
-        this.role = res.role;
+        this.role.set(res.role);
       }
     });
   }
@@ -58,7 +58,7 @@ export class MyEventsComponent {
   changeFilter(value: string, query: Partial<MyEventQuery>) {
     this.cache.resetMyEventsQuery$.next(true);
     
-    this.router.navigate([`/${this.role}/dashboard/my_events`], {
+    this.router.navigate([`/${this.role()}/dashboard/my_events`], {
       queryParams: { ...query, type: value, offset: 0 },
       replaceUrl: true
     });

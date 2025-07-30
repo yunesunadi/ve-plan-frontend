@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, filter, map, Observable, of, scan, shareReplay, switchMap, tap, merge } from 'rxjs';
 import { Event, EventQuery, MyEventQuery } from '../models/Event';
@@ -25,8 +25,8 @@ export class EventCacheService {
   changeRoute$ = new BehaviorSubject(false);
   myEventsPagination$ = new BehaviorSubject<Partial<MyEventQuery> | null>(null);
 
-  isEventsLoading = true;
-  isMyEventsLoading = true;
+  isEventsLoading = signal(true);
+  isMyEventsLoading = signal(true);
 
   query$ = this.activatedRoute.queryParams.pipe(
     filter(() => location.href.includes("dashboard/events")),
@@ -71,7 +71,7 @@ export class EventCacheService {
     if (!this.cache.events$) {
       this.cache.events$ = this.query$.pipe(
         switchMap((query) => this.eventService.getAllByQuery(query).pipe(
-          tap(() => this.isEventsLoading = false),
+          tap(() => this.isEventsLoading.set(false)),
           map((res) => res.data)
         )),
         tap(() => {
@@ -93,7 +93,7 @@ export class EventCacheService {
 
       this.cache.my_events$ = allQueries$.pipe(
         switchMap((query) => this.eventService.getMyEvents(query).pipe(
-          tap(() => this.isMyEventsLoading = false),
+          tap(() => this.isMyEventsLoading.set(false)),
           map(res => ({ data: res.data, query })),
         )),
         scan((acc: Event[], { data, query }) => {

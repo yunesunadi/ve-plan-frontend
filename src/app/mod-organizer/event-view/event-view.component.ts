@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { EventService } from '../../services/event.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, catchError, EMPTY, map, shareReplay, switchMap, tap } from 'rxjs';
@@ -29,15 +29,15 @@ export class EventViewComponent {
   private fetchSessions$ = new BehaviorSubject(false);
   location = inject(Location);
 
-  isLoading = true;
+  isLoading = signal(true);
 
   event$ = this.fetchEvents$.pipe(
     switchMap(() => this.aroute.params),
     switchMap((params: any) => this.eventService.getOneById(params.id)),
     map((res) => res.data),
-    tap(() => this.isLoading = false),
+    tap(() => this.isLoading.set(false)),
     catchError(() => {
-      this.isLoading = false;
+      this.isLoading.set(false);
       this.route.navigateByUrl("organizer/dashboard/not-found");
       return EMPTY;
     }),

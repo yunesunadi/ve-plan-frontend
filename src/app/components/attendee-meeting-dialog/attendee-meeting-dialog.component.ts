@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, signal, ViewChild } from '@angular/core';
 import { MeetingService } from '../../services/meeting.service';
 import { concatMap, map, tap } from 'rxjs';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -22,7 +22,7 @@ export class AttendeeMeetingDialogComponent {
   private commonService = inject(CommonService);
 
   api: any;
-  room_name = "";
+  room_name = signal("");
 
   ngOnDestroy() {
     if (this.api) {
@@ -35,7 +35,7 @@ export class AttendeeMeetingDialogComponent {
       map((res) => res.data.room_name),
       concatMap((room_name) => this.meetingService.createToken(false).pipe(
         tap(() => {
-          this.room_name = room_name;
+          this.room_name.set(room_name);
         }),
         map((data) => ({ room_name, token: data.token }))
       )),
@@ -68,7 +68,7 @@ export class AttendeeMeetingDialogComponent {
   handleVideoConferenceJoined = async (participant: MeetingParticipant) => {
     this.participantService.create({
       event: this.dialog_data.event_id,
-      room_name: this.room_name,
+      room_name: this.room_name(),
       start_time: new Date().toISOString(),
     }).subscribe({
       next: () => {

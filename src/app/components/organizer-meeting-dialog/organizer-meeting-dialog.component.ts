@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, signal, ViewChild } from '@angular/core';
 import { concatMap, delay, map, tap } from 'rxjs';
 import { MeetingService } from '../../services/meeting.service';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -22,7 +22,7 @@ export class OrganizerMeetingDialogComponent {
   private commonService = inject(CommonService);
 
   api: any;
-  room_name = "";
+  room_name = signal("");
 
   ngOnDestroy() {
     if (this.api) {
@@ -35,7 +35,7 @@ export class OrganizerMeetingDialogComponent {
       map((res) => res.data)
     ).subscribe({
       next: (data) => {
-        this.room_name = data.room_name;
+        this.room_name.set(data.room_name);
         this.api = this.meetingService.createJitsiMeeting(data, this.jitsi_iframe);
 
         this.api.addEventListeners({

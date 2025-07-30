@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, signal, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, combineLatest, concatMap, map, of, shareReplay, switchMap, tap } from 'rxjs';
 import { MeetingService } from '../../services/meeting.service';
@@ -50,9 +50,9 @@ export class MeetingComponent {
   selection = new SelectionModel<any>(true, []);
 
   readonly PAGE_LIMIT = 10;
-  role!: string;
-  all_joined_participants!: Participant[];
-  isLoading = true;
+  role = signal("");
+  all_joined_participants = signal<Participant[]>([]);
+  isLoading = signal(true);
 
   doughnut_chart!: Chart;
   line_chart!: Chart;
@@ -76,7 +76,7 @@ export class MeetingComponent {
 
   event$ = this.aroute.params.pipe(
     switchMap((params: any) => this.eventService.getOneById(params.id).pipe(
-      tap(() => this.isLoading = false),
+      tap(() => this.isLoading.set(false)),
       map(res => res.data)
     )),
     shareReplay(1)
@@ -113,7 +113,7 @@ export class MeetingComponent {
       switchMap((params: any) => this.participantService.getAllByEventId(params.id)),
       map(res => res.data),
       tap((result) => {
-        this.all_joined_participants = result;
+        this.all_joined_participants.set(result);
         const participants = result.map((data: Participant, index: number) => ({ id: index + 1, ...data }));
         const paginated_result = participants.slice(query.offset || 0, (query.offset || 0) + (query.limit || 0));
         this.dataSource = new MatTableDataSource(paginated_result);
@@ -153,7 +153,7 @@ export class MeetingComponent {
 
     this.dashboardCache.has_role.subscribe({
       next: (res) => {
-        this.role = res.role;
+        this.role.set(res.role);
       }
     });
 
@@ -162,7 +162,7 @@ export class MeetingComponent {
       this.joined_participants$
     ]).subscribe({
       next: ([event_attendees, joined_participants]) => {
-        if (!this.doughnut_chart && !this.isLoading) {
+        if (!this.doughnut_chart && !this.isLoading()) {
           this.doughnut_chart = new Chart(this.doughnut_canvas.nativeElement, {
             type: "doughnut",
             data: {
@@ -186,7 +186,7 @@ export class MeetingComponent {
 
     this.line_chart_data$.subscribe({
       next: (line_chart_data) => {
-        if (!this.line_chart && !this.isLoading) {
+        if (!this.line_chart && !this.isLoading()) {
           this.line_chart = new Chart(this.line_canvas.nativeElement, {
             type: "line",
             data: {
@@ -250,7 +250,7 @@ export class MeetingComponent {
 
   handlePageChange(event: PageEvent, query: Partial<PageQuery>, event_id: string) {
     const offset = event.pageIndex ? (event.pageIndex * this.PAGE_LIMIT) : undefined;
-    this.router.navigate([`/${this.role}/dashboard/events/${event_id}/meeting`], {
+    this.router.navigate([`/${this.role()}/dashboard/events/${event_id}/meeting`], {
       queryParams:{ ...query, offset, limit: this.PAGE_LIMIT },
       replaceUrl: true
     });

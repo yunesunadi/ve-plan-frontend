@@ -2,7 +2,7 @@
 @let query = (cache.query$ | async) || {};
 @let offset = +(query.offset || 0);
 
-@if (cache.isEventsLoading) {
+@if (cache.isEventsLoading()) {
   <app-page-loading></app-page-loading>
 }
 <app-outlet-inner>
@@ -110,7 +110,7 @@
             <button
               mat-stroked-button
               class="text-secondary-clr bg-primary-clr"
-              [routerLink]="'/' + role + '/dashboard/events/' + item._id + '/view'"
+              [routerLink]="'/' + role() + '/dashboard/events/' + item._id + '/view'"
             >
               <span>See Details</span>
               <mat-icon>arrow_forward</mat-icon>

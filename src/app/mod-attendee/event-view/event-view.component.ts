@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { EventService } from '../../services/event.service';
 import { SessionService } from '../../services/session.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -32,15 +32,15 @@ export class EventViewComponent {
   location = inject(Location);
   util = inject(UtilService);
 
-  private is_expired = false;
-  isLoading = true;
+  private is_expired = signal(false);
+  isLoading = signal(true);
 
   event$ = this.aroute.params.pipe(
     switchMap((params: any) => this.eventService.getOneById(params.id).pipe(
       map((res) => res.data),
-      tap(() => this.isLoading = false),
+      tap(() => this.isLoading.set(false)),
       catchError(() => {
-        this.isLoading = false;
+        this.isLoading.set(false);
         this.route.navigateByUrl("attendee/dashboard/not-found");
         return EMPTY;
       })
@@ -101,7 +101,7 @@ export class EventViewComponent {
       switchMap((params: any) => this.meetingService.isExpired(params.id))
     ).subscribe({
       next: (res) => {
-        this.is_expired = res.is_expired;
+        this.is_expired.set(res.is_expired);
       }
     })
   }
@@ -137,7 +137,7 @@ export class EventViewComponent {
       disableClose: true,
       data: {
         event_id,
-        is_expired: this.is_expired
+        is_expired: this.is_expired()
       }
     });
   }

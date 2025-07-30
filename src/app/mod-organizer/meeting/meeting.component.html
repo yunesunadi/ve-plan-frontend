@@ -7,7 +7,7 @@
 @let registered_users = registered_users$ | async;
 @let invitation_accepted_users = invitation_accepted_users$ | async;
 
-@if (isLoading) {
+@if (isLoading()) {
   <app-page-loading></app-page-loading>
 } @else {
 <app-outlet-inner>
@@ -100,7 +100,7 @@
       <mat-card appearance="outlined">
         <div class="text-center py-3">
           <mat-card-title class="fw-bold text-primary-clr">
-            {{ all_joined_participants.length }}
+            {{ all_joined_participants().length }}
           </mat-card-title>
           <mat-card-subtitle class="text-primary-clr">
             Joined Participants
@@ -188,7 +188,7 @@
     </table>
 
     <mat-paginator
-      [length]="all_joined_participants.length"
+      [length]="all_joined_participants().length"
       [pageIndex]="(query?.offset ?? 0) / PAGE_LIMIT"
       [pageSize]="PAGE_LIMIT"
       (page)="handlePageChange($event, query, event._id)"

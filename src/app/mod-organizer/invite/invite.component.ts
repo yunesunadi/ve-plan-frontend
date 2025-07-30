@@ -1,5 +1,5 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { Component, ElementRef, inject, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, signal, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute } from '@angular/router';
@@ -36,11 +36,11 @@ export class InviteComponent {
   location = inject(Location);
   util = inject(UtilService);
 
-  isLoading = true;
+  isLoading = signal(true);
 
   event$ = this.aroute.params.pipe(
     switchMap((params: any) => this.eventService.getOneById(params.id).pipe(
-      tap(() => this.isLoading = false),
+      tap(() => this.isLoading.set(false)),
       map((res) => res.data)
     )),
     shareReplay(1)

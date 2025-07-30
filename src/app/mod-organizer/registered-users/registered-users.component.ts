@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, signal, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { EventRegisterService } from '../../services/event-register.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -24,8 +24,8 @@ export class RegisteredUsersComponent {
   
   displayedColumns: string[] = ['select', 'id', 'name', 'register_approved'];
   selection = new SelectionModel<any>(true, []);
-  role!: string;
-  isLoading = true;
+  role = signal("");
+  isLoading = signal(true);
 
   readonly PAGE_LIMIT = 10;
 
@@ -42,7 +42,7 @@ export class RegisteredUsersComponent {
 
   event$ = this.aroute.params.pipe(
     switchMap((params: any) => this.eventService.getOneById(params.id).pipe(
-      tap(() => this.isLoading = false),
+      tap(() => this.isLoading.set(false)),
       map(res => res.data)
     )),
     shareReplay(1)
@@ -96,7 +96,7 @@ export class RegisteredUsersComponent {
   ngOnInit() {
     this.dashboardCache.has_role.subscribe({
       next: (res) => {
-        this.role = res.role;
+        this.role.set(res.role);
       }
     });
   }
@@ -157,7 +157,7 @@ export class RegisteredUsersComponent {
 
   handlePageChange(event: PageEvent, query: Partial<PageQuery>, event_id: string) {
     const offset = event.pageIndex ? (event.pageIndex * this.PAGE_LIMIT) : undefined;
-    this.router.navigate([`/${this.role}/dashboard/events/${event_id}/registered_users`], {
+    this.router.navigate([`/${this.role()}/dashboard/events/${event_id}/registered_users`], {
       queryParams:{ ...query, offset, limit: this.PAGE_LIMIT },
       replaceUrl: true
     });

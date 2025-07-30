@@ -1,4 +1,4 @@
-import { Component, inject, ViewChild } from '@angular/core';
+import { Component, inject, signal, ViewChild } from '@angular/core';
 import { EventCategoryType, EventQuery, EventTimeType } from '../../models/Event';
 import { DashboardCacheService } from '../../caches/dashboard-cache.service';
 import { MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
@@ -31,14 +31,14 @@ export class EventsComponent {
 
   times: EventTimeType[] = ["upcoming", "happening", "past"];
   categories: EventCategoryType[] = ["conference", "meetup", "webinar"];
-  role!: string;
+  role = signal("");
 
   constructor() { }
 
   ngOnInit() {
     this.dashboardCache.has_role.subscribe({
       next: (res) => {
-        this.role = res.role;
+        this.role.set(res.role);
       }
     });
   }
@@ -73,7 +73,7 @@ export class EventsComponent {
       value = new Date(value).toISOString();
     }
 
-    this.router.navigate([`/${this.role}/dashboard/events`], {
+    this.router.navigate([`/${this.role()}/dashboard/events`], {
       queryParams: { ...query, [type]: value, offset: 0 },
       replaceUrl: true
     });
@@ -83,21 +83,21 @@ export class EventsComponent {
     this.cache.resetQuery$.next(true);
     
     delete query[type as keyof EventQuery];
-    this.router.navigate([`/${this.role}/dashboard/events`], {
+    this.router.navigate([`/${this.role()}/dashboard/events`], {
       queryParams: { ...query, offset: 0 },
       replaceUrl: true
     });
   }
 
   goPrev(query: Partial<EventQuery>) {
-    this.router.navigate([`/${this.role}/dashboard/events`], {
+    this.router.navigate([`/${this.role()}/dashboard/events`], {
       queryParams: { ...query, offset: +(query.offset || 0) - this.LIMIT },
       replaceUrl: true
     });
   }
 
   goNext(query: Partial<EventQuery>) {
-    this.router.navigate([`/${this.role}/dashboard/events`], {
+    this.router.navigate([`/${this.role()}/dashboard/events`], {
       queryParams: { ...query, offset: +(query.offset || 0) + this.LIMIT },
       replaceUrl: true
     });

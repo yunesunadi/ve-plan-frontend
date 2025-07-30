@@ -2,7 +2,7 @@
 @let query = (query$ | async)!;
 @let dataSource = (registered_users$ | async)!;
 
-@if (isLoading) {
+@if (isLoading()) {
   <app-page-loading></app-page-loading>
 } @else {
 <app-outlet-inner>

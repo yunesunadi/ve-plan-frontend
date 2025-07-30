@@ -1,7 +1,7 @@
 @let joined_events = joined_events$ | async;
 @let query = query$ | async;
 
-@if (isLoading) {
+@if (isLoading()) {
   <app-page-loading></app-page-loading>
 } @else {
 <app-outlet-inner>
@@ -15,7 +15,7 @@
         >
           <mat-icon class="text-primary-clr m-0">keyboard_backspace</mat-icon>
         </button>
-        <h3 class="text-primary-clr mb-0">{{ label }} Events</h3>
+        <h3 class="text-primary-clr mb-0">{{ label() }} Events</h3>
       </div>
       <button 
         mat-stroked-button 

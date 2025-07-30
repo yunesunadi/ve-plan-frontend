@@ -1,7 +1,7 @@
 @let event = (event$ | async)!;
 @let sessions = sessions$ | async;
 
-@if (isLoading) {
+@if (isLoading()) {
   <app-page-loading></app-page-loading>
 } @else {
 <app-outlet-inner>

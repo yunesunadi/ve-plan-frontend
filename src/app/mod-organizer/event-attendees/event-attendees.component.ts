@@ -1,5 +1,5 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { Component, ElementRef, inject, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, signal, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -25,9 +25,9 @@ export class EventAttendeesComponent {
   
   displayedColumns: string[] = ['select', 'id', 'name', 'meeting_started'];
   selection = new SelectionModel<any>(true, []);
-  role!: string;
-  data_length!: number;
-  isLoading = true;
+  role = signal("");
+  data_length = signal(0);
+  isLoading = signal(true);
 
   readonly PAGE_LIMIT = 10;
 
@@ -45,7 +45,7 @@ export class EventAttendeesComponent {
 
   event$ = this.aroute.params.pipe(
     switchMap((params: any) => this.eventService.getOneById(params.id).pipe(
-      tap(() => this.isLoading = false),
+      tap(() => this.isLoading.set(false)),
       map(res => res.data)
     )),
     shareReplay(1)
@@ -94,7 +94,7 @@ export class EventAttendeesComponent {
             type: item.type
           }));
 
-          this.data_length = result.length;
+          this.data_length.set(result.length);
 
           const paginated_result = result.slice(query.offset || 0, (query.offset || 0) + (query.limit || 0));
 
@@ -111,7 +111,7 @@ export class EventAttendeesComponent {
   ngOnInit() {
     this.dashboardCache.has_role.subscribe({
       next: (res) => {
-        this.role = res.role;
+        this.role.set(res.role);
       }
     });
   }
@@ -172,7 +172,7 @@ export class EventAttendeesComponent {
 
   handlePageChange(event: PageEvent, query: Partial<PageQuery>, event_id: string) {
     const offset = event.pageIndex ? (event.pageIndex * this.PAGE_LIMIT) : undefined;
-    this.router.navigate([`/${this.role}/dashboard/events/${event_id}/meeting/attendees`], {
+    this.router.navigate([`/${this.role()}/dashboard/events/${event_id}/meeting/attendees`], {
       queryParams:{ ...query, offset, limit: this.PAGE_LIMIT },
       replaceUrl: true
     });

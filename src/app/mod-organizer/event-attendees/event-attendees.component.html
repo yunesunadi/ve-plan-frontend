@@ -2,7 +2,7 @@
 @let query = (query$ | async)!;
 @let dataSource = (event_attendees$ | async)!;
 
-@if (isLoading) {
+@if (isLoading()) {
   <app-page-loading></app-page-loading>
 } @else {
 <app-outlet-inner>
@@ -87,7 +87,7 @@
     </table>
 
     <mat-paginator
-      [length]="data_length"
+      [length]="data_length()"
       [pageIndex]="(query?.offset ?? 0) / PAGE_LIMIT"
       [pageSize]="PAGE_LIMIT"
       (page)="handlePageChange($event, query, event._id)"

@@ -22,7 +22,7 @@ export class SettingComponent {
   isConfirmPassword = signal(true);
   edit_profile_form: FormGroup;
   change_password_form: FormGroup;
-  profile = "";
+  profile = signal("");
 
   private form_builder = inject(FormBuilder);
   private userService = inject(UserService);
@@ -63,12 +63,12 @@ export class SettingComponent {
       next: (user) => {
         if (user.profile) {
           if (user.googleId || user.facebookId) {
-            this.profile = user.profile;
+            this.profile.set(user.profile);
           } else {
-            this.profile = environment.profileUrl + "/" + user.profile;
+            this.profile.set(environment.profileUrl + "/" + user.profile);
           }
         } else {
-          this.profile = "assets/images/placeholder_person.png";
+          this.profile.set("assets/images/placeholder_person.png");
         }
 
         this.edit_profile_form = this.form_builder.group(
@@ -103,15 +103,15 @@ export class SettingComponent {
   }
 
   toggleCurrentPasswordVisibility() {
-    this.isCurrentPassword.set(!this.isCurrentPassword());
+    this.isCurrentPassword.update(prev => !prev);
   }
 
   toggleNewPasswordVisibility() {
-    this.isNewPassword.set(!this.isNewPassword());
+    this.isNewPassword.update(prev => !prev);
   }
 
   toggleConfirmPasswordVisibility() {
-    this.isConfirmPassword.set(!this.isConfirmPassword());
+    this.isConfirmPassword.update(prev => !prev);
   }
 
   changeProfile(event: Event) {

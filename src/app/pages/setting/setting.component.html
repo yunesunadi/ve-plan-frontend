@@ -14,7 +14,7 @@
       <p class="mb-1">Profile</p>
       <label for="profile" class="profile-img-container">
         <input id="profile" type="file" accept="image/*" (change)="changeProfile($event)" class="d-none">
-        <img [src]="profile" #imgView alt="Profile image" class="profile-img rounded">
+        <img [src]="profile()" #imgView alt="Profile image" class="profile-img rounded">
       </label>
     </div>
     <mat-form-field appearance="outline">

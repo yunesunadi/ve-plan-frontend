@@ -63,11 +63,11 @@ export class SignupComponent {
   }
 
   togglePasswordVisibility() {
-    this.isPassword.set(!this.isPassword());
+    this.isPassword.update(prev => !prev);
   }
 
   toggleConfirmPasswordVisibility() {
-    this.isConfirmPassword.set(!this.isConfirmPassword());
+    this.isConfirmPassword.update(prev => !prev);
   }
 
   changeProfile(event: Event) {

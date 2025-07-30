@@ -1,13 +1,13 @@
 import { inject, Injectable } from '@angular/core';
 import { map, Observable, shareReplay } from 'rxjs';
-import { User } from '../models/User';
+import { RoleType, User } from '../models/User';
 import { UserService } from '../services/user.service';
 
 interface Cache {
   current_user$: Observable<User> | null;
   has_role$: Observable<{
     has_role: boolean;
-    role: "organizer" | "attendee";
+    role: RoleType;
   }> | null;
 }
 
