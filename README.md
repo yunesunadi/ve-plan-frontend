@@ -1,53 +1,61 @@
-# VE-Plan
+# VE-Plan Frontend
 
-VE-Plan is a web application that helps you organize and attend virtual events easily. This is frontend source code of VE-Plan.
+A comprehensive virtual event planning platform frontend built with Angular, RxJS, TypeScript, Angular Material and Bootstrap. VE-Plan enables users to organize and attend virtual events with real-time features, email notifications, and extensive user management.
 
 ## Features
 
-- Sign up and login
-- Choose role
+### Authentication & User Management
+- **Multi-role System**: Organizer and attendee roles with different permissions
+- **Social Authentication**: Google and Facebook OAuth integration
+- **Email Verification**: Secure email verification system
+- **Password Management**: Forgot password and reset functionality
 
-As event organizer,
-- View various events with calendar UI
-- View event details including its multiple sessions
-- Create, edit and delete event
-- Create, edit and delete event session
-- Search and filter events with different groups and pagination
-- Filter own events with different groups and infinite scrolling
-- Search and filter event registered users with table pagination
-- Send approval email to registered users
-- View and search users to invite event
-- Send invitation email to users
-- View invited and invitation accepted users
-- Create event meeting
-- Search and filter event attendees with table pagination
-- Send event meeting email to event attendees
-- View event meeting's statistics dashboard
-- Search and filter joined participants with table pagination
-- Edit user profile
-- Change password
+### Event Management (Organizer)
+- **Event Creation**: Create, view, edit, and delete events with details
+- **Session Management**: Organize events into multiple sessions
+- **Calendar Interface**: FullCalendar integration for event visualization
+- **Advanced Filtering**: Search and filter events by keyword, time, category, and status
+- **User Management**: 
+  - View and manage registered users
+  - Send approval emails
+  - Search and invite users
+  - Send invitation emails
+- **Meeting Integration**: 
+  - Create virtual meetings with 8x8.vc integration
+  - Attendee tracking and management
+  - Send meeting emails
+  - Real-time meeting statistics dashboard
 
-As event attendee,
-- View various events with calendar UI
-- View event details including its multiple sessions
-- Register and unregister event
-- Search and filter events with different groups and pagination
-- View event invitations
-- Accept event invitations
-- Filter joined events with different groups
-- Receive registration approval, invitation, and event meeting emails
-- Join event meeting
-- Edit user profile
-- Change password
+### Event Participation (Attendee)
+- **Event Discovery**: Browse and search available events
+- **Registration System**: Register and unregister from events
+- **Invitation Management**: Receive and accept event invitations
+- **Personal Dashboard**: View joined events and invitations
+- **Meeting Participation**: Join virtual meetings seamlessly
+- **Meeting integration**: 8x8.vc video calls
 
-## Technologies
+### User Interface
+- **Modern Design**: Material Design with custom theming
+- **Responsive Layout**: Bootstrap 5 for mobile-first design
+- **Real-time Updates**: Socket.IO integration for live notifications
+- **Infinite Scrolling**: Optimized performance for large datasets
+- **Data Visualization**: Chart.js integration for meeting statistics
 
-- Mongoose
-- Express
-- Passport.js
+## Security Features
+
+- **JWT Authentication**: Secure token-based authentication
+- **Route Guards**: Protected routes based on user roles
+- **HTTP Interceptors**: Automatic error handling
+- **Social OAuth**: Secure third-party authentication
+- **Email Verification**: Account verification system
+
+## Technology Stack
+
 - Angular
 - RxJS
+- TypeScript
 - Angular Material
 - Bootstrap
-- TypeScript
-- Node.js
+- FullCalendar
+- Chart.js
+- Socket.IO Client
