@@ -72,7 +72,7 @@ export const routes: Routes = [
   {
     path: "attendee/dashboard",
     component: PrivateComponent,
-    loadChildren: () => import('./mod-attendee/mod-attendee.module').then(m => m.ModAttendeeModule),
+    loadChildren: () => import('./mod-attendee/mod-attendee.routes').then(m => m.MOD_ATTENDEE_ROUTES),
     canMatch: [completeAuthGuard]
   },
   {

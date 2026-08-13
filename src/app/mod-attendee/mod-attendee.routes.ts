@@ -1,5 +1,4 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { EventsComponent } from '../pages/events/events.component';
 import { EventViewComponent } from './event-view/event-view.component';
@@ -9,7 +8,7 @@ import { SettingComponent } from '../pages/setting/setting.component';
 import { NotFoundComponent } from '../pages/not-found/not-found.component';
 import { NotificationsComponent } from '../pages/notifications/notifications.component';
 
-const routes: Routes = [
+export const MOD_ATTENDEE_ROUTES: Routes = [
   {
     path: "home",
     component: HomeComponent,
@@ -43,9 +42,3 @@ const routes: Routes = [
     component: NotFoundComponent,
   },
 ];
-
-@NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
-})
-export class ModAttendeeRoutingModule { }
