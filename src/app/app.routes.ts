@@ -66,7 +66,7 @@ export const routes: Routes = [
   {
     path: "organizer/dashboard",
     component: PrivateComponent,
-    loadChildren: () => import('./mod-organizer/mod-organizer.module').then(m => m.ModOrganizerModule),
+    loadChildren: () => import('./mod-organizer/mod-organizer.routes').then(m => m.MOD_ORGANIZER_ROUTES),
     canMatch: [completeAuthGuard]
   },
   {
