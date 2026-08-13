@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonService } from '../../services/common.service';
 
@@ -6,6 +6,7 @@ import { CommonService } from '../../services/common.service';
   standalone: false,
   selector: 'app-social-login-redirect',
   templateUrl: './social-login-redirect.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './social-login-redirect.component.scss'
 })
 export class SocialLoginRedirectComponent {

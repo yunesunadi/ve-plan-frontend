@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { CommonService } from '../../services/common.service';
 import { EventRegisterService } from '../../services/event-register.service';
@@ -7,6 +7,7 @@ import { EventRegisterService } from '../../services/event-register.service';
   standalone: false,
   selector: 'app-register-approval-dialog',
   templateUrl: './register-approval-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './register-approval-dialog.component.scss'
 })
 export class RegisterApprovalDialogComponent {

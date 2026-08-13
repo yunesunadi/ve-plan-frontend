@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, signal, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, signal, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { EventRegisterService } from '../../services/event-register.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -17,6 +17,7 @@ import { PageEvent } from '@angular/material/paginator';
   standalone: false,
   selector: 'app-registered-users',
   templateUrl: './registered-users.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './registered-users.component.scss'
 })
 export class RegisteredUsersComponent {

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { EventInviteService } from '../../services/event-invite.service';
 import { map, shareReplay } from 'rxjs';
@@ -7,6 +7,7 @@ import { map, shareReplay } from 'rxjs';
   standalone: false,
   selector: 'app-accepted-users-dialog',
   templateUrl: './accepted-users-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './accepted-users-dialog.component.scss'
 })
 export class AcceptedUsersDialogComponent {

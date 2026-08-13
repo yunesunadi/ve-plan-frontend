@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { EventInviteService } from '../../services/event-invite.service';
 import { map, shareReplay } from 'rxjs';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -7,6 +7,7 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
   standalone: false,
   selector: 'app-invited-users-dialog',
   templateUrl: './invited-users-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './invited-users-dialog.component.scss'
 })
 export class InvitedUsersDialogComponent {

@@ -1,5 +1,5 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { Component, ElementRef, inject, signal, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, signal, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute } from '@angular/router';
@@ -17,6 +17,7 @@ import { UtilService } from '../../services/util.service';
   standalone: false,
   selector: 'app-invite',
   templateUrl: './invite.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './invite.component.scss'
 })
 export class InviteComponent {

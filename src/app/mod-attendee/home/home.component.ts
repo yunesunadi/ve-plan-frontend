@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { EventService } from '../../services/event.service';
 import { map, shareReplay } from 'rxjs';
 import { CalendarOptions, EventClickArg } from '@fullcalendar/core/index.js';
@@ -11,6 +11,7 @@ import { EventDetailsDialogComponent } from '../../components/event-details-dial
   standalone: false,
   selector: 'app-home',
   templateUrl: './home.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './home.component.scss'
 })
 export class HomeComponent {

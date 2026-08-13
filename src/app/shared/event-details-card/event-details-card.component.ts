@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { Event } from '../../models/Event';
 import { environment } from '../../../environments/environment';
 
@@ -6,6 +6,7 @@ import { environment } from '../../../environments/environment';
   standalone: false,
   selector: 'app-event-details-card',
   templateUrl: './event-details-card.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './event-details-card.component.scss'
 })
 export class EventDetailsCardComponent {

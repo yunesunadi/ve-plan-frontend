@@ -1,4 +1,4 @@
-import { Component, inject, signal, ViewChild } from '@angular/core';
+import { Component, inject, signal, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { EventCategoryType, EventQuery, EventTimeType } from '../../models/Event';
 import { DashboardCacheService } from '../../caches/dashboard-cache.service';
 import { MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
@@ -11,6 +11,7 @@ import { MatAccordion } from '@angular/material/expansion';
   selector: 'app-events',
   templateUrl: './events.component.html',
   styleUrl: './events.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [
     provideNativeDateAdapter(),
     {

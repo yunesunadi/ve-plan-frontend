@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { EventService } from '../../services/event.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, catchError, EMPTY, map, shareReplay, switchMap, tap } from 'rxjs';
@@ -16,6 +16,7 @@ import { CommonService } from '../../services/common.service';
   standalone: false,
   selector: 'app-event-view',
   templateUrl: './event-view.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './event-view.component.scss'
 })
 export class EventViewComponent {

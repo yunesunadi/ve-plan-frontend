@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, signal, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, signal, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
@@ -11,6 +11,7 @@ const MIN_LENGTH = 6;
   standalone: false,
   selector: 'app-signup',
   templateUrl: './signup.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './signup.component.scss',
 })
 export class SignupComponent {

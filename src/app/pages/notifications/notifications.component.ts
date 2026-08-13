@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { catchError, combineLatest, map, of, scan, startWith, switchMap, tap } from 'rxjs';
 import { Notification } from '../../models/Notification';
 import { SocketService } from '../../services/socket.service';
@@ -9,6 +9,7 @@ import { CommonService } from '../../services/common.service';
   standalone: false,
   selector: 'app-notifications',
   templateUrl: './notifications.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './notifications.component.scss'
 })
 export class NotificationsComponent {

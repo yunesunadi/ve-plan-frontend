@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { catchError, EMPTY, map, switchMap } from 'rxjs';
@@ -8,6 +8,7 @@ import { CommonService } from '../../services/common.service';
   standalone: false,
   selector: 'app-verify-email',
   templateUrl: './verify-email.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./verify-email.component.scss']
 })
 export class VerifyEmailComponent implements OnInit {

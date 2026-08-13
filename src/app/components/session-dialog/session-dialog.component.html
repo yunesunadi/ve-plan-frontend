@@ -42,8 +42,8 @@
         matInput 
         [matTimepicker]="timepicker1" 
         formControlName="start_time"
-        [matTimepickerMin]="((event$ | async)?.start_time) | date: 'hh:mm'"
-        [matTimepickerMax]="((event$ | async)?.end_time) | date: 'hh:mm'"
+        [matTimepickerMin]="($safeNavigationMigration((event$ | async)?.start_time)) | date: 'hh:mm'"
+        [matTimepickerMax]="($safeNavigationMigration((event$ | async)?.end_time)) | date: 'hh:mm'"
       >
       <mat-timepicker #timepicker1/>
       <mat-timepicker-toggle [for]="timepicker1" matSuffix/>
@@ -70,8 +70,8 @@
         matInput 
         [matTimepicker]="timepicker2" 
         formControlName="end_time"
-        [matTimepickerMin]="((event$ | async)?.start_time) | date: 'hh:mm'"
-        [matTimepickerMax]="((event$ | async)?.end_time) | date: 'hh:mm'"
+        [matTimepickerMin]="($safeNavigationMigration((event$ | async)?.start_time)) | date: 'hh:mm'"
+        [matTimepickerMax]="($safeNavigationMigration((event$ | async)?.end_time)) | date: 'hh:mm'"
       >
       <mat-timepicker #timepicker2/>
       <mat-timepicker-toggle [for]="timepicker2" matSuffix/>

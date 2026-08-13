@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { UserPayload } from '../../models/User';
 import { jwtDecode } from 'jwt-decode';
@@ -12,6 +12,7 @@ import { Notification } from '../../models/Notification';
   standalone: false,
   selector: 'app-private',
   templateUrl: './private.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './private.component.scss'
 })
 export class PrivateComponent {

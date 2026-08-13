@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { CommonService } from '../../services/common.service';
 import { EventRegisterService } from '../../services/event-register.service';
@@ -9,6 +9,7 @@ import { combineLatest } from 'rxjs';
   standalone: false,
   selector: 'app-meeting-started-dialog',
   templateUrl: './meeting-started-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './meeting-started-dialog.component.scss'
 })
 export class MeetingStartedDialogComponent {

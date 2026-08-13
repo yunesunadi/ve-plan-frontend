@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { CommonService } from '../../services/common.service';
@@ -11,6 +11,7 @@ import { HttpErrorResponse } from '@angular/common/http';
   standalone: false,
   selector: 'app-role',
   templateUrl: './role.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './role.component.scss'
 })
 export class RoleComponent {

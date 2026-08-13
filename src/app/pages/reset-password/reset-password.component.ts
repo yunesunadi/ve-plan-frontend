@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { CommonService } from '../../services/common.service';
@@ -9,6 +9,7 @@ import { ActivatedRoute, Router } from '@angular/router';
   standalone: false,
   selector: 'app-reset-password',
   templateUrl: './reset-password.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './reset-password.component.scss'
 })
 export class ResetPasswordComponent {

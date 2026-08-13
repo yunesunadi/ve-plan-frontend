@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { format } from "date-fns";
@@ -13,6 +13,7 @@ import { EventCategoryType, EventType } from '../../models/Event';
   standalone: false,
   selector: 'app-event-dialog',
   templateUrl: './event-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './event-dialog.component.scss'
 })
 export class EventDialogComponent {

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { CommonService } from '../../services/common.service';
@@ -7,6 +7,7 @@ import { CommonService } from '../../services/common.service';
   standalone: false,
   selector: 'app-forgot-password',
   templateUrl: './forgot-password.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './forgot-password.component.scss'
 })
 export class ForgotPasswordComponent {

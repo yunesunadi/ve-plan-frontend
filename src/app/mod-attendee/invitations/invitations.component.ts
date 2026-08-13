@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { EventInviteService } from '../../services/event-invite.service';
 import { BehaviorSubject, concatMap, map, shareReplay, tap } from 'rxjs';
 import { CommonService } from '../../services/common.service';
@@ -8,6 +8,7 @@ import { Location } from '@angular/common';
   standalone: false,
   selector: 'app-invitations',
   templateUrl: './invitations.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './invitations.component.scss'
 })
 export class InvitationsComponent {

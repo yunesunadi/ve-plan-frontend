@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { CommonService } from '../../services/common.service';
 import { MatDialogRef } from '@angular/material/dialog';
@@ -11,6 +11,7 @@ import { EventService } from '../../services/event.service';
   standalone: false,
   selector: 'app-session-dialog',
   templateUrl: './session-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './session-dialog.component.scss'
 })
 export class SessionDialogComponent {

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { EventService } from '../../services/event.service';
 import { map, shareReplay } from 'rxjs';
@@ -10,6 +10,7 @@ import { DashboardCacheService } from '../../caches/dashboard-cache.service';
   standalone: false,
   selector: 'app-event-details-dialog',
   templateUrl: './event-details-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './event-details-dialog.component.scss'
 })
 export class EventDetailsDialogComponent {

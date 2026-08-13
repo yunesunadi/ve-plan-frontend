@@ -16,7 +16,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { RoleComponent } from './pages/role/role.component';
 import { MatSelectModule } from '@angular/material/select';
 import { PrivateComponent } from './layouts/private/private.component';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideHttpClient, withInterceptors, withXhr } from '@angular/common/http';
 import { notFoundInterceptor } from './interceptors/not-found.interceptor';
 import { unauthenticatedInterceptor } from './interceptors/unauthenticated.interceptor';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -100,7 +100,7 @@ import { SocialLoginRedirectComponent } from './pages/social-login-redirect/soci
   ],
   providers: [
     appConfig.providers,
-    provideHttpClient(withInterceptors([
+    provideHttpClient(withXhr(), withInterceptors([
       notFoundInterceptor,
       unauthenticatedInterceptor,
       unauthorizedInterceptor,

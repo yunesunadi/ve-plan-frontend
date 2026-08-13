@@ -1,4 +1,4 @@
-import { Component, signal, ChangeDetectorRef, inject } from '@angular/core';
+import { Component, signal, ChangeDetectorRef, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CalendarOptions, EventClickArg } from '@fullcalendar/core';
 import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -12,6 +12,7 @@ import { EventDetailsDialogComponent } from '../../components/event-details-dial
   standalone: false,
   selector: 'app-home',
   templateUrl: './home.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './home.component.scss'
 })
 export class HomeComponent {

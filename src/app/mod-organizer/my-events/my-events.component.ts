@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { DashboardCacheService } from '../../caches/dashboard-cache.service';
 import { Router, NavigationStart, NavigationEnd } from '@angular/router';
 import { EventCacheService } from '../../caches/event-cache.service';
@@ -8,6 +8,7 @@ import { MyEventQuery, MyEventType } from '../../models/Event';
   standalone: false,
   selector: 'app-my-events',
   templateUrl: './my-events.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './my-events.component.scss'
 })
 export class MyEventsComponent {

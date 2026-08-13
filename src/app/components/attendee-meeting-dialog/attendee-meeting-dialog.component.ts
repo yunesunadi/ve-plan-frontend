@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, signal, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, signal, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { MeetingService } from '../../services/meeting.service';
 import { concatMap, map, tap } from 'rxjs';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -10,6 +10,7 @@ import { CommonService } from '../../services/common.service';
   standalone: false,
   selector: 'app-attendee-meeting-dialog',
   templateUrl: './attendee-meeting-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './attendee-meeting-dialog.component.scss'
 })
 export class AttendeeMeetingDialogComponent {

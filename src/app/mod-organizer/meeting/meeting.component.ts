@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, signal, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, signal, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, combineLatest, concatMap, map, of, shareReplay, switchMap, tap } from 'rxjs';
 import { MeetingService } from '../../services/meeting.service';
@@ -25,6 +25,7 @@ import { PageEvent } from '@angular/material/paginator';
   standalone: false,
   selector: 'app-meeting',
   templateUrl: './meeting.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './meeting.component.scss'
 })
 export class MeetingComponent {

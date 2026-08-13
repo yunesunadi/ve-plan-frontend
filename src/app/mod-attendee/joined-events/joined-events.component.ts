@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { EventRegisterService } from '../../services/event-register.service';
 import { EventInviteService } from '../../services/event-invite.service';
 import { combineLatest, map, Observable, of, shareReplay, switchMap, tap } from 'rxjs';
@@ -17,6 +17,7 @@ interface Query {
   standalone: false,
   selector: 'app-joined-events',
   templateUrl: './joined-events.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './joined-events.component.scss'
 })
 export class JoinedEventsComponent {

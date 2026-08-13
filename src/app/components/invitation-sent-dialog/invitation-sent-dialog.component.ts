@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { CommonService } from '../../services/common.service';
 import { EventInviteService } from '../../services/event-invite.service';
@@ -8,6 +8,7 @@ import { HttpErrorResponse } from '@angular/common/http';
   standalone: false,
   selector: 'app-invitation-sent-dialog',
   templateUrl: './invitation-sent-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './invitation-sent-dialog.component.scss'
 })
 export class InvitationSentDialogComponent {

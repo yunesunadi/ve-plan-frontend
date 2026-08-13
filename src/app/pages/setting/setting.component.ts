@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, signal, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, signal, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { CommonService } from '../../services/common.service';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -13,6 +13,7 @@ const MIN_LENGTH = 6;
   standalone: false,
   selector: 'app-setting',
   templateUrl: './setting.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './setting.component.scss'
 })
 export class SettingComponent {
