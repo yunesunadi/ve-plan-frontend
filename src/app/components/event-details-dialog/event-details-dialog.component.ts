@@ -1,17 +1,20 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialogActions, MatDialogContent } from '@angular/material/dialog';
 import { EventService } from '../../services/event.service';
 import { map, shareReplay } from 'rxjs';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { DashboardCacheService } from '../../caches/dashboard-cache.service';
+import { MatIcon } from '@angular/material/icon';
+import { CdkScrollable } from '@angular/cdk/scrolling';
+import { AsyncPipe, DatePipe } from '@angular/common';
 
 @Component({
-  standalone: false,
-  selector: 'app-event-details-dialog',
-  templateUrl: './event-details-dialog.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: './event-details-dialog.component.scss'
+    selector: 'app-event-details-dialog',
+    templateUrl: './event-details-dialog.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './event-details-dialog.component.scss',
+    imports: [MatDialogActions, MatIcon, CdkScrollable, MatDialogContent, AsyncPipe, DatePipe]
 })
 export class EventDetailsDialogComponent {
   private dialog_data = inject(MAT_DIALOG_DATA);

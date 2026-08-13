@@ -1,5 +1,5 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { UserPayload } from '../../models/User';
 import { jwtDecode } from 'jwt-decode';
 import { environment } from '../../../environments/environment';
@@ -7,13 +7,21 @@ import { catchError, of, map, combineLatest, startWith, switchMap, timer, scan }
 import { NotificationService } from '../../services/notification.service';
 import { SocketService } from '../../services/socket.service';
 import { Notification } from '../../models/Notification';
+import { MatToolbar } from '@angular/material/toolbar';
+import { MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { MatBadge } from '@angular/material/badge';
+import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
+import { MatDivider } from '@angular/material/divider';
+import { MatDrawerContainer, MatDrawer } from '@angular/material/sidenav';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
-  standalone: false,
-  selector: 'app-private',
-  templateUrl: './private.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: './private.component.scss'
+    selector: 'app-private',
+    templateUrl: './private.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './private.component.scss',
+    imports: [MatToolbar, MatIconButton, MatIcon, RouterLink, MatBadge, MatMenuTrigger, MatMenu, MatMenuItem, MatDivider, MatDrawerContainer, MatDrawer, RouterLinkActive, RouterOutlet, AsyncPipe]
 })
 export class PrivateComponent {
   private route = inject(Router);

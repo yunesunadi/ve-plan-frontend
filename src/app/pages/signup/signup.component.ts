@@ -1,18 +1,35 @@
 import { Component, ElementRef, inject, signal, ViewChild, ChangeDetectionStrategy } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { map } from 'rxjs';
 import { CommonService } from '../../services/common.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { RegisterWrapperComponent } from '../../shared/register-wrapper/register-wrapper.component';
+import { MatFormField, MatLabel, MatInput, MatError, MatSuffix, MatHint } from '@angular/material/input';
+import { MatIconButton, MatButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
 
 const MIN_LENGTH = 6;
 @Component({
-  standalone: false,
-  selector: 'app-signup',
-  templateUrl: './signup.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: './signup.component.scss',
+    selector: 'app-signup',
+    templateUrl: './signup.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './signup.component.scss',
+    imports: [
+        RegisterWrapperComponent,
+        ReactiveFormsModule,
+        MatFormField,
+        MatLabel,
+        MatInput,
+        MatError,
+        MatIconButton,
+        MatSuffix,
+        MatIcon,
+        MatHint,
+        MatButton,
+        RouterLink,
+    ],
 })
 export class SignupComponent {
   @ViewChild("imgView") imgView!: ElementRef;

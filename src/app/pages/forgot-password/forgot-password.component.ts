@@ -1,14 +1,19 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { CommonService } from '../../services/common.service';
+import { RegisterWrapperComponent } from '../../shared/register-wrapper/register-wrapper.component';
+import { MatFormField, MatLabel, MatInput, MatError } from '@angular/material/input';
+import { MatButton } from '@angular/material/button';
+import { RouterLink } from '@angular/router';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
-  standalone: false,
-  selector: 'app-forgot-password',
-  templateUrl: './forgot-password.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: './forgot-password.component.scss'
+    selector: 'app-forgot-password',
+    templateUrl: './forgot-password.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './forgot-password.component.scss',
+    imports: [RegisterWrapperComponent, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, MatButton, RouterLink, MatIcon]
 })
 export class ForgotPasswordComponent {
 

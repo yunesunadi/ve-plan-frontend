@@ -1,20 +1,24 @@
 import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { map } from 'rxjs';
 import { jwtDecode } from "jwt-decode";
 import { UserPayload } from '../../models/User';
 import { CommonService } from '../../services/common.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
+import { RegisterWrapperComponent } from '../../shared/register-wrapper/register-wrapper.component';
+import { MatButton, MatIconButton } from '@angular/material/button';
+import { MatFormField, MatLabel, MatInput, MatError, MatSuffix } from '@angular/material/input';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
-  standalone: false,
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: './login.component.scss'
+    selector: 'app-login',
+    templateUrl: './login.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './login.component.scss',
+    imports: [RegisterWrapperComponent, MatButton, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, MatIconButton, MatSuffix, MatIcon, RouterLink]
 })
 export class LoginComponent {
   isPassword = signal(true);

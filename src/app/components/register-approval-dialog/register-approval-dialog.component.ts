@@ -1,14 +1,16 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogActions, MatDialogClose } from '@angular/material/dialog';
 import { CommonService } from '../../services/common.service';
 import { EventRegisterService } from '../../services/event-register.service';
+import { CdkScrollable } from '@angular/cdk/scrolling';
+import { MatButton } from '@angular/material/button';
 
 @Component({
-  standalone: false,
-  selector: 'app-register-approval-dialog',
-  templateUrl: './register-approval-dialog.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: './register-approval-dialog.component.scss'
+    selector: 'app-register-approval-dialog',
+    templateUrl: './register-approval-dialog.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './register-approval-dialog.component.scss',
+    imports: [CdkScrollable, MatDialogContent, MatDialogActions, MatButton, MatDialogClose]
 })
 export class RegisterApprovalDialogComponent {
   dialog_data = inject(MAT_DIALOG_DATA);

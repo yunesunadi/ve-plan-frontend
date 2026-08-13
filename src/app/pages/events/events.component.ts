@@ -2,23 +2,34 @@ import { Component, inject, signal, ViewChild, ChangeDetectionStrategy } from '@
 import { EventCategoryType, EventQuery, EventTimeType } from '../../models/Event';
 import { DashboardCacheService } from '../../caches/dashboard-cache.service';
 import { MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { EventCacheService } from '../../caches/event-cache.service';
-import { MatAccordion } from '@angular/material/expansion';
+import { MatAccordion, MatExpansionPanel } from '@angular/material/expansion';
+import { PageLoadingComponent } from '../../shared/page-loading/page-loading.component';
+import { OutletInnerComponent } from '../../shared/outlet-inner/outlet-inner.component';
+import { MatButton, MatIconButton } from '@angular/material/button';
+import { MatBadge } from '@angular/material/badge';
+import { MatIcon } from '@angular/material/icon';
+import { MatFormField, MatLabel, MatInput, MatPrefix, MatSuffix, MatHint } from '@angular/material/input';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { MatSelect, MatOption } from '@angular/material/select';
+import { MatDatepickerInput, MatDatepickerToggle, MatDatepicker } from '@angular/material/datepicker';
+import { MatCard, MatCardTitle, MatCardSubtitle, MatCardActions } from '@angular/material/card';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
-  standalone: false,
-  selector: 'app-events',
-  templateUrl: './events.component.html',
-  styleUrl: './events.component.scss',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  providers: [
-    provideNativeDateAdapter(),
-    {
-      provide: MAT_DATE_LOCALE,
-      useValue: "en-GB"
-    },
-  ]
+    selector: 'app-events',
+    templateUrl: './events.component.html',
+    styleUrl: './events.component.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    providers: [
+        provideNativeDateAdapter(),
+        {
+            provide: MAT_DATE_LOCALE,
+            useValue: "en-GB"
+        },
+    ],
+    imports: [PageLoadingComponent, OutletInnerComponent, MatButton, MatBadge, MatIcon, MatAccordion, MatExpansionPanel, MatFormField, MatLabel, MatInput, ReactiveFormsModule, FormsModule, MatPrefix, MatIconButton, MatSuffix, MatSelect, MatOption, MatDatepickerInput, MatHint, MatDatepickerToggle, MatDatepicker, MatCard, MatCardTitle, MatCardSubtitle, MatCardActions, RouterLink, AsyncPipe]
 })
 export class EventsComponent {
   @ViewChild(MatAccordion) accordion!: MatAccordion;

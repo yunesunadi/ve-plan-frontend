@@ -3,13 +3,14 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { catchError, EMPTY, map, switchMap } from 'rxjs';
 import { CommonService } from '../../services/common.service';
+import { RegisterWrapperComponent } from '../../shared/register-wrapper/register-wrapper.component';
 
 @Component({
-  standalone: false,
-  selector: 'app-verify-email',
-  templateUrl: './verify-email.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrls: ['./verify-email.component.scss']
+    selector: 'app-verify-email',
+    templateUrl: './verify-email.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrls: ['./verify-email.component.scss'],
+    imports: [RegisterWrapperComponent]
 })
 export class VerifyEmailComponent implements OnInit {
   activatedRoute = inject(ActivatedRoute);

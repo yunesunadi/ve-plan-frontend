@@ -1,18 +1,24 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonService } from '../../services/common.service';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef, MatDialogTitle, MatDialogContent, MatDialogActions, MatDialogClose } from '@angular/material/dialog';
 import { DIALOG_DATA } from '@angular/cdk/dialog';
 import { SessionService } from '../../services/session.service';
 import { concatMap, iif, map, of, shareReplay } from 'rxjs';
 import { EventService } from '../../services/event.service';
+import { CdkScrollable } from '@angular/cdk/scrolling';
+import { MatFormField, MatLabel, MatInput, MatError, MatSuffix } from '@angular/material/input';
+import { CdkTextareaAutosize } from '@angular/cdk/text-field';
+import { MatTimepickerInput, MatTimepicker, MatTimepickerToggle } from '@angular/material/timepicker';
+import { MatButton } from '@angular/material/button';
+import { AsyncPipe, DatePipe } from '@angular/common';
 
 @Component({
-  standalone: false,
-  selector: 'app-session-dialog',
-  templateUrl: './session-dialog.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: './session-dialog.component.scss'
+    selector: 'app-session-dialog',
+    templateUrl: './session-dialog.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './session-dialog.component.scss',
+    imports: [MatDialogTitle, CdkScrollable, MatDialogContent, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, CdkTextareaAutosize, MatTimepickerInput, MatTimepicker, MatTimepickerToggle, MatSuffix, MatDialogActions, MatButton, MatDialogClose, AsyncPipe, DatePipe]
 })
 export class SessionDialogComponent {
   create_form: FormGroup;

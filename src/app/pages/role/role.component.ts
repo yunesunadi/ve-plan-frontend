@@ -6,13 +6,18 @@ import { map } from 'rxjs';
 import { RoleType, UserPayload } from '../../models/User';
 import { jwtDecode } from 'jwt-decode';
 import { HttpErrorResponse } from '@angular/common/http';
+import { RegisterWrapperComponent } from '../../shared/register-wrapper/register-wrapper.component';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { MatFormField, MatLabel, MatError } from '@angular/material/input';
+import { MatSelect, MatOption } from '@angular/material/select';
+import { MatButton } from '@angular/material/button';
 
 @Component({
-  standalone: false,
-  selector: 'app-role',
-  templateUrl: './role.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: './role.component.scss'
+    selector: 'app-role',
+    templateUrl: './role.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './role.component.scss',
+    imports: [RegisterWrapperComponent, ReactiveFormsModule, FormsModule, MatFormField, MatLabel, MatSelect, MatOption, MatError, MatButton]
 })
 export class RoleComponent {
   roles: RoleType[] = ["organizer", "attendee"];

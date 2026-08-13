@@ -1,6 +1,6 @@
 import { Component, ElementRef, inject, ViewChild, ChangeDetectionStrategy } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators, ReactiveFormsModule } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialogTitle, MatDialogContent, MatDialogActions, MatDialogClose } from '@angular/material/dialog';
 import { format } from "date-fns";
 import { EventService } from '../../services/event.service';
 import { CommonService } from '../../services/common.service';
@@ -8,13 +8,19 @@ import { concatMap, iif, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { EventCacheService } from '../../caches/event-cache.service';
 import { EventCategoryType, EventType } from '../../models/Event';
+import { CdkScrollable } from '@angular/cdk/scrolling';
+import { MatFormField, MatLabel, MatInput, MatError, MatSuffix } from '@angular/material/input';
+import { CdkTextareaAutosize } from '@angular/cdk/text-field';
+import { MatTimepickerInput, MatTimepicker, MatTimepickerToggle } from '@angular/material/timepicker';
+import { MatSelect, MatOption } from '@angular/material/select';
+import { MatButton } from '@angular/material/button';
 
 @Component({
-  standalone: false,
-  selector: 'app-event-dialog',
-  templateUrl: './event-dialog.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: './event-dialog.component.scss'
+    selector: 'app-event-dialog',
+    templateUrl: './event-dialog.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './event-dialog.component.scss',
+    imports: [MatDialogTitle, CdkScrollable, MatDialogContent, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, CdkTextareaAutosize, MatTimepickerInput, MatTimepicker, MatTimepickerToggle, MatSuffix, MatSelect, MatOption, MatDialogActions, MatButton, MatDialogClose]
 })
 export class EventDialogComponent {
   @ViewChild("imgView") imgView!: ElementRef;

@@ -1,16 +1,20 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonService } from '../../services/common.service';
 import { catchError, EMPTY, switchMap } from 'rxjs';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { RegisterWrapperComponent } from '../../shared/register-wrapper/register-wrapper.component';
+import { MatFormField, MatLabel, MatInput, MatError } from '@angular/material/input';
+import { MatButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
-  standalone: false,
-  selector: 'app-reset-password',
-  templateUrl: './reset-password.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: './reset-password.component.scss'
+    selector: 'app-reset-password',
+    templateUrl: './reset-password.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './reset-password.component.scss',
+    imports: [RegisterWrapperComponent, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, MatButton, RouterLink, MatIcon]
 })
 export class ResetPasswordComponent {
   private authService = inject(AuthService);

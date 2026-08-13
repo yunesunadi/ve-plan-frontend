@@ -1,20 +1,24 @@
 import { Component, ElementRef, inject, signal, ViewChild, ChangeDetectionStrategy } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonService } from '../../services/common.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { UserService } from '../../services/user.service';
 import { environment } from '../../../environments/environment';
 import { Location } from '@angular/common';
 import { DashboardCacheService } from '../../caches/dashboard-cache.service';
+import { OutletInnerComponent } from '../../shared/outlet-inner/outlet-inner.component';
+import { MatButton, MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { MatFormField, MatLabel, MatInput, MatError, MatSuffix, MatHint } from '@angular/material/input';
 
 const MIN_LENGTH = 6;
 
 @Component({
-  standalone: false,
-  selector: 'app-setting',
-  templateUrl: './setting.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: './setting.component.scss'
+    selector: 'app-setting',
+    templateUrl: './setting.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './setting.component.scss',
+    imports: [OutletInnerComponent, MatButton, MatIcon, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, MatIconButton, MatSuffix, MatHint]
 })
 export class SettingComponent {
   @ViewChild("imgView") imgView!: ElementRef;

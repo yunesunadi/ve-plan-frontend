@@ -1,17 +1,18 @@
 import { Component, ElementRef, inject, signal, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { concatMap, delay, map, tap } from 'rxjs';
 import { MeetingService } from '../../services/meeting.service';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent } from '@angular/material/dialog';
 import { MeetingParticipant } from '../../models/Participant';
 import { CommonService } from '../../services/common.service';
 import { ParticipantService } from '../../services/participant.service';
+import { CdkScrollable } from '@angular/cdk/scrolling';
 
 @Component({
-  standalone: false,
-  selector: 'app-organizer-meeting-dialog',
-  templateUrl: './organizer-meeting-dialog.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: './organizer-meeting-dialog.component.scss'
+    selector: 'app-organizer-meeting-dialog',
+    templateUrl: './organizer-meeting-dialog.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './organizer-meeting-dialog.component.scss',
+    imports: [CdkScrollable, MatDialogContent]
 })
 export class OrganizerMeetingDialogComponent {
   @ViewChild("jitsi_iframe") jitsi_iframe!: ElementRef;

@@ -1,13 +1,14 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonService } from '../../services/common.service';
+import { RegisterWrapperComponent } from '../../shared/register-wrapper/register-wrapper.component';
 
 @Component({
-  standalone: false,
-  selector: 'app-social-login-redirect',
-  templateUrl: './social-login-redirect.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: './social-login-redirect.component.scss'
+    selector: 'app-social-login-redirect',
+    templateUrl: './social-login-redirect.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './social-login-redirect.component.scss',
+    imports: [RegisterWrapperComponent]
 })
 export class SocialLoginRedirectComponent {
   activatedRoute = inject(ActivatedRoute);
