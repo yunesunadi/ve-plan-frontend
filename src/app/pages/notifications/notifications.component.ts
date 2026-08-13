@@ -4,13 +4,20 @@ import { Notification } from '../../models/Notification';
 import { SocketService } from '../../services/socket.service';
 import { NotificationService } from '../../services/notification.service';
 import { CommonService } from '../../services/common.service';
+import { PageLoadingComponent } from '../../shared/page-loading/page-loading.component';
+import { OutletInnerComponent } from '../../shared/outlet-inner/outlet-inner.component';
+import { MatButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { MatCard, MatCardContent } from '@angular/material/card';
+import { NgClass, AsyncPipe } from '@angular/common';
+import { MatCheckbox } from '@angular/material/checkbox';
 
 @Component({
-  standalone: false,
-  selector: 'app-notifications',
-  templateUrl: './notifications.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: './notifications.component.scss'
+    selector: 'app-notifications',
+    templateUrl: './notifications.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './notifications.component.scss',
+    imports: [PageLoadingComponent, OutletInnerComponent, MatButton, MatIcon, MatCard, NgClass, MatCardContent, MatCheckbox, AsyncPipe]
 })
 export class NotificationsComponent {
   private notificationService = inject(NotificationService);

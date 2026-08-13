@@ -13,29 +13,27 @@ import { PageLoadingComponent } from './page-loading/page-loading.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
-  declarations: [
-    RegisterWrapperComponent,
-    OutletInnerComponent,
-    EventDetailsCardComponent,
-    SessionDetailsCardComponent,
-    NotificationsComponent,
-    PageLoadingComponent,
-  ],
-  imports: [
-    CommonModule,
-    MatButtonModule,
-    MatCardModule,
-    MatIconModule,
-    MatCheckboxModule,
-    MatProgressSpinnerModule,
-  ],
-  exports: [
-    RegisterWrapperComponent,
-    OutletInnerComponent,
-    EventDetailsCardComponent,
-    SessionDetailsCardComponent,
-    NotificationsComponent,
-    PageLoadingComponent,
-  ]
+    imports: [
+        CommonModule,
+        MatButtonModule,
+        MatCardModule,
+        MatIconModule,
+        MatCheckboxModule,
+        MatProgressSpinnerModule,
+        RegisterWrapperComponent,
+        OutletInnerComponent,
+        EventDetailsCardComponent,
+        SessionDetailsCardComponent,
+        NotificationsComponent,
+        PageLoadingComponent,
+    ],
+    exports: [
+        RegisterWrapperComponent,
+        OutletInnerComponent,
+        EventDetailsCardComponent,
+        SessionDetailsCardComponent,
+        NotificationsComponent,
+        PageLoadingComponent,
+    ]
 })
 export class SharedModule { }
