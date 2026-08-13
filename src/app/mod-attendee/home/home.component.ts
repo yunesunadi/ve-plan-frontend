@@ -6,13 +6,15 @@ import interactionPlugin from '@fullcalendar/interaction';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import { MatDialog } from '@angular/material/dialog';
 import { EventDetailsDialogComponent } from '../../components/event-details-dialog/event-details-dialog.component';
+import { OutletInnerComponent } from '../../shared/outlet-inner/outlet-inner.component';
+import { FullCalendarModule } from '@fullcalendar/angular';
 
 @Component({
-  standalone: false,
-  selector: 'app-home',
-  templateUrl: './home.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: './home.component.scss'
+    selector: 'app-home',
+    templateUrl: './home.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './home.component.scss',
+    imports: [OutletInnerComponent, FullCalendarModule]
 })
 export class HomeComponent {
   private eventService = inject(EventService);

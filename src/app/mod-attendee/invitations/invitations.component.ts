@@ -2,14 +2,20 @@ import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/cor
 import { EventInviteService } from '../../services/event-invite.service';
 import { BehaviorSubject, concatMap, map, shareReplay, tap } from 'rxjs';
 import { CommonService } from '../../services/common.service';
-import { Location } from '@angular/common';
+import { Location, AsyncPipe } from '@angular/common';
+import { PageLoadingComponent } from '../../shared/page-loading/page-loading.component';
+import { OutletInnerComponent } from '../../shared/outlet-inner/outlet-inner.component';
+import { MatButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { MatCard, MatCardTitle, MatCardSubtitle, MatCardActions } from '@angular/material/card';
+import { RouterLink } from '@angular/router';
 
 @Component({
-  standalone: false,
-  selector: 'app-invitations',
-  templateUrl: './invitations.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: './invitations.component.scss'
+    selector: 'app-invitations',
+    templateUrl: './invitations.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './invitations.component.scss',
+    imports: [PageLoadingComponent, OutletInnerComponent, MatButton, MatIcon, MatCard, MatCardTitle, MatCardSubtitle, RouterLink, MatCardActions, AsyncPipe]
 })
 export class InvitationsComponent {
   private eventInviteService = inject(EventInviteService);

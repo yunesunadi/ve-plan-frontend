@@ -2,23 +2,30 @@ import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/cor
 import { EventRegisterService } from '../../services/event-register.service';
 import { EventInviteService } from '../../services/event-invite.service';
 import { combineLatest, map, Observable, of, shareReplay, switchMap, tap } from 'rxjs';
-import { Location } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Location, NgClass, AsyncPipe } from '@angular/common';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DashboardCacheService } from '../../caches/dashboard-cache.service';
 import { Timestamp } from '../../models/Utils';
 import { EventRegister } from '../../models/EventRegister';
 import { EventInvite } from '../../models/EventInvite';
+import { PageLoadingComponent } from '../../shared/page-loading/page-loading.component';
+import { OutletInnerComponent } from '../../shared/outlet-inner/outlet-inner.component';
+import { MatButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { MatBadge } from '@angular/material/badge';
+import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
+import { MatCard, MatCardTitle, MatCardSubtitle, MatCardActions } from '@angular/material/card';
 
 interface Query { 
   category?: string; 
 }
 
 @Component({
-  standalone: false,
-  selector: 'app-joined-events',
-  templateUrl: './joined-events.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: './joined-events.component.scss'
+    selector: 'app-joined-events',
+    templateUrl: './joined-events.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './joined-events.component.scss',
+    imports: [PageLoadingComponent, OutletInnerComponent, MatButton, MatIcon, MatBadge, MatMenuTrigger, MatMenu, MatMenuItem, NgClass, MatCard, MatCardTitle, MatCardSubtitle, MatCardActions, RouterLink, AsyncPipe]
 })
 export class JoinedEventsComponent {
   private eventRegisterService = inject(EventRegisterService);

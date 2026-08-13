@@ -9,15 +9,21 @@ import { EventInviteService } from '../../services/event-invite.service';
 import { MeetingService } from '../../services/meeting.service';
 import { MatDialog } from '@angular/material/dialog';
 import { AttendeeMeetingDialogComponent } from '../../components/attendee-meeting-dialog/attendee-meeting-dialog.component';
-import { Location } from '@angular/common';
+import { Location, AsyncPipe } from '@angular/common';
 import { UtilService } from '../../services/util.service';
+import { PageLoadingComponent } from '../../shared/page-loading/page-loading.component';
+import { OutletInnerComponent } from '../../shared/outlet-inner/outlet-inner.component';
+import { MatButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { EventDetailsCardComponent } from '../../shared/event-details-card/event-details-card.component';
+import { SessionDetailsCardComponent } from '../../shared/session-details-card/session-details-card.component';
 
 @Component({
-  standalone: false,
-  selector: 'app-event-view',
-  templateUrl: './event-view.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: './event-view.component.scss'
+    selector: 'app-event-view',
+    templateUrl: './event-view.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './event-view.component.scss',
+    imports: [PageLoadingComponent, OutletInnerComponent, MatButton, MatIcon, EventDetailsCardComponent, SessionDetailsCardComponent, AsyncPipe]
 })
 export class EventViewComponent {
   private eventService = inject(EventService);

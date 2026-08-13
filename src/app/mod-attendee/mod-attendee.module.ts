@@ -17,24 +17,22 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatBadgeModule } from '@angular/material/badge';
 
 @NgModule({
-  declarations: [
-    HomeComponent,
-    EventViewComponent,
-    InvitationsComponent,
-    JoinedEventsComponent,
-  ],
-  imports: [
-    CommonModule,
-    ModAttendeeRoutingModule,
-    SharedModule,
-    MatCardModule,
-    MatIconModule,
-    FullCalendarModule,
-    MatButtonModule,
-    FormsModule,
-    MatSelectModule,
-    MatMenuModule,
-    MatBadgeModule,
-  ]
+    imports: [
+        CommonModule,
+        ModAttendeeRoutingModule,
+        SharedModule,
+        MatCardModule,
+        MatIconModule,
+        FullCalendarModule,
+        MatButtonModule,
+        FormsModule,
+        MatSelectModule,
+        MatMenuModule,
+        MatBadgeModule,
+        HomeComponent,
+        EventViewComponent,
+        InvitationsComponent,
+        JoinedEventsComponent,
+    ]
 })
 export class ModAttendeeModule { }
