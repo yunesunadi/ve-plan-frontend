@@ -1,9 +1,9 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { Component, ElementRef, inject, signal, ViewChild, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatNoDataRow } from '@angular/material/table';
 import { ActivatedRoute } from '@angular/router';
-import { concatMap, debounceTime, iif, map, of, shareReplay, switchMap, tap } from 'rxjs';
+import { concatMap, debounceTime, iif, map, of, shareReplay, startWith, switchMap, tap } from 'rxjs';
 import { UserService } from '../../services/user.service';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { EventService } from '../../services/event.service';
@@ -28,10 +28,7 @@ import { MatCheckbox } from '@angular/material/checkbox';
     imports: [PageLoadingComponent, OutletInnerComponent, MatButton, MatIcon, ReactiveFormsModule, MatFormField, MatPrefix, MatLabel, MatInput, MatIconButton, MatMenuTrigger, MatMenu, MatMenuItem, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCheckbox, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatNoDataRow, AsyncPipe]
 })
 export class InviteComponent {
-  @ViewChild("input") input!: ElementRef;
-  
   displayedColumns: string[] = ['select', 'id', 'name'];
-  dataSource = new MatTableDataSource<any>([]);
   selection = new SelectionModel<any>(true, []);
   form = new FormGroup({
     search_input: new FormControl()
@@ -54,58 +51,55 @@ export class InviteComponent {
     shareReplay(1)
   );
 
+  dataSource$ = this.form.controls.search_input.valueChanges.pipe(
+    debounceTime(500),
+    switchMap((value) => iif(
+      () => !!value,
+      this.userService.getAttendees(value).pipe(
+        concatMap((users) => this.event$.pipe(
+          map((event) => (users.data.map((item) => ({ ...item, event_id: event._id, event_title: event.title }))))
+        ))
+      ),
+      of([])
+    )),
+    map((res) => res.map((item, index) => ({
+      id: index + 1,
+      name: item.name,
+      email: item.email,
+      event_title: item.event_title,
+      user_id: item._id,
+      event_id: item.event_id,
+    }))),
+    map((users) => new MatTableDataSource(users)),
+    startWith(new MatTableDataSource<any>([])),
+    shareReplay(1)
+  );
+
   constructor() {}
 
-  ngOnInit() {
-    this.form.controls.search_input.valueChanges.pipe(
-      debounceTime(500),
-      switchMap((value) => iif(
-        () => !!value,
-        this.userService.getAttendees(value).pipe(
-          concatMap((users) => this.event$.pipe(
-            map((event) => (users.data.map((item) => ({ ...item, event_id: event._id, event_title: event.title }))))
-          ))
-        ),
-        of([])
-      )),
-      map((res) => res.map((item, index) => ({
-        id: index + 1,
-        name: item.name,
-        email: item.email,
-        event_title: item.event_title,
-        user_id: item._id,
-        event_id: item.event_id,
-      })))
-    ).subscribe({
-      next: (users) => {
-        this.dataSource = new MatTableDataSource(users);
-      }
-    });
-  }
-
-  isAllSelected() {
+  isAllSelected(dataSource: MatTableDataSource<any>) {
     const numSelected = this.selection.selected.length;
-    const numRows = this.dataSource.data.length;
+    const numRows = dataSource.data.length;
     return numSelected === numRows;
   }
 
-  toggleAllRows() {
-    if (this.isAllSelected()) {
+  toggleAllRows(dataSource: MatTableDataSource<any>) {
+    if (this.isAllSelected(dataSource)) {
       this.selection.clear();
       return;
     }
 
-    this.selection.select(...this.dataSource.data);
+    this.selection.select(...dataSource.data);
   }
 
-  checkboxLabel(row?: any): string {
+  checkboxLabel(dataSource: MatTableDataSource<any>, row?: any): string {
     if (!row) {
-      return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
+      return `${this.isAllSelected(dataSource) ? 'deselect' : 'select'} all`;
     }
     return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.position + 1}`;
   }
 
-  sendInvitation() {
+  sendInvitation(dataSource: MatTableDataSource<any>) {
     const dialogRef = this.dialog.open(InvitationSentDialogComponent, {
       data: this.selection.selected,
       disableClose: true,
@@ -114,11 +108,9 @@ export class InviteComponent {
 
     dialogRef.afterClosed().subscribe({
       next: () => {
-        this.selection.deselect(...this.dataSource.data);
+        this.selection.deselect(...dataSource.data);
         this.selection.clear();
-        this.input.nativeElement.value = "";
-
-        this.dataSource = new MatTableDataSource([] as any);
+        this.form.controls.search_input.setValue("");
       }
     });
   }

@@ -1,4 +1,5 @@
 @let event = (event$ | async)!;
+@let dataSource = (dataSource$ | async)!;
 
 @if (isLoading()) {
   <app-page-loading></app-page-loading>
@@ -20,7 +21,7 @@
       <mat-form-field appearance="outline" class="w-100" style="max-width: 300px;">
         <mat-icon matPrefix>search</mat-icon>
         <mat-label>Search Users</mat-label>
-        <input matInput formControlName="search_input" placeholder="Enter name or email" #input>
+        <input matInput formControlName="search_input" placeholder="Enter name or email">
       </mat-form-field>
     </div>
     <div class="d-flex mt-2 align-self-end align-self-md-auto" style="gap: .5rem;">
@@ -28,7 +29,7 @@
         mat-raised-button
         type="button"
         class="bg-secondary-clr text-primary-clr"
-        (click)="sendInvitation()"
+        (click)="sendInvitation(dataSource)"
         [disabled]="util.is_event_expired(event.date, event.end_time)"
       >
         <mat-icon>mail</mat-icon>
@@ -57,19 +58,19 @@
       <ng-container matColumnDef="select">
         <th mat-header-cell *matHeaderCellDef>
             <mat-checkbox
-              (change)="$event ? toggleAllRows() : null"
-              [checked]="selection.hasValue() && isAllSelected()"
-              [indeterminate]="selection.hasValue() && !isAllSelected()"
-              [aria-label]="checkboxLabel()"
+              (change)="$event ? toggleAllRows(dataSource) : null"
+              [checked]="selection.hasValue() && isAllSelected(dataSource)"
+              [indeterminate]="selection.hasValue() && !isAllSelected(dataSource)"
+              [aria-label]="checkboxLabel(dataSource)"
             >
             </mat-checkbox>
         </th>
         <td mat-cell *matCellDef="let row">
-            <mat-checkbox 
+            <mat-checkbox
               (click)="$event.stopPropagation()"
               (change)="$event ? selection.toggle(row) : null"
               [checked]="selection.isSelected(row)"
-              [aria-label]="checkboxLabel(row)"
+              [aria-label]="checkboxLabel(dataSource, row)"
             >
             </mat-checkbox>
         </td>

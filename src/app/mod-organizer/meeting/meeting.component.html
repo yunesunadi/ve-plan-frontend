@@ -6,6 +6,7 @@
 @let event_attendees = event_attendees$ | async;
 @let registered_users = registered_users$ | async;
 @let invitation_accepted_users = invitation_accepted_users$ | async;
+@let dataSource = (dataSource$ | async)!;
 
 @if (isLoading()) {
   <app-page-loading></app-page-loading>
@@ -153,7 +154,7 @@
   <mat-form-field appearance="outline" class="w-100" style="max-width: 300px;">
     <mat-icon matPrefix>search</mat-icon>
     <mat-label>Search Participants</mat-label>
-    <input matInput (keyup)="applyFilter($event)" placeholder="Enter name" #input>
+    <input matInput (keyup)="applyFilter($event, dataSource)" placeholder="Enter name" #input>
   </mat-form-field>
 
   <div class="mat-elevation-z8">

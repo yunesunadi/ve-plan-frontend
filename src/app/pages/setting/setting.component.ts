@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, signal, ViewChild, ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, inject, signal, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonService } from '../../services/common.service';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -33,6 +33,7 @@ export class SettingComponent {
   private userService = inject(UserService);
   private cacheService = inject(DashboardCacheService);
   private commonService = inject(CommonService);
+  private changeDetectorRef = inject(ChangeDetectorRef);
   location = inject(Location);
 
   constructor() {
@@ -83,6 +84,8 @@ export class SettingComponent {
             email: [user.email || '', [Validators.required, Validators.email]],
           }
         );
+
+        this.changeDetectorRef.markForCheck();
       }
     });
   }

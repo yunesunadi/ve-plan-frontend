@@ -1,6 +1,6 @@
 import { Component, ElementRef, inject, signal, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { BehaviorSubject, combineLatest, concatMap, map, of, shareReplay, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, combineLatest, concatMap, map, of, shareReplay, startWith, switchMap, tap } from 'rxjs';
 import { MeetingService } from '../../services/meeting.service';
 import { CommonService } from '../../services/common.service';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -53,7 +53,6 @@ export class MeetingComponent {
   util = inject(UtilService);
 
   displayedColumns: string[] = ['id', 'name', 'start_time', 'end_time', 'duration'];
-  dataSource = new MatTableDataSource<any>([]);
   selection = new SelectionModel<any>(true, []);
 
   readonly PAGE_LIMIT = 10;
@@ -115,18 +114,27 @@ export class MeetingComponent {
     shareReplay(1)
   );
 
-  joined_participants$ = this.query$.pipe(
+  joined_participants_page$ = this.query$.pipe(
     switchMap((query) => this.aroute.params.pipe(
       switchMap((params: any) => this.participantService.getAllByEventId(params.id)),
       map(res => res.data),
-      tap((result) => {
-        this.all_joined_participants.set(result);
-        const participants = result.map((data: Participant, index: number) => ({ id: index + 1, ...data }));
-        const paginated_result = participants.slice(query.offset || 0, (query.offset || 0) + (query.limit || 0));
-        this.dataSource = new MatTableDataSource(paginated_result);
-        return paginated_result;
-      })
-    )), 
+      tap((result) => this.all_joined_participants.set(result)),
+      map((result: Participant[]) => ({ result, query }))
+    )),
+    shareReplay(1)
+  );
+
+  joined_participants$ = this.joined_participants_page$.pipe(
+    map(({ result }) => result)
+  );
+
+  dataSource$ = this.joined_participants_page$.pipe(
+    map(({ result, query }) => {
+      const participants = result.map((data: Participant, index: number) => ({ id: index + 1, ...data }));
+      const paginated_result = participants.slice(query.offset || 0, (query.offset || 0) + (query.limit || 0));
+      return new MatTableDataSource(paginated_result);
+    }),
+    startWith(new MatTableDataSource<any>([])),
     shareReplay(1)
   );
 
@@ -246,12 +254,12 @@ export class MeetingComponent {
     });
   }
 
-  applyFilter(event: Event) {
+  applyFilter(event: Event, dataSource: MatTableDataSource<any>) {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+    dataSource.filter = filterValue.trim().toLowerCase();
 
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
+    if (dataSource.paginator) {
+      dataSource.paginator.firstPage();
     }
   }
 
