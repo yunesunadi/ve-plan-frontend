@@ -1,5 +1,5 @@
 import { Component, ElementRef, inject, signal, ViewChild, ChangeDetectionStrategy } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { BehaviorSubject, combineLatest, concatMap, map, of, shareReplay, switchMap, tap } from 'rxjs';
 import { MeetingService } from '../../services/meeting.service';
 import { CommonService } from '../../services/common.service';
@@ -10,23 +10,29 @@ import { MatDialog } from '@angular/material/dialog';
 import { EventRegisterService } from '../../services/event-register.service';
 import { EventInviteService } from '../../services/event-invite.service';
 import { ParticipantService } from '../../services/participant.service';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatTableDataSource, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatNoDataRow } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { Participant } from '../../models/Participant';
-import { Location } from '@angular/common';
+import { Location, AsyncPipe, DatePipe } from '@angular/common';
 import Chart from "chart.js/auto";
 import { EventService } from '../../services/event.service';
 import { UtilService } from '../../services/util.service';
 import { PageQuery } from '../../models/Utils';
 import { DashboardCacheService } from '../../caches/dashboard-cache.service';
-import { PageEvent } from '@angular/material/paginator';
+import { PageEvent, MatPaginator } from '@angular/material/paginator';
+import { PageLoadingComponent } from '../../shared/page-loading/page-loading.component';
+import { OutletInnerComponent } from '../../shared/outlet-inner/outlet-inner.component';
+import { MatButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { MatCard, MatCardTitle, MatCardSubtitle } from '@angular/material/card';
+import { MatFormField, MatPrefix, MatLabel, MatInput } from '@angular/material/input';
 
 @Component({
-  standalone: false,
-  selector: 'app-meeting',
-  templateUrl: './meeting.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: './meeting.component.scss'
+    selector: 'app-meeting',
+    templateUrl: './meeting.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './meeting.component.scss',
+    imports: [PageLoadingComponent, OutletInnerComponent, MatButton, MatIcon, RouterLink, MatCard, MatCardTitle, MatCardSubtitle, MatFormField, MatPrefix, MatLabel, MatInput, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatNoDataRow, MatPaginator, AsyncPipe, DatePipe]
 })
 export class MeetingComponent {
   @ViewChild("doughnut_canvas") doughnut_canvas!: ElementRef;

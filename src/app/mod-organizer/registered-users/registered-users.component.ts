@@ -1,24 +1,30 @@
 import { Component, ElementRef, inject, signal, ViewChild, ChangeDetectionStrategy } from '@angular/core';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatTableDataSource, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatNoDataRow } from '@angular/material/table';
 import { EventRegisterService } from '../../services/event-register.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, map, of, shareReplay, switchMap, tap } from 'rxjs';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatDialog } from '@angular/material/dialog';
 import { RegisterApprovalDialogComponent } from '../../components/register-approval-dialog/register-approval-dialog.component';
-import { Location } from '@angular/common';
+import { Location, AsyncPipe } from '@angular/common';
 import { EventService } from '../../services/event.service';
 import { UtilService } from '../../services/util.service';
 import { DashboardCacheService } from '../../caches/dashboard-cache.service';
 import { PageQuery } from '../../models/Utils';
-import { PageEvent } from '@angular/material/paginator';
+import { PageEvent, MatPaginator } from '@angular/material/paginator';
+import { PageLoadingComponent } from '../../shared/page-loading/page-loading.component';
+import { OutletInnerComponent } from '../../shared/outlet-inner/outlet-inner.component';
+import { MatButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { MatFormField, MatPrefix, MatLabel, MatInput } from '@angular/material/input';
+import { MatCheckbox } from '@angular/material/checkbox';
 
 @Component({
-  standalone: false,
-  selector: 'app-registered-users',
-  templateUrl: './registered-users.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: './registered-users.component.scss'
+    selector: 'app-registered-users',
+    templateUrl: './registered-users.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './registered-users.component.scss',
+    imports: [PageLoadingComponent, OutletInnerComponent, MatButton, MatIcon, MatFormField, MatPrefix, MatLabel, MatInput, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCheckbox, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatNoDataRow, MatPaginator, AsyncPipe]
 })
 export class RegisteredUsersComponent {
   @ViewChild("input") input!: ElementRef;

@@ -1,15 +1,23 @@
 import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { DashboardCacheService } from '../../caches/dashboard-cache.service';
-import { Router, NavigationStart, NavigationEnd } from '@angular/router';
+import { Router, NavigationStart, NavigationEnd, RouterLink } from '@angular/router';
 import { EventCacheService } from '../../caches/event-cache.service';
 import { MyEventQuery, MyEventType } from '../../models/Event';
+import { PageLoadingComponent } from '../../shared/page-loading/page-loading.component';
+import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
+import { MatButtonToggleGroup, MatButtonToggle } from '@angular/material/button-toggle';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { MatCard, MatCardTitle, MatCardSubtitle, MatCardActions } from '@angular/material/card';
+import { MatButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
-  standalone: false,
-  selector: 'app-my-events',
-  templateUrl: './my-events.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: './my-events.component.scss'
+    selector: 'app-my-events',
+    templateUrl: './my-events.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './my-events.component.scss',
+    imports: [PageLoadingComponent, InfiniteScrollDirective, MatButtonToggleGroup, ReactiveFormsModule, FormsModule, MatButtonToggle, MatCard, MatCardTitle, MatCardSubtitle, MatCardActions, MatButton, RouterLink, MatIcon, AsyncPipe]
 })
 export class MyEventsComponent {
   private dashboardCache = inject(DashboardCacheService);

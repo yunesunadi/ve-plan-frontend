@@ -1,25 +1,31 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import { Component, ElementRef, inject, signal, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatTableDataSource, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatNoDataRow } from '@angular/material/table';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EventRegisterService } from '../../services/event-register.service';
 import { EventInviteService } from '../../services/event-invite.service';
 import { BehaviorSubject, combineLatest, map, of, shareReplay, switchMap, tap } from 'rxjs';
 import { MeetingStartedDialogComponent } from '../../components/meeting-started-dialog/meeting-started-dialog.component';
-import { Location } from '@angular/common';
+import { Location, AsyncPipe } from '@angular/common';
 import { PageQuery } from '../../models/Utils';
 import { DashboardCacheService } from '../../caches/dashboard-cache.service';
 import { UtilService } from '../../services/util.service';
 import { EventService } from '../../services/event.service';
-import { PageEvent } from '@angular/material/paginator';
+import { PageEvent, MatPaginator } from '@angular/material/paginator';
+import { PageLoadingComponent } from '../../shared/page-loading/page-loading.component';
+import { OutletInnerComponent } from '../../shared/outlet-inner/outlet-inner.component';
+import { MatButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { MatFormField, MatPrefix, MatLabel, MatInput } from '@angular/material/input';
+import { MatCheckbox } from '@angular/material/checkbox';
 
 @Component({
-  standalone: false,
-  selector: 'app-event-attendees',
-  templateUrl: './event-attendees.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: './event-attendees.component.scss'
+    selector: 'app-event-attendees',
+    templateUrl: './event-attendees.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './event-attendees.component.scss',
+    imports: [PageLoadingComponent, OutletInnerComponent, MatButton, MatIcon, MatFormField, MatPrefix, MatLabel, MatInput, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCheckbox, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatNoDataRow, MatPaginator, AsyncPipe]
 })
 export class EventAttendeesComponent {
   @ViewChild("input") input!: ElementRef;

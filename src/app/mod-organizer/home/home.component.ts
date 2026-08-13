@@ -7,13 +7,15 @@ import { EventDialogComponent } from '../../components/event-dialog/event-dialog
 import { EventService } from '../../services/event.service';
 import { BehaviorSubject, concatMap, map, shareReplay, switchMap, take } from 'rxjs';
 import { EventDetailsDialogComponent } from '../../components/event-details-dialog/event-details-dialog.component';
+import { OutletInnerComponent } from '../../shared/outlet-inner/outlet-inner.component';
+import { FullCalendarModule } from '@fullcalendar/angular';
 
 @Component({
-  standalone: false,
-  selector: 'app-home',
-  templateUrl: './home.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: './home.component.scss'
+    selector: 'app-home',
+    templateUrl: './home.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './home.component.scss',
+    imports: [OutletInnerComponent, FullCalendarModule]
 })
 export class HomeComponent {
   private eventService = inject(EventService);

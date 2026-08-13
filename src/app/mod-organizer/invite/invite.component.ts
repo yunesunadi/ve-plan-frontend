@@ -1,24 +1,31 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import { Component, ElementRef, inject, signal, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatTableDataSource, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatNoDataRow } from '@angular/material/table';
 import { ActivatedRoute } from '@angular/router';
 import { concatMap, debounceTime, iif, map, of, shareReplay, switchMap, tap } from 'rxjs';
 import { UserService } from '../../services/user.service';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { EventService } from '../../services/event.service';
 import { InvitationSentDialogComponent } from '../../components/invitation-sent-dialog/invitation-sent-dialog.component';
 import { InvitedUsersDialogComponent } from '../../components/invited-users-dialog/invited-users-dialog.component';
 import { AcceptedUsersDialogComponent } from '../../components/accepted-users-dialog/accepted-users-dialog.component';
-import { Location } from '@angular/common';
+import { Location, AsyncPipe } from '@angular/common';
 import { UtilService } from '../../services/util.service';
+import { PageLoadingComponent } from '../../shared/page-loading/page-loading.component';
+import { OutletInnerComponent } from '../../shared/outlet-inner/outlet-inner.component';
+import { MatButton, MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { MatFormField, MatPrefix, MatLabel, MatInput } from '@angular/material/input';
+import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
+import { MatCheckbox } from '@angular/material/checkbox';
 
 @Component({
-  standalone: false,
-  selector: 'app-invite',
-  templateUrl: './invite.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: './invite.component.scss'
+    selector: 'app-invite',
+    templateUrl: './invite.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './invite.component.scss',
+    imports: [PageLoadingComponent, OutletInnerComponent, MatButton, MatIcon, ReactiveFormsModule, MatFormField, MatPrefix, MatLabel, MatInput, MatIconButton, MatMenuTrigger, MatMenu, MatMenuItem, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCheckbox, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatNoDataRow, AsyncPipe]
 })
 export class InviteComponent {
   @ViewChild("input") input!: ElementRef;

@@ -1,6 +1,6 @@
 import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { EventService } from '../../services/event.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { BehaviorSubject, catchError, EMPTY, map, shareReplay, switchMap, tap } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { SessionDialogComponent } from '../../components/session-dialog/session-dialog.component';
@@ -9,15 +9,22 @@ import { EventDialogComponent } from '../../components/event-dialog/event-dialog
 import { jwtDecode } from 'jwt-decode';
 import { UserPayload } from '../../models/User';
 import { Event } from '../../models/Event';
-import { Location } from '@angular/common';
+import { Location, AsyncPipe } from '@angular/common';
 import { CommonService } from '../../services/common.service';
+import { PageLoadingComponent } from '../../shared/page-loading/page-loading.component';
+import { OutletInnerComponent } from '../../shared/outlet-inner/outlet-inner.component';
+import { MatButton, MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
+import { EventDetailsCardComponent } from '../../shared/event-details-card/event-details-card.component';
+import { SessionDetailsCardComponent } from '../../shared/session-details-card/session-details-card.component';
 
 @Component({
-  standalone: false,
-  selector: 'app-event-view',
-  templateUrl: './event-view.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: './event-view.component.scss'
+    selector: 'app-event-view',
+    templateUrl: './event-view.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './event-view.component.scss',
+    imports: [PageLoadingComponent, OutletInnerComponent, MatButton, MatIcon, MatIconButton, MatMenuTrigger, MatMenu, MatMenuItem, RouterLink, EventDetailsCardComponent, SessionDetailsCardComponent, AsyncPipe]
 })
 export class EventViewComponent {
   private eventService = inject(EventService);
