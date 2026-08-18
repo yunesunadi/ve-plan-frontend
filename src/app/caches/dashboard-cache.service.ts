@@ -43,5 +43,9 @@ export class DashboardCacheService {
   resetCurrentUser() {
     this.cache.current_user$ = null;
   }
+
+  resetHasRole() {
+    this.cache.has_role$ = null;
+  }
   
 }

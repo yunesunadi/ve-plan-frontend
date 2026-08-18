@@ -2,6 +2,7 @@ import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { CommonService } from '../../services/common.service';
+import { DashboardCacheService } from '../../caches/dashboard-cache.service';
 import { map } from 'rxjs';
 import { RoleType, UserPayload } from '../../models/User';
 import { jwtDecode } from 'jwt-decode';
@@ -26,6 +27,7 @@ export class RoleComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
   private commonService = inject(CommonService);
+  private dashboardCache = inject(DashboardCacheService);
 
   submit() {
     this.authService.setRole(this.chosen_role).pipe(
@@ -34,16 +36,10 @@ export class RoleComponent {
       next: (token) => {
         this.commonService.openSnackBar("Your account is successfully registered.");
         localStorage.setItem("token", token);
-        
+        this.dashboardCache.resetHasRole();
+
         const decoded: UserPayload = jwtDecode(token);
-
-        if (decoded.role === "organizer") {
-          this.router.navigateByUrl("organizer/dashboard/home");
-        }
-
-        if (decoded.role === "attendee") {
-          this.router.navigateByUrl("attendee/dashboard/home");
-        }   
+        this.router.navigateByUrl(`${decoded.role}/dashboard/home`);
       },
       error: (err) => {
         if (err instanceof HttpErrorResponse) {
