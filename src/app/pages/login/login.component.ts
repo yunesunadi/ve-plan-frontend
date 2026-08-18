@@ -12,6 +12,7 @@ import { RegisterWrapperComponent } from '../../shared/register-wrapper/register
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatFormField, MatLabel, MatInput, MatError, MatSuffix } from '@angular/material/input';
 import { MatIcon } from '@angular/material/icon';
+import { DashboardCacheService } from '../../caches/dashboard-cache.service';
 
 @Component({
     selector: 'app-login',
@@ -28,6 +29,7 @@ export class LoginComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
   private commonService = inject(CommonService);
+  private dashboardCache = inject(DashboardCacheService);
 
   constructor() {
     this.login_form = this.form_builder.group({
@@ -59,16 +61,11 @@ export class LoginComponent {
       next: (token) => {
         this.commonService.openSnackBar("Login successfully.");
         localStorage.setItem("token", token);
+        this.dashboardCache.resetCurrentUser();
+        this.dashboardCache.resetHasRole();
 
         const decoded: UserPayload = jwtDecode(token);
-
-        if (decoded.role === "organizer") {
-          this.router.navigateByUrl("organizer/dashboard/home");
-        }
-
-        if (decoded.role === "attendee") {
-          this.router.navigateByUrl("attendee/dashboard/home");
-        }
+        this.router.navigateByUrl(`${decoded.role}/dashboard/home`);
       },
       error: (err) => {
         if (err instanceof HttpErrorResponse) {
