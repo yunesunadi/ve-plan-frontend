@@ -5,9 +5,9 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "start:dev": "ng serve --configuration=development",
+    "start:staging": "ng serve --configuration=staging",
     "start:prod": "ng serve --configuration=production",
-    "build:dev": "rm -rf dist && ng build --configuration=development",
+    "build:staging": "rm -rf dist && ng build --configuration=staging",
     "build:prod": "rm -rf dist && ng build --configuration=production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
