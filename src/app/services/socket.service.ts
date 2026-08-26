@@ -19,6 +19,7 @@ export class SocketService {
     }
     
     this.socket = io(environment.socketUrl, {
+      path: environment.socketPath,
       auth: { token }
     });
 
