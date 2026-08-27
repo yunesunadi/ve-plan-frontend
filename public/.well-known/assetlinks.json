@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.veplan.mobile",
+      "sha256_cert_fingerprints": [
+        "AB:CF:E0:DF:DC:E1:23:DF:F2:27:40:E0:EB:5C:F0:B0:D5:0E:FD:61:C0:DF:49:67:0E:8D:A3:4D:8A:DC:5D:4D"
+      ]
+    }
+  }
+]
