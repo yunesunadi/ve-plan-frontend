@@ -51,13 +51,12 @@ export class UserService {
     );
   }
 
-  editProfile(data: { profile: string; name: string; email: string; }) {
+  editProfile(data: { profile: string; name: string; }) {
     const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/user`;
     const formData = new FormData();
     formData.append("profile", data.profile || "");
     formData.append("name", data.name);
-    formData.append("email", data.email);
 
     return this.http.put<GeneralResponse>(
       url,

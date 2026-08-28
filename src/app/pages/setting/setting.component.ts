@@ -42,7 +42,7 @@ export class SettingComponent {
       {
         profile: [''],
         name: [''],
-        email: [''],
+        email: [{ value: '', disabled: true }],
       }
     );
 
@@ -85,7 +85,7 @@ export class SettingComponent {
           {
             profile: [user.profile || ''],
             name: [user.name || '', Validators.required],
-            email: [user.email || '', [Validators.required, Validators.email]],
+            email: [{ value: user.email || '', disabled: true }],
           }
         );
 
@@ -96,10 +96,6 @@ export class SettingComponent {
 
   get nameControl() {
     return this.edit_profile_form.controls["name"];
-  }
-
-  get emailControl() {
-    return this.edit_profile_form.controls["email"];
   }
 
   get currentPasswordControl() {

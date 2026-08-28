@@ -26,17 +26,8 @@
     </mat-form-field>
     <mat-form-field appearance="outline">
       <mat-label>Email</mat-label>
-      <input type="email" matInput formControlName="email" placeholder="Enter email">
-      @if (emailControl.touched && emailControl.errors) {
-        <mat-error>
-          @if (emailControl.hasError('email') && !emailControl.hasError('required')) {
-            Please enter a valid email address.
-          }
-          @if (emailControl.hasError('required')) {
-            Email is required.
-          }
-        </mat-error>
-      }
+      <input type="email" matInput formControlName="email" readonly>
+      <mat-hint>Email can't be changed.</mat-hint>
     </mat-form-field>
     <button
       mat-raised-button
