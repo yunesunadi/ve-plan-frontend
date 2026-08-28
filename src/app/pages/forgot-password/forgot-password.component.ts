@@ -1,4 +1,5 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { CommonService } from '../../services/common.service';
@@ -35,8 +36,11 @@ export class ForgotPasswordComponent {
       next: () => {
         this.commonService.openSnackBar("Sent password reset email successfully. Please check your email.");
       },
-      error: () => {
-        this.commonService.openSnackBar("Failed to sent password reset email.");
+      error: (err) => {
+        const message = err instanceof HttpErrorResponse && err.error?.message
+          ? err.error.message
+          : "Failed to sent password reset email.";
+        this.commonService.openSnackBar(message);
       }
     });
   }

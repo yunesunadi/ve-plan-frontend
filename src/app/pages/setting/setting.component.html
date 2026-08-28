@@ -47,6 +47,7 @@
     </button>
   </form>
 
+  @if (showChangePassword()) {
   <form [formGroup]="change_password_form" (ngSubmit)="changePassword()" class="d-flex flex-column edit-profile-form mb-2">
     <h4 class="text-primary-clr my-3">Change Password</h4>
     <mat-form-field appearance="outline">
@@ -124,4 +125,5 @@
       Change Password
     </button>
   </form>
+  }
 </app-outlet-inner>

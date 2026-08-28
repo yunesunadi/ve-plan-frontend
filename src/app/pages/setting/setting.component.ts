@@ -25,6 +25,7 @@ export class SettingComponent {
   isCurrentPassword = signal(true);
   isNewPassword = signal(true);
   isConfirmPassword = signal(true);
+  showChangePassword = signal(true);
   edit_profile_form: FormGroup;
   change_password_form: FormGroup;
   profile = signal("");
@@ -76,6 +77,9 @@ export class SettingComponent {
         } else {
           this.profile.set("assets/images/placeholder_person.png");
         }
+
+        const isSocialOnly = !!(user.googleId || user.facebookId) && !user.hasPassword;
+        this.showChangePassword.set(!isSocialOnly);
 
         this.edit_profile_form = this.form_builder.group(
           {
