@@ -14,14 +14,25 @@ export class MeetingService {
 
   constructor() { }
 
-  createJitsiMeeting(data: { room_name: string; token: string; }, jitsi_iframe: ElementRef) {
+  createJitsiMeeting(data: { room_name: string; token: string; }, jitsi_iframe: ElementRef, hide_hangup = false) {
+    const configOverwrite: any = {
+      prejoinPageEnabled: true,
+      disableInviteFunctions: true,
+      disableKick: true,
+    };
+
+    if (hide_hangup) {
+      configOverwrite.toolbarButtons = [
+        "microphone", "camera", "desktop", "fullscreen", "fodeviceselection",
+        "profile", "chat", "settings", "raisehand", "videoquality", "filmstrip",
+        "shortcuts", "tileview", "select-background", "mute-everyone",
+        "mute-video-everyone", "security",
+      ];
+    }
+
     const options = {
       roomName: `${environment.appId}/${data.room_name}`,
-      configOverwrite: {
-        prejoinPageEnabled: true,
-        disableInviteFunctions: true,
-        disableKick: true,
-      },
+      configOverwrite,
       interfaceConfigOverwrite: {
         startAudioMuted: true,
         startVideoMuted: true,
@@ -140,6 +151,26 @@ export class MeetingService {
     const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/meetings/${event_id}/end_time`;
     return this.http.put<GeneralResponse>(url, meeting, {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${token}`,
+      })
+    });
+  }
+
+  end(event_id: string) {
+    const token = localStorage.getItem("token");
+    const url = `${environment.apiUrl}/meetings/${event_id}/end`;
+    return this.http.put<GeneralResponse>(url, {}, {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${token}`,
+      })
+    });
+  }
+
+  reopen(event_id: string) {
+    const token = localStorage.getItem("token");
+    const url = `${environment.apiUrl}/meetings/${event_id}/reopen`;
+    return this.http.put<GeneralResponse>(url, {}, {
       headers: new HttpHeaders({
         Authorization: `Bearer ${token}`,
       })

@@ -11,6 +11,8 @@ export interface Meeting {
   start_time: string;
   end_time: string;
   duration: number;
+  ended: boolean;
+  ended_at: string | null;
 }
 
 export type CreateMeetingResponse = GeneralResponse & Response<"data", Timestamp & Meeting>;

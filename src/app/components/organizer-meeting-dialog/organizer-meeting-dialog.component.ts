@@ -25,6 +25,7 @@ export class OrganizerMeetingDialogComponent {
 
   api: any;
   room_name = signal("");
+  is_ending = signal(false);
 
   ngOnDestroy() {
     if (this.api) {
@@ -38,7 +39,7 @@ export class OrganizerMeetingDialogComponent {
     ).subscribe({
       next: (data) => {
         this.room_name.set(data.room_name);
-        this.api = this.meetingService.createJitsiMeeting(data, this.jitsi_iframe);
+        this.api = this.meetingService.createJitsiMeeting(data, this.jitsi_iframe, true);
 
         this.api.addEventListeners({
           readyToClose: this.handleClose,
@@ -57,9 +58,17 @@ export class OrganizerMeetingDialogComponent {
     });
   }
 
+  leaveAndEnd() {
+    const isConfirmed = confirm("Leaving will end the meeting for everyone. Attendees will no longer be able to join. Continue?");
+
+    if (!isConfirmed) return;
+
+    this.endMeetingAndReload();
+  }
+
   handleClose = () => {
-    this.api.dispose();
-    this.dialog.close();
+    // Fallback exit path (kick / error): still end the meeting for everyone.
+    this.endMeetingAndReload();
   }
 
   handleVideoConferenceJoined = async (participant: MeetingParticipant) => {
@@ -72,16 +81,24 @@ export class OrganizerMeetingDialogComponent {
   }
 
   handleVideoConferenceLeft = async (participant: MeetingParticipant) => {
-    this.meetingService.updateEndTime(this.dialog_data.event_id, { end_time: new Date().toISOString() }).pipe(
+    this.endMeetingAndReload();
+  }
+
+  private endMeetingAndReload() {
+    if (this.is_ending()) return;
+    this.is_ending.set(true);
+
+    this.meetingService.end(this.dialog_data.event_id).pipe(
+      concatMap(() => this.meetingService.updateEndTime(this.dialog_data.event_id, { end_time: new Date().toISOString() })),
       concatMap(() => this.participantService.updateNoEndTime(this.dialog_data.event_id)),
       tap(() => {
-        this.commonService.openSnackBar("End meeting successfully.");
+        this.commonService.openSnackBar("Meeting ended.");
       }),
       delay(1500)
     ).subscribe({
-        next: () => {
-          window.location.reload();
-        }
-      });
+      next: () => {
+        window.location.reload();
+      }
+    });
   }
 }

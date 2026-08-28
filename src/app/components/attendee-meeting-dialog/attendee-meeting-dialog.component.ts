@@ -34,15 +34,21 @@ export class AttendeeMeetingDialogComponent {
 
   ngAfterViewInit(): void {
     this.meetingService.getOneByEventId(this.dialog_data.event_id).pipe(
-      map((res) => res.data.room_name),
-      concatMap((room_name) => this.meetingService.createToken(false).pipe(
+      map((res) => res.data),
+      concatMap((meeting) => this.meetingService.createToken(false).pipe(
         tap(() => {
-          this.room_name.set(room_name);
+          this.room_name.set(meeting.room_name);
         }),
-        map((data) => ({ room_name, token: data.token }))
+        map((data) => ({ room_name: meeting.room_name, token: data.token, ended: meeting.ended }))
       )),
     ).subscribe({
       next: (data) => {
+        if (data.ended) {
+          confirm("This meeting has ended.");
+          this.dialog.close();
+          return;
+        }
+
         this.api = this.meetingService.createJitsiMeeting(data, this.jitsi_iframe);
 
         this.api.addEventListeners({

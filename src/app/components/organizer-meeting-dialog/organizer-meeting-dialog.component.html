@@ -1,3 +1,13 @@
-<mat-dialog-content style="min-height: 100%;">
-  <div #jitsi_iframe style="width: 100%; height: 100%;"></div>
+<mat-dialog-content style="min-height: 100%; padding: 0;">
+  <div class="d-flex justify-content-end align-items-center p-2" style="gap: .5rem; background: #432E54;">
+    <button
+      type="button"
+      class="btn btn-sm btn-light fw-bold"
+      [disabled]="is_ending()"
+      (click)="leaveAndEnd()"
+    >
+      Leave &amp; End Meeting
+    </button>
+  </div>
+  <div #jitsi_iframe style="width: 100%; height: calc(100% - 52px);"></div>
 </mat-dialog-content>

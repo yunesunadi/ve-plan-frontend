@@ -95,9 +95,11 @@ export class MeetingComponent {
     shareReplay(1)
   );
 
-  meeting$ = this.event$.pipe(
-    concatMap((event) => this.meetingService.getOneById(event._id).pipe(
-      map((res) => res.data)
+  meeting$ = this.refresh$.pipe(
+    switchMap(() => this.event$.pipe(
+      concatMap((event) => this.meetingService.getOneById(event._id).pipe(
+        map((res) => res.data)
+      ))
     )),
     shareReplay(1)
   );
@@ -228,6 +230,42 @@ export class MeetingComponent {
       )) 
     )
     .subscribe({
+      next: (res) => {
+        this.refresh$.next(true);
+        this.commonService.openSnackBar(res.message);
+      },
+      error: (err) => {
+        if (err instanceof HttpErrorResponse) {
+          this.commonService.openSnackBar(err.error.message);
+        }
+      }
+    });
+  }
+
+  endMeeting(event_id: string) {
+    const isConfirmed = confirm("End this meeting? Attendees will no longer be able to join.");
+
+    if (!isConfirmed) return;
+
+    this.meetingService.end(event_id).subscribe({
+      next: (res) => {
+        this.refresh$.next(true);
+        this.commonService.openSnackBar(res.message);
+      },
+      error: (err) => {
+        if (err instanceof HttpErrorResponse) {
+          this.commonService.openSnackBar(err.error.message);
+        }
+      }
+    });
+  }
+
+  reopenMeeting(event_id: string) {
+    const isConfirmed = confirm("Re-open this meeting so attendees can join again?");
+
+    if (!isConfirmed) return;
+
+    this.meetingService.reopen(event_id).subscribe({
       next: (res) => {
         this.refresh$.next(true);
         this.commonService.openSnackBar(res.message);
