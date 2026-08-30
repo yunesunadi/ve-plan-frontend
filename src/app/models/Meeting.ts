@@ -7,7 +7,6 @@ export interface Meeting {
   event: Event;
   user: User;
   room_name: string;
-  token: string;
   start_time: string;
   end_time: string;
   duration: number;
@@ -18,3 +17,13 @@ export interface Meeting {
 export type CreateMeetingResponse = GeneralResponse & Response<"data", Timestamp & Meeting>;
 
 export type GetMeetingResponse = CreateMeetingResponse;
+
+export interface AttendeeMeeting {
+  room_name: string;
+  ended: boolean;
+  starts_at: string | null;
+}
+
+export type AttendeeMeetingResponse = GeneralResponse & Response<"data", AttendeeMeeting>;
+
+export type CreateTokenResponse = GeneralResponse & Response<"token", string> & Response<"room_name", string>;

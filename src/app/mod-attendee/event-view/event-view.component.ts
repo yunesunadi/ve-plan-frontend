@@ -39,7 +39,6 @@ export class EventViewComponent {
   location = inject(Location);
   util = inject(UtilService);
 
-  private is_expired = signal(false);
   isLoading = signal(true);
 
   event$ = this.aroute.params.pipe(
@@ -103,16 +102,6 @@ export class EventViewComponent {
 
   constructor() {}
 
-  ngOnInit() {
-    this.aroute.params.pipe(
-      switchMap((params: any) => this.meetingService.isExpired(params.id))
-    ).subscribe({
-      next: (res) => {
-        this.is_expired.set(res.is_expired);
-      }
-    })
-  }
-
   register(event_id: string) {
     this.eventRegisterService.register(event_id).subscribe({
       next: (res) => {
@@ -143,8 +132,7 @@ export class EventViewComponent {
       maxHeight: "100%",
       disableClose: true,
       data: {
-        event_id,
-        is_expired: this.is_expired()
+        event_id
       }
     });
   }

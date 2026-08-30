@@ -1,7 +1,6 @@
 @let is_created = is_created$ | async;
 @let event = (event$ | async)!;
 @let query = (query$ | async)!;
-@let is_expired = (is_expired$ | async)!;
 @let meeting = meeting$ | async;
 @let event_attendees = event_attendees$ | async;
 @let registered_users = registered_users$ | async;
@@ -40,7 +39,7 @@
           type="button"
           mat-raised-button
           class="bg-primary-clr text-secondary-clr"
-          (click)="join(event._id, is_expired)"
+          (click)="join(event._id)"
           [disabled]="util.is_event_expired(event.date, event.end_time)"
         >
           Join Meeting

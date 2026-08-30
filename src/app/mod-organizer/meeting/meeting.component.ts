@@ -4,7 +4,6 @@ import { BehaviorSubject, combineLatest, concatMap, map, of, shareReplay, startW
 import { MeetingService } from '../../services/meeting.service';
 import { CommonService } from '../../services/common.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { nanoid } from "nanoid";
 import { OrganizerMeetingDialogComponent } from '../../components/organizer-meeting-dialog/organizer-meeting-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { EventRegisterService } from '../../services/event-register.service';
@@ -84,13 +83,6 @@ export class MeetingComponent {
     switchMap((params: any) => this.eventService.getOneById(params.id).pipe(
       tap(() => this.isLoading.set(false)),
       map(res => res.data)
-    )),
-    shareReplay(1)
-  );
-
-  is_expired$ = this.event$.pipe(
-    concatMap((event) => this.meetingService.isExpired(event._id).pipe(
-      map(res => res.is_expired)
     )),
     shareReplay(1)
   );
@@ -223,11 +215,8 @@ export class MeetingComponent {
   }
 
   create() {
-    this.meetingService.createToken(true).pipe(
-      map((res) => res.token),
-      concatMap((token) => this.event$.pipe(
-        concatMap((event) => this.meetingService.start(event._id, nanoid(), token))
-      )) 
+    this.event$.pipe(
+      concatMap((event) => this.meetingService.start(event._id))
     )
     .subscribe({
       next: (res) => {
@@ -278,7 +267,7 @@ export class MeetingComponent {
     });
   }
 
-  join(event_id: string, is_expired: boolean) {
+  join(event_id: string) {
     this.dialog.open(OrganizerMeetingDialogComponent, {
       width: "calc(100% - 10px)",
       maxWidth: "100%",
@@ -286,8 +275,7 @@ export class MeetingComponent {
       maxHeight: "100%",
       disableClose: true,
       data: {
-        event_id: event_id,
-        is_expired: is_expired
+        event_id: event_id
       }
     });
   }

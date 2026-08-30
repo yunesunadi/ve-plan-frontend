@@ -1,6 +1,7 @@
 import { Component, ElementRef, inject, signal, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { MeetingService } from '../../services/meeting.service';
-import { concatMap, map, tap } from 'rxjs';
+import { concatMap, map, of } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent } from '@angular/material/dialog';
 import { MeetingParticipant } from '../../models/Participant';
 import { ParticipantService } from '../../services/participant.service';
@@ -35,12 +36,19 @@ export class AttendeeMeetingDialogComponent {
   ngAfterViewInit(): void {
     this.meetingService.getOneByEventId(this.dialog_data.event_id).pipe(
       map((res) => res.data),
-      concatMap((meeting) => this.meetingService.createToken(false).pipe(
-        tap(() => {
-          this.room_name.set(meeting.room_name);
-        }),
-        map((data) => ({ room_name: meeting.room_name, token: data.token, ended: meeting.ended }))
-      )),
+      concatMap((meeting) => {
+        if (meeting.ended) {
+          return of({ ended: true as const });
+        }
+
+        return this.meetingService.createToken(this.dialog_data.event_id).pipe(
+          map((data) => ({
+            ended: false as const,
+            room_name: data.room_name,
+            token: data.token,
+          }))
+        );
+      }),
     ).subscribe({
       next: (data) => {
         if (data.ended) {
@@ -49,21 +57,23 @@ export class AttendeeMeetingDialogComponent {
           return;
         }
 
-        this.api = this.meetingService.createJitsiMeeting(data, this.jitsi_iframe);
+        this.room_name.set(data.room_name);
+        this.api = this.meetingService.createJitsiMeeting(
+          { room_name: data.room_name, token: data.token },
+          this.jitsi_iframe
+        );
 
         this.api.addEventListeners({
           readyToClose: this.handleClose,
           videoConferenceJoined: this.handleVideoConferenceJoined,
           videoConferenceLeft: this.handleVideoConferenceLeft,
         });
-
-        if (this.dialog_data.is_expired) {
-          const isConfirmed = confirm("Can't join this meeting since meeting token is expired.");
-          if (isConfirmed) {
-            this.dialog.close();
-            this.api.dispose();
-          }
+      },
+      error: (err) => {
+        if (err instanceof HttpErrorResponse) {
+          this.commonService.openSnackBar(err.error.message);
         }
+        this.dialog.close();
       }
     });
   }

@@ -1,8 +1,8 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ElementRef, inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { CreateMeetingResponse, GetMeetingResponse, Meeting } from '../models/Meeting';
-import { GeneralResponse, Response } from '../models/Utils';
+import { AttendeeMeetingResponse, CreateMeetingResponse, CreateTokenResponse, GetMeetingResponse, Meeting } from '../models/Meeting';
+import { GeneralResponse } from '../models/Utils';
 
 declare var JitsiMeetExternalAPI: any;
 
@@ -46,12 +46,12 @@ export class MeetingService {
     return api;
   }
 
-  createToken(is_moderator: boolean) {
+  createToken(eventId: string) {
     const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/meetings/token`;
-    return this.http.post<GeneralResponse & Response<"token", string>>(
+    return this.http.post<CreateTokenResponse>(
       url,
-      { is_moderator },
+      { event_id: eventId },
       {
         headers: new HttpHeaders({
           Authorization: `Bearer ${token}`,
@@ -60,16 +60,12 @@ export class MeetingService {
     );
   }
 
-  start(event: string, room_name: string, meeting_token: string) {
+  start(event: string) {
     const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/meetings`;
     return this.http.post<CreateMeetingResponse>(
       url,
-      {
-        event,
-        room_name,
-        token: meeting_token,
-      },
+      { event },
       {
         headers: new HttpHeaders({
           Authorization: `Bearer ${token}`,
@@ -117,24 +113,11 @@ export class MeetingService {
   getOneByEventId(event_id: string) {
     const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/meetings/${event_id}/attendee`;
-    return this.http.get<GetMeetingResponse>(url, {
+    return this.http.get<AttendeeMeetingResponse>(url, {
       headers: new HttpHeaders({
         Authorization: `Bearer ${token}`,
       })
     });
-  }
-
-  isExpired(event_id: string) {
-    const token = localStorage.getItem("token");
-    const url = `${environment.apiUrl}/meetings/${event_id}/is_expired`;
-    return this.http.get<GeneralResponse & { is_expired: boolean; }>(
-      url,
-      {
-        headers: new HttpHeaders({
-          Authorization: `Bearer ${token}`
-        })
-      }
-    );
   }
 
   updateStartTime(event_id: string, meeting: Partial<Meeting>) {

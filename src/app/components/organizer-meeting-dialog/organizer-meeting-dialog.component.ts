@@ -1,5 +1,6 @@
 import { Component, ElementRef, inject, signal, ViewChild, ChangeDetectionStrategy } from '@angular/core';
-import { concatMap, delay, map, tap } from 'rxjs';
+import { concatMap, delay, tap } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
 import { MeetingService } from '../../services/meeting.service';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent } from '@angular/material/dialog';
 import { MeetingParticipant } from '../../models/Participant';
@@ -34,26 +35,26 @@ export class OrganizerMeetingDialogComponent {
   }
 
   ngAfterViewInit(): void {
-    this.meetingService.getOneById(this.dialog_data.event_id).pipe(
-      map((res) => res.data)
-    ).subscribe({
-      next: (data) => {
-        this.room_name.set(data.room_name);
-        this.api = this.meetingService.createJitsiMeeting(data, this.jitsi_iframe, true);
+    this.meetingService.createToken(this.dialog_data.event_id).subscribe({
+      next: (res) => {
+        this.room_name.set(res.room_name);
+        this.api = this.meetingService.createJitsiMeeting(
+          { room_name: res.room_name, token: res.token },
+          this.jitsi_iframe,
+          true
+        );
 
         this.api.addEventListeners({
           readyToClose: this.handleClose,
           videoConferenceJoined: this.handleVideoConferenceJoined,
           videoConferenceLeft: this.handleVideoConferenceLeft,
         });
-
-        if (this.dialog_data.is_expired) {
-          const isConfirmed = confirm("Can't join this meeting since meeting token is expired.");
-          if (isConfirmed) {
-            this.dialog.close();
-            this.api.dispose();
-          }
+      },
+      error: (err) => {
+        if (err instanceof HttpErrorResponse) {
+          this.commonService.openSnackBar(err.error.message);
         }
+        this.dialog.close();
       }
     });
   }
