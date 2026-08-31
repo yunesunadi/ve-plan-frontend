@@ -30,7 +30,7 @@
           mat-raised-button
           class="bg-primary-clr text-secondary-clr"
           (click)="reopenMeeting(event._id)"
-          [disabled]="util.is_event_expired(event.date, event.end_time)"
+          [disabled]="util.is_event_expired(event)"
         >
           Re-open Meeting
         </button>
@@ -40,7 +40,7 @@
           mat-raised-button
           class="bg-primary-clr text-secondary-clr"
           (click)="join(event._id)"
-          [disabled]="util.is_event_expired(event.date, event.end_time)"
+          [disabled]="util.is_event_expired(event)"
         >
           Join Meeting
         </button>
@@ -49,7 +49,7 @@
           mat-raised-button
           class="bg-primary-clr text-secondary-clr"
           (click)="endMeeting(event._id)"
-          [disabled]="util.is_event_expired(event.date, event.end_time)"
+          [disabled]="util.is_event_expired(event)"
         >
           End Meeting
         </button>
@@ -60,7 +60,7 @@
         mat-raised-button
         class="bg-primary-clr text-secondary-clr"
         (click)="create()"
-        [disabled]="util.is_event_expired(event.date, event.end_time)"
+        [disabled]="util.is_event_expired(event)"
       >
         Start Meeting
       </button>

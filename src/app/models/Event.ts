@@ -17,6 +17,9 @@ export interface Event {
   date: string;
   start_time: string;
   end_time: string;
+  timezone?: string;
+  starts_at?: string;
+  ends_at?: string;
   category: EventCategoryType;
   type: EventType;
   user: User;

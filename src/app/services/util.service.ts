@@ -7,26 +7,24 @@ export class UtilService {
 
   constructor() { }
 
-  is_event_expired(event_date: string, event_time: string) {
-    const date = new Date(event_date);
-    const time = new Date(event_time);
-    
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    const day = date.getDate();
-
-    const hours = time.getHours();
-    const minutes = time.getMinutes();
-    const seconds = time.getSeconds();
-    const milliseconds = time.getMilliseconds();
-
-    const event_datetime = new Date(year, month, day, hours, minutes, seconds, milliseconds).getTime();
-    const current_datetime = new Date().getTime();
-
-    if (event_datetime < current_datetime) {
-      return true;
+  is_event_expired(event: { ends_at?: string | null; date: string; end_time: string }) {
+    if (event.ends_at) {
+      return new Date(event.ends_at).getTime() < Date.now();
     }
 
-    return false;
+    const date = new Date(event.date);
+    const time = new Date(event.end_time);
+
+    const event_datetime = new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate(),
+      time.getHours(),
+      time.getMinutes(),
+      time.getSeconds(),
+      time.getMilliseconds()
+    ).getTime();
+
+    return event_datetime < Date.now();
   }
 }

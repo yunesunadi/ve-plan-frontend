@@ -10,6 +10,10 @@ import { GeneralResponse } from '../models/Utils';
 export class EventService {
   private http = inject(HttpClient);
 
+  private browserTimezone(): string {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone;
+  }
+
   create(event: Event) {
     const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/events`;
@@ -20,6 +24,7 @@ export class EventService {
     formData.append("date", event.date);
     formData.append("start_time", event.start_time);
     formData.append("end_time", event.end_time);
+    formData.append("timezone", this.browserTimezone());
     formData.append("category", event.category);
     formData.append("type", event.type);
 
@@ -121,6 +126,7 @@ export class EventService {
     formData.append("date", event.date);
     formData.append("start_time", event.start_time);
     formData.append("end_time", event.end_time);
+    formData.append("timezone", this.browserTimezone());
     formData.append("category", event.category);
     formData.append("type", event.type);
     return this.http.put<CreateEventResponse>(url, formData, {
