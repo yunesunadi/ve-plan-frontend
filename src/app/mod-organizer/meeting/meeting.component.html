@@ -169,7 +169,12 @@
     <div class="col-lg-7">
       <h6 class="text-center">Meeting Stay Times Per Participants</h6>
       <div style="width: 100%; max-width: 550px; margin: 0 auto;">
-        <canvas #line_canvas></canvas>
+        <canvas #line_canvas [hidden]="!stay_times_available()"></canvas>
+        @if (!stay_times_available()) {
+          <p class="text-center text-secondary py-5 my-3">
+            {{ stay_times_reason() || 'Analytics will be available after the meeting ends.' }}
+          </p>
+        }
       </div>
     </div>
   </section>

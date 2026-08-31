@@ -1,11 +1,9 @@
 import { Component, ElementRef, inject, signal, ViewChild, ChangeDetectionStrategy } from '@angular/core';
-import { concatMap, delay, tap } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MeetingService } from '../../services/meeting.service';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent } from '@angular/material/dialog';
 import { MeetingParticipant } from '../../models/Participant';
 import { CommonService } from '../../services/common.service';
-import { ParticipantService } from '../../services/participant.service';
 import { CdkScrollable } from '@angular/cdk/scrolling';
 
 @Component({
@@ -19,7 +17,6 @@ export class OrganizerMeetingDialogComponent {
   @ViewChild("jitsi_iframe") jitsi_iframe!: ElementRef;
 
   private meetingService = inject(MeetingService);
-  private participantService = inject(ParticipantService);
   private dialog_data = inject(MAT_DIALOG_DATA);
   private dialog = inject(MatDialogRef<this>);
   private commonService = inject(CommonService);
@@ -27,6 +24,7 @@ export class OrganizerMeetingDialogComponent {
   api: any;
   room_name = signal("");
   is_ending = signal(false);
+  end_error = signal("");
 
   ngOnDestroy() {
     if (this.api) {
@@ -64,41 +62,47 @@ export class OrganizerMeetingDialogComponent {
 
     if (!isConfirmed) return;
 
-    this.endMeetingAndReload();
+    this.endMeeting();
   }
 
   handleClose = () => {
     // Fallback exit path (kick / error): still end the meeting for everyone.
-    this.endMeetingAndReload();
+    this.endMeeting();
   }
 
-  handleVideoConferenceJoined = async (participant: MeetingParticipant) => {
-    this.meetingService.updateStartTime(this.dialog_data.event_id, { start_time: new Date().toISOString() })
-      .subscribe({
-        next: () => {
-          this.commonService.openSnackBar("Start meeting successfully.");
-        }
-      });
+  handleVideoConferenceJoined = async (_participant: MeetingParticipant) => {
+    this.meetingService.updateStartTime(this.dialog_data.event_id).subscribe({
+      next: () => {
+        this.commonService.openSnackBar("Start meeting successfully.");
+      }
+    });
   }
 
-  handleVideoConferenceLeft = async (participant: MeetingParticipant) => {
-    this.endMeetingAndReload();
+  handleVideoConferenceLeft = async (_participant: MeetingParticipant) => {
+    this.endMeeting();
   }
 
-  private endMeetingAndReload() {
+  private endMeeting() {
     if (this.is_ending()) return;
     this.is_ending.set(true);
+    this.end_error.set("");
 
-    this.meetingService.end(this.dialog_data.event_id).pipe(
-      concatMap(() => this.meetingService.updateEndTime(this.dialog_data.event_id, { end_time: new Date().toISOString() })),
-      concatMap(() => this.participantService.updateNoEndTime(this.dialog_data.event_id)),
-      tap(() => {
-        this.commonService.openSnackBar("Meeting ended.");
-      }),
-      delay(1500)
-    ).subscribe({
+    this.meetingService.end(this.dialog_data.event_id).subscribe({
       next: () => {
-        window.location.reload();
+        if (this.api) {
+          this.api.dispose();
+          this.api = null;
+        }
+        this.commonService.openSnackBar("Meeting ended.");
+        this.dialog.close(true);
+      },
+      error: (err) => {
+        this.is_ending.set(false);
+        const message = err instanceof HttpErrorResponse && err.error?.message
+          ? err.error.message
+          : "Couldn't end the meeting. Please try again.";
+        this.end_error.set(message);
+        this.commonService.openSnackBar(message);
       }
     });
   }

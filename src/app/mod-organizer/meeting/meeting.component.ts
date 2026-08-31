@@ -58,6 +58,8 @@ export class MeetingComponent {
   role = signal("");
   all_joined_participants = signal<Participant[]>([]);
   isLoading = signal(true);
+  stay_times_available = signal(false);
+  stay_times_reason = signal("");
 
   doughnut_chart!: Chart;
   line_chart!: Chart;
@@ -132,8 +134,15 @@ export class MeetingComponent {
     shareReplay(1)
   );
 
-  line_chart_data$ = this.aroute.params.pipe(
-    switchMap((params: any) => this.participantService.getStayTimes(params.id)),
+  line_chart_data$ = this.refresh$.pipe(
+    switchMap(() => this.aroute.params.pipe(
+      switchMap((params: any) => this.participantService.getStayTimes(params.id))
+    )),
+    tap((res) => {
+      const available = res.meta ? res.meta.available : res.data.length > 0;
+      this.stay_times_available.set(available);
+      this.stay_times_reason.set(res.meta?.reason || "");
+    }),
     map((res) => res.data),
     shareReplay(1)
   );
@@ -195,21 +204,35 @@ export class MeetingComponent {
 
     this.line_chart_data$.subscribe({
       next: (line_chart_data) => {
-        if (!this.line_chart && !this.isLoading()) {
-          this.line_chart = new Chart(this.line_canvas.nativeElement, {
-            type: "line",
-            data: {
-              labels: line_chart_data.map(item => item.label),
-              datasets: [{
-                label: "No. of participants",
-                data: line_chart_data.map(item => item.value),
-                fill: true,
-                borderColor: "#432E54",
-                tension: 0.1
-              }]
-            },
-          });
+        if (this.isLoading() || !this.stay_times_available()) {
+          this.line_chart?.destroy();
+          this.line_chart = undefined as any;
+          return;
         }
+
+        const labels = line_chart_data.map(item => item.label);
+        const values = line_chart_data.map(item => item.value);
+
+        if (this.line_chart) {
+          this.line_chart.data.labels = labels;
+          this.line_chart.data.datasets[0].data = values;
+          this.line_chart.update();
+          return;
+        }
+
+        this.line_chart = new Chart(this.line_canvas.nativeElement, {
+          type: "line",
+          data: {
+            labels,
+            datasets: [{
+              label: "No. of participants",
+              data: values,
+              fill: true,
+              borderColor: "#432E54",
+              tension: 0.1
+            }]
+          },
+        });
       }
     });
   }
@@ -277,6 +300,8 @@ export class MeetingComponent {
       data: {
         event_id: event_id
       }
+    }).afterClosed().subscribe(() => {
+      this.refresh$.next(true);
     });
   }
 

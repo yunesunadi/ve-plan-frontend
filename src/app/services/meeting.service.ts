@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ElementRef, inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { AttendeeMeetingResponse, CreateMeetingResponse, CreateTokenResponse, GetMeetingResponse, Meeting } from '../models/Meeting';
+import { AttendeeMeetingResponse, CreateMeetingResponse, CreateTokenResponse, GetMeetingResponse } from '../models/Meeting';
 import { GeneralResponse } from '../models/Utils';
 
 declare var JitsiMeetExternalAPI: any;
@@ -120,20 +120,20 @@ export class MeetingService {
     });
   }
 
-  updateStartTime(event_id: string, meeting: Partial<Meeting>) {
+  updateStartTime(event_id: string) {
     const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/meetings/${event_id}/start_time`;
-    return this.http.put<GeneralResponse>(url, meeting, {
+    return this.http.put<GeneralResponse>(url, {}, {
       headers: new HttpHeaders({
         Authorization: `Bearer ${token}`,
       })
     });
   }
 
-  updateEndTime(event_id: string, meeting: Partial<Meeting>) {
+  updateEndTime(event_id: string) {
     const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/meetings/${event_id}/end_time`;
-    return this.http.put<GeneralResponse>(url, meeting, {
+    return this.http.put<GeneralResponse>(url, {}, {
       headers: new HttpHeaders({
         Authorization: `Bearer ${token}`,
       })

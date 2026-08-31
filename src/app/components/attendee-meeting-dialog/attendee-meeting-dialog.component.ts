@@ -83,11 +83,10 @@ export class AttendeeMeetingDialogComponent {
     this.dialog.close();
   }
 
-  handleVideoConferenceJoined = async (participant: MeetingParticipant) => {
+  handleVideoConferenceJoined = async (_participant: MeetingParticipant) => {
     this.participantService.create({
       event: this.dialog_data.event_id,
       room_name: this.room_name(),
-      start_time: new Date().toISOString(),
     }).subscribe({
       next: () => {
         this.commonService.openSnackBar("Join meeting successfully.");
@@ -95,8 +94,8 @@ export class AttendeeMeetingDialogComponent {
     });
   }
 
-  handleVideoConferenceLeft = async (participant: MeetingParticipant) => {
-    this.participantService.update(this.dialog_data.event_id, { end_time: new Date().toISOString() })
+  handleVideoConferenceLeft = async (_participant: MeetingParticipant) => {
+    this.participantService.update(this.dialog_data.event_id, {})
       .subscribe({
         next: () => {
           this.commonService.openSnackBar("Leave meeting successfully.");
