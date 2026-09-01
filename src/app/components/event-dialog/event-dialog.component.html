@@ -51,6 +51,9 @@
     @if (startTimeControl.value && endTimeControl.value && create_form.errors && create_form.hasError('invalidTime')) {
       <small class="text-danger mb-3" style="margin-top: -1.3rem;">End time mustn't be ahead of start time.</small>
     }
+    @if (endTimeControl.value && create_form.errors && create_form.hasError('eventEnded')) {
+      <small class="text-danger mb-3" style="margin-top: -1.3rem;">This event has already ended.</small>
+    }
     <mat-form-field appearance="outline">
       <mat-label>Category</mat-label>
       <mat-select formControlName="category">

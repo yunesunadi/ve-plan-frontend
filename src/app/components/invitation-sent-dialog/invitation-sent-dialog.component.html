@@ -1,7 +1,7 @@
 <mat-dialog-content class="pt-3">
   <h5 class="text-primary-clr">User List for invitation</h5>
   @if (dialog_data.length > 0) {
-    @for (item of dialog_data; track item.email) {
+    @for (item of dialog_data; track item.user_id) {
       <p class="mb-1">{{ $index + 1 }}. {{ item.name }}</p>
     }
   } @else {

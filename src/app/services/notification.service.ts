@@ -15,10 +15,14 @@ export class NotificationService {
 
   constructor() { }
 
-  getNotifications() {
+  getNotifications(offset = 0, limit = 20) {
     const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/notifications`;
+    const params = new HttpParams()
+      .set('offset', offset)
+      .set('limit', limit);
     return this.http.get<GetNotificationsResponse>(url, {
+      params,
       headers: new HttpHeaders({
         'Authorization': `Bearer ${token}`
       })
@@ -45,12 +49,21 @@ export class NotificationService {
     });
   }
 
+  markAllRead() {
+    const token = localStorage.getItem("token");
+    const url = `${environment.apiUrl}/notifications/mark_all_read`;
+    return this.http.post(url, {}, {
+      headers: new HttpHeaders({
+        'Authorization': `Bearer ${token}`
+      })
+    });
+  }
+
   deleteNotifications(notification_id_list: string[]) {
     const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/notifications`;
-    const params = new HttpParams().set('notification_id_list', JSON.stringify(notification_id_list));
     return this.http.delete(url, {
-      params,
+      body: { notification_id_list },
       headers: new HttpHeaders({
         'Authorization': `Bearer ${token}`
       })

@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import { EventService } from '../../services/event.service';
 import { CommonService } from '../../services/common.service';
 import { concatMap, iif, of } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { EventCacheService } from '../../caches/event-cache.service';
 import { EventCategoryType, EventType } from '../../models/Event';
@@ -58,6 +59,26 @@ export class EventDialogComponent {
       const end_time = new Date(control.value['end_time']).getTime();
 
       if (start_time > end_time) return { invalidTime: true };
+
+      if (!this.dialog_data._id) {
+        const date_value = control.value['date'];
+        const end_value = control.value['end_time'];
+
+        if (date_value && end_value) {
+          const day = new Date(date_value);
+          const end = new Date(end_value);
+          const end_instant = new Date(
+            day.getFullYear(),
+            day.getMonth(),
+            day.getDate(),
+            end.getHours(),
+            end.getMinutes(),
+            end.getSeconds(),
+          );
+
+          if (end_instant.getTime() < Date.now()) return { eventEnded: true };
+        }
+      }
 
       return null;
     };
@@ -131,8 +152,13 @@ export class EventDialogComponent {
         this.cache.resetMyEventsQuery$.next(true);
       },
       error: (err) => {
-        this.commonService.openSnackBar("Error creating event.");
-        this.dialog.close();
+        const isHttpError = err instanceof HttpErrorResponse;
+        const message = (isHttpError && err.error?.message) || "Error creating event.";
+        this.commonService.openSnackBar(message);
+
+        if (!isHttpError || err.status >= 500) {
+          this.dialog.close();
+        }
       }
     });
   }

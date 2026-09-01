@@ -65,12 +65,13 @@ export class HomeComponent {
   constructor() {}
 
   handleDateClick(arg: DateClickArg) {
-    const clicked_date = new Date(arg.date).getTime();
-    const current_date = new Date().getTime();
-    const one_day = 24 * 60 * 60 * 1000;
-    
-    if (clicked_date < (current_date - one_day)) {
-      alert("Can't create an event in past days.");
+    const clickedDay = new Date(arg.date);
+    clickedDay.setHours(0, 0, 0, 0);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (clickedDay.getTime() < today.getTime()) {
+      alert("Can't create an event on a past day.");
       return;
     }
 

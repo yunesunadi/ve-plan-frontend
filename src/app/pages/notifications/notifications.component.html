@@ -6,7 +6,16 @@
 <app-outlet-inner>
   <h3 class="text-primary-clr mb-3">Notifications</h3>
 
-  <div class="d-flex justify-content-end mb-4" style="gap: .5rem;">
+  <div class="d-flex justify-content-end flex-wrap mb-4" style="gap: .5rem;">
+    <button
+      mat-raised-button
+      class="text-primary-clr bg-secondary-clr"
+      (click)="markAllRead()"
+      [disabled]="!hasUnread(notifications)"
+    >
+      <mat-icon class="text-primary-clr">mark_email_read</mat-icon>
+      <span>Mark all read</span>
+    </button>
     <button mat-raised-button class="text-primary-clr bg-secondary-clr" (click)="markAsRead()">
       <mat-icon class="text-primary-clr">done_all</mat-icon>
       <span>Mark as read</span>
@@ -24,11 +33,23 @@
     }
     @if (notifications.length > 0) {
     <div class="d-flex flex-column w-100 mx-auto" style="gap: 1rem; max-width: 600px;">
-      @for (notification of notifications; track $index) {
-      <mat-card appearance="outlined" [ngClass]="{ 'bg-secondary-clr': !notification.isRead }">
+      @for (notification of notifications; track notification._id) {
+      @let sid = senderId(notification);
+      <mat-card
+        appearance="outlined"
+        [ngClass]="{ 'bg-secondary-clr': !notification.isRead, 'notification-card--linked': sid }"
+        [routerLink]="sid ? '/' + role() + '/dashboard/events/' + sid + '/view' : null"
+        [attr.role]="sid ? 'link' : null"
+        [attr.tabindex]="sid ? 0 : null"
+        (keydown.enter)="navigateToSender(notification)"
+      >
         <mat-card-content>
           <div class="d-flex" style="gap: .5rem;">
-            <mat-checkbox (change)="onChange(notification._id)" color="primary"></mat-checkbox>
+            <mat-checkbox
+              (click)="$event.stopPropagation()"
+              (change)="onChange(notification._id)"
+              color="primary"
+            ></mat-checkbox>
             <div class="d-flex flex-column">
               <h4 class="text-primary-clr">{{ notification.title }}</h4>
               <p class="text-primary-clr mb-0">{{ notification.message }}</p>
@@ -38,6 +59,15 @@
       </mat-card>
       }
     </div>
+
+    @if (loadedCount() < total()) {
+    <div class="d-flex justify-content-center mt-4">
+      <button mat-stroked-button class="bg-secondary-clr text-primary-clr" (click)="loadMore()">
+        <mat-icon>expand_more</mat-icon>
+        <span>Load more</span>
+      </button>
+    </div>
+    }
     }
   }
 </app-outlet-inner>

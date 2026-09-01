@@ -1,4 +1,5 @@
-import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonService } from '../../services/common.service';
@@ -26,6 +27,9 @@ export class ResetPasswordComponent {
     password: new FormControl('', [Validators.required, Validators.minLength(8)]),
   });
 
+  expired = signal(false);
+  expiredMessage = signal('This password reset link has expired. Request a new one.');
+
   onSubmit() {
     this.resetPasswordForm.markAllAsTouched();
     if (this.resetPasswordForm.invalid) return;
@@ -42,8 +46,13 @@ export class ResetPasswordComponent {
         }
 
         return this.authService.resetPassword(token, password).pipe(
-          catchError(() => {
-            this.commonService.openSnackBar("Failed to reset password.");
+          catchError((err: HttpErrorResponse) => {
+            if (err.status === 410) {
+              this.expired.set(true);
+              this.expiredMessage.set(err.error?.message || this.expiredMessage());
+            } else {
+              this.commonService.openSnackBar(err.error?.message || "Failed to reset password.");
+            }
             return EMPTY;
           })
         );

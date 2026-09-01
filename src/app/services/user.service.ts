@@ -23,10 +23,12 @@ export class UserService {
     );
   }
 
-  getAttendees(keyword: string) {
+  getAttendees(keyword: string, page = 1) {
     const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/user/attendees`;
-    const params = new HttpParams().append("search", keyword);
+    const params = new HttpParams()
+      .append("search", keyword)
+      .append("page", String(page));
     return this.http.get<GeneralResponse & { data: User[] }>(
       url,
       {
@@ -67,6 +69,15 @@ export class UserService {
         })
       }
     );
+  }
+
+  deleteAccount(body: { password?: string; confirm_email?: string }) {
+    const token = localStorage.getItem("token");
+    const url = `${environment.apiUrl}/user`;
+    return this.http.delete<GeneralResponse>(url, {
+      body,
+      headers: new HttpHeaders({ Authorization: `Bearer ${token}` })
+    });
   }
 
   updatePassword(current_password: string, new_password: string) {

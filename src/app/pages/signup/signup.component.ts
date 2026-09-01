@@ -110,9 +110,11 @@ export class SignupComponent {
     if (this.signup_form.invalid) return;
     delete this.signup_form.value['confirm_password'];
     
+    const email = this.signup_form.value['email'];
+
     this.authService.register(this.signup_form.value).subscribe({
       next: () => {
-        this.router.navigateByUrl("verify_email");
+        this.router.navigate(["verify_email"], { queryParams: { email } });
       },
       error: (err) => {
         if (err instanceof HttpErrorResponse) {

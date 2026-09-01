@@ -1,7 +1,76 @@
 <app-register-wrapper>
   <ng-container form>
     <h1 class="text-primary-clr mb-3 d-md-none text-center">VE-Plan</h1>
-    <h3 class="text-primary-clr mb-4 text-center">Verify Email</h3>
-    <p class="text-center mx-3">Email verification is sent to your email. Please check your email. If you don't receive the email, please check your spam folder.</p>
+
+    @switch (status()) {
+      @case ('verifying') {
+        <h3 class="text-primary-clr mb-4 text-center">Verifying Email</h3>
+        <p class="text-center mx-3">Please wait while we verify your email address&hellip;</p>
+      }
+
+      @case ('expired') {
+        <h3 class="text-primary-clr mb-4 text-center">Link Expired</h3>
+        @if (resent()) {
+          <p class="text-center mx-3">If that address still needs verifying, a new link is on its way. Please check your email, and your spam folder if you don't see it.</p>
+        } @else {
+          <p class="text-center mx-3 mb-4">{{ errorMessage() }}</p>
+          <form [formGroup]="resendForm" (ngSubmit)="resendExpired()" class="d-flex flex-column w-100" style="gap: .5rem; max-width: 300px;">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Email</mat-label>
+              <input matInput formControlName="email" placeholder="Enter your email" />
+              @if (resendForm.get('email')?.touched && resendForm.get('email')?.errors) {
+              <mat-error>
+                @if (resendForm.get('email')?.hasError('required')) {
+                  <span>Email is required.</span>
+                }
+                @if (resendForm.get('email')?.hasError('email')) {
+                  <span>Please enter a valid email.</span>
+                }
+              </mat-error>
+              }
+            </mat-form-field>
+            <div class="d-flex justify-content-center">
+              <button mat-raised-button class="bg-primary-clr text-secondary-clr" type="submit" [disabled]="resending()">
+                Resend verification link
+              </button>
+            </div>
+          </form>
+        }
+      }
+
+      @case ('failed') {
+        <h3 class="text-primary-clr mb-4 text-center">Verification Failed</h3>
+        <p class="text-center mx-3">{{ errorMessage() }}</p>
+      }
+
+      @default {
+        <h3 class="text-primary-clr mb-4 text-center">Verify Email</h3>
+        <p class="text-center mx-3" [class.mb-4]="pendingEmail()">Email verification is sent to your email. Please check your email. If you don't receive the email, please check your spam folder.</p>
+        @if (pendingEmail()) {
+          <div class="d-flex justify-content-center">
+            <button
+              mat-raised-button
+              class="bg-primary-clr text-secondary-clr"
+              type="button"
+              [disabled]="resending() || resendCooldown()"
+              (click)="resendPending()"
+            >
+              @if (resendCooldown()) {
+                Link sent &mdash; check your email
+              } @else {
+                Resend verification link
+              }
+            </button>
+          </div>
+        }
+      }
+    }
+
+    <div class="mt-3">
+      <a routerLink="/login" class="text-primary-clr d-flex align-items-center justify-content-center gap-2">
+        <mat-icon>arrow_back</mat-icon>
+        <span>Back to Login</span>
+      </a>
+    </div>
   </ng-container>
 </app-register-wrapper>

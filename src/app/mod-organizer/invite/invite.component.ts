@@ -54,7 +54,7 @@ export class InviteComponent {
   dataSource$ = this.form.controls.search_input.valueChanges.pipe(
     debounceTime(500),
     switchMap((value) => iif(
-      () => !!value,
+      () => !!value && value.trim().length >= 2,
       this.userService.getAttendees(value).pipe(
         concatMap((users) => this.event$.pipe(
           map((event) => (users.data.map((item) => ({ ...item, event_id: event._id, event_title: event.title }))))

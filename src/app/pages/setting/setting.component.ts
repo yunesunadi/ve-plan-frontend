@@ -5,11 +5,13 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { UserService } from '../../services/user.service';
 import { environment } from '../../../environments/environment';
 import { Location } from '@angular/common';
+import { Router } from '@angular/router';
 import { DashboardCacheService } from '../../caches/dashboard-cache.service';
 import { OutletInnerComponent } from '../../shared/outlet-inner/outlet-inner.component';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatFormField, MatLabel, MatInput, MatError, MatSuffix, MatHint } from '@angular/material/input';
+import { MatDivider } from '@angular/material/divider';
 
 const MIN_LENGTH = 6;
 
@@ -18,7 +20,7 @@ const MIN_LENGTH = 6;
     templateUrl: './setting.component.html',
     changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './setting.component.scss',
-    imports: [OutletInnerComponent, MatButton, MatIcon, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, MatIconButton, MatSuffix, MatHint]
+    imports: [OutletInnerComponent, MatButton, MatIcon, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, MatIconButton, MatSuffix, MatHint, MatDivider]
 })
 export class SettingComponent {
   @ViewChild("imgView") imgView!: ElementRef;
@@ -26,8 +28,11 @@ export class SettingComponent {
   isNewPassword = signal(true);
   isConfirmPassword = signal(true);
   showChangePassword = signal(true);
+  isDeletePassword = signal(true);
+  isDeleting = signal(false);
   edit_profile_form: FormGroup;
   change_password_form: FormGroup;
+  delete_account_form: FormGroup;
   profile = signal("");
 
   private form_builder = inject(FormBuilder);
@@ -35,6 +40,7 @@ export class SettingComponent {
   private cacheService = inject(DashboardCacheService);
   private commonService = inject(CommonService);
   private changeDetectorRef = inject(ChangeDetectorRef);
+  private router = inject(Router);
   location = inject(Location);
 
   constructor() {
@@ -56,12 +62,26 @@ export class SettingComponent {
         validators: this.checkPasswordsValidator()
       }
     );
+
+    this.delete_account_form = this.form_builder.group(
+      {
+        password: ['', Validators.required],
+      }
+    );
   }
 
   checkPasswordsValidator(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       const isNotMatched = control.value['new_password'] !== control.value['confirm_password'];
       return  isNotMatched ? { passwordsNotMatched: true } : null;
+    };
+  }
+
+  emailMatchValidator(email: string): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const value = (control.value?.['confirm_email'] ?? '').trim().toLowerCase();
+      if (!value) return null;
+      return value === email.trim().toLowerCase() ? null : { emailMismatch: true };
     };
   }
 
@@ -80,6 +100,13 @@ export class SettingComponent {
 
         const isSocialOnly = !!(user.googleId || user.facebookId) && !user.hasPassword;
         this.showChangePassword.set(!isSocialOnly);
+
+        this.delete_account_form = isSocialOnly
+          ? this.form_builder.group(
+              { confirm_email: ['', Validators.required] },
+              { validators: this.emailMatchValidator(user.email || '') }
+            )
+          : this.form_builder.group({ password: ['', Validators.required] });
 
         this.edit_profile_form = this.form_builder.group(
           {
@@ -108,6 +135,18 @@ export class SettingComponent {
 
   get confirmPasswordControl() {
     return this.change_password_form.controls["confirm_password"];
+  }
+
+  get deletePasswordControl() {
+    return this.delete_account_form.controls["password"];
+  }
+
+  get confirmEmailControl() {
+    return this.delete_account_form.controls["confirm_email"];
+  }
+
+  toggleDeletePasswordVisibility() {
+    this.isDeletePassword.update(prev => !prev);
   }
 
   toggleCurrentPasswordVisibility() {
@@ -174,6 +213,36 @@ export class SettingComponent {
         this.cacheService.resetCurrentUser();
       },
       error: (err) => {
+        if (err instanceof HttpErrorResponse) {
+          this.commonService.openSnackBar(err.error.message);
+        }
+      }
+    });
+  }
+
+  deleteAccount() {
+    this.delete_account_form.markAllAsTouched();
+
+    if (this.delete_account_form.invalid) return;
+
+    const ok = confirm("Delete your account? This permanently removes your events, registrations, invitations and meeting history and cannot be undone.");
+
+    if (!ok) return;
+
+    const body = this.showChangePassword()
+      ? { password: this.delete_account_form.value.password }
+      : { confirm_email: this.delete_account_form.value.confirm_email };
+
+    this.isDeleting.set(true);
+
+    this.userService.deleteAccount(body).subscribe({
+      next: (res) => {
+        this.commonService.openSnackBar(res.message);
+        localStorage.removeItem("token");
+        this.router.navigateByUrl("login");
+      },
+      error: (err) => {
+        this.isDeleting.set(false);
         if (err instanceof HttpErrorResponse) {
           this.commonService.openSnackBar(err.error.message);
         }

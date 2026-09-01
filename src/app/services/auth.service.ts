@@ -53,6 +53,11 @@ export class AuthService {
     return this.http.post<Response<"token", string>>(url, {}, { params });
   }
 
+  resendVerification(email: string) {
+    const url = `${environment.apiUrl}/auth/resend_verification`;
+    return this.http.post<GeneralResponse>(url, { email });
+  }
+
   forgotPassword(email: string) {
     const url = `${environment.apiUrl}/auth/forgot_password`;
     return this.http.post<GeneralResponse>(url, { email });
