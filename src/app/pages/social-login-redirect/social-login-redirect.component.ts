@@ -20,7 +20,8 @@ export class SocialLoginRedirectComponent {
       next: (params) => {
         const token = params.get("token")!;
         localStorage.setItem("token", token);
-        this.router.navigateByUrl("/role");
+        history.replaceState(null, "", "/social_login_redirect");
+        this.router.navigateByUrl("/role", { replaceUrl: true });
       }
     });
   }

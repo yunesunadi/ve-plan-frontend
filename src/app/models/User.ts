@@ -1,4 +1,4 @@
-import { Timestamp, JWTPayload } from "./Utils";
+import { JWTPayload } from "./Utils";
 
 export type RoleType = "organizer" | "attendee";
 
@@ -25,4 +25,8 @@ export interface User {
   hasPassword?: boolean;
 }
 
-export type UserPayload = User & Timestamp & JWTPayload;
+export type UserPayload = {
+  _id: string;
+  role: RoleType;
+  tokenVersion: number;
+} & JWTPayload;

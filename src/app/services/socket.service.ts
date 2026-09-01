@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { Socket, io } from "socket.io-client";
 import { environment } from '../../environments/environment';
@@ -9,6 +10,7 @@ import { Notification } from '../models/Notification';
 })
 export class SocketService {
   private socket: Socket | undefined;
+  private router = inject(Router);
 
   constructor() { }
 
@@ -29,6 +31,12 @@ export class SocketService {
 
     this.socket.on("connect_error", (error) => {
       console.error("Socket connection error:", error);
+
+      if (error?.message?.includes("Authentication")) {
+        this.disconnect();
+        localStorage.removeItem("token");
+        this.router.navigateByUrl("login");
+      }
     });
 
     this.socket.on("error", (error) => {

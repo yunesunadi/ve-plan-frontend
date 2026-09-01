@@ -1,12 +1,12 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { UserPayload } from '../../models/User';
-import { jwtDecode } from 'jwt-decode';
 import { environment } from '../../../environments/environment';
-import { catchError, of, map, combineLatest, startWith, switchMap, timer, scan } from 'rxjs';
+import { catchError, of, map, combineLatest, startWith, switchMap, scan } from 'rxjs';
 import { NotificationService } from '../../services/notification.service';
 import { SocketService } from '../../services/socket.service';
+import { DashboardCacheService } from '../../caches/dashboard-cache.service';
 import { Notification } from '../../models/Notification';
+import { User } from '../../models/User';
 import { MatToolbar } from '@angular/material/toolbar';
 import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
@@ -27,6 +27,11 @@ export class PrivateComponent {
   private route = inject(Router);
   private notificationService = inject(NotificationService);
   private socketService = inject(SocketService);
+  private dashboardCache = inject(DashboardCacheService);
+
+  current_user$ = this.dashboardCache.current_user.pipe(
+    catchError(() => of(null))
+  );
 
   notifications_data_count$ = this.notificationService.getNotificationsCount().pipe(
     map(res => res.unreadCount),
@@ -53,7 +58,7 @@ export class PrivateComponent {
   ngOnInit() {
     const token = localStorage.getItem("token");
     if (!token) return;
-    
+
     if (!this.socketService.isConnected()) {
       console.log('Attempting to connect socket...');
       this.socketService.connect(token);
@@ -73,27 +78,12 @@ export class PrivateComponent {
     }
   }
 
-  get isAttendee() {
-    const token = localStorage.getItem("token") || "";
-    const decoded: UserPayload = jwtDecode(token);
-    return decoded.role === "attendee";
-  }
-
-  get isOrganizer() {
-    const token = localStorage.getItem("token") || "";
-    const decoded: UserPayload = jwtDecode(token);
-    return decoded.role === "organizer";
-  }
-
-  get profile_url() {
-    const token = localStorage.getItem("token") || "";
-    const decoded: UserPayload = jwtDecode(token);
-    if (decoded.profile) {
-      if (decoded.googleId || decoded.facebookId) {
-        return decoded.profile;
-      } else {
-        return environment.profileUrl + "/" + decoded.profile;
+  profileUrl(user: User | null) {
+    if (user?.profile) {
+      if (user.googleId || user.facebookId) {
+        return user.profile;
       }
+      return environment.profileUrl + "/" + user.profile;
     }
 
     return "assets/images/placeholder_person.png";

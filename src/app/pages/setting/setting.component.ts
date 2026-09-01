@@ -205,6 +205,7 @@ export class SettingComponent {
     
     this.userService.updatePassword(current_password, new_password).subscribe({
       next: (res) => {
+        localStorage.setItem("token", res.token);
         this.commonService.openSnackBar(res.message);
         this.change_password_form.reset();
         this.currentPasswordControl.setErrors(null);

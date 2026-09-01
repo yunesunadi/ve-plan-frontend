@@ -44,7 +44,7 @@ export class UserService {
 
   updatePassword(current_password: string, new_password: string) {
     const url = `${environment.apiUrl}/user/password`;
-    return this.http.put<GeneralResponse>(url, {
+    return this.http.put<GeneralResponse & { token: string }>(url, {
       current_password,
       new_password
     });

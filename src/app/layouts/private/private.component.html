@@ -1,3 +1,5 @@
+@let current_user = current_user$ | async;
+
 <mat-toolbar class="bg-primary-clr">
   <button mat-icon-button class="text-secondary-clr" (click)="drawer.toggle()">
     <mat-icon>menu</mat-icon>
@@ -15,7 +17,7 @@
     <mat-icon>notifications_active</mat-icon>
   </button>
   <div mat-button [matMenuTriggerFor]="menu" class="d-flex align-items-center cursor-pointer">
-    <img [src]="profile_url" width="45" height="45" class="rounded-circle" alt="User profile">
+    <img [src]="profileUrl(current_user)" width="45" height="45" class="rounded-circle" alt="User profile">
     <mat-icon class="text-secondary-clr">keyboard_arrow_down</mat-icon>
   </div>
   <mat-menu #menu="matMenu">
@@ -47,7 +49,7 @@
         <span>Events</span>
       </a>
     </div>
-    @if (isOrganizer) {
+    @if (current_user?.role === "organizer") {
       <div class="sidenav-list">
         <a class="sidenav-item" routerLink="my_events" routerLinkActive="active">
           <mat-icon>date_range</mat-icon>
@@ -55,7 +57,7 @@
         </a>
       </div>
     }
-    @if (isAttendee) {
+    @if (current_user?.role === "attendee") {
       <div class="sidenav-list">
         <a class="sidenav-item" routerLink="invitations" routerLinkActive="active">
           <mat-icon>drafts</mat-icon>
