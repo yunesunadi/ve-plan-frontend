@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Event, CreateEventResponse, GetEventsResponse, GetEventResponse, EventQuery, MyEventQuery } from '../models/Event';
 import { environment } from '../../environments/environment';
@@ -15,7 +15,6 @@ export class EventService {
   }
 
   create(event: Event) {
-    const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/events`;
     const formData = new FormData();
     formData.append("cover", event.cover);
@@ -28,25 +27,15 @@ export class EventService {
     formData.append("category", event.category);
     formData.append("type", event.type);
 
-    return this.http.post<CreateEventResponse>(url, formData, {
-      headers: new HttpHeaders({
-        Authorization: `Bearer ${token}`,
-      })
-    });
+    return this.http.post<CreateEventResponse>(url, formData);
   }
 
   getAll() {
-    const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/events`;
-    return this.http.get<GetEventsResponse>(url, {
-      headers: new HttpHeaders({
-        Authorization: `Bearer ${token}`,
-      })
-    });
+    return this.http.get<GetEventsResponse>(url);
   }
 
   getMyEvents(query: MyEventQuery) {
-    const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/events/own`;
     let params = new HttpParams();
 
@@ -62,16 +51,10 @@ export class EventService {
       }
     }
 
-    return this.http.get<GetEventsResponse>(url, {
-      headers: new HttpHeaders({
-        Authorization: `Bearer ${token}`,
-      }),
-      params
-    });
+    return this.http.get<GetEventsResponse>(url, { params });
   }
 
   getAllByQuery(query: EventQuery) {
-    const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/events/events_by_query`;
     let params = new HttpParams();
 
@@ -96,26 +79,15 @@ export class EventService {
       }
     }
 
-    return this.http.get<GetEventsResponse>(url, {
-      headers: new HttpHeaders({
-        Authorization: `Bearer ${token}`,
-      }),
-      params
-    });
+    return this.http.get<GetEventsResponse>(url, { params });
   }
 
   getOneById(id: string) {
-    const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/events/${id}`;
-    return this.http.get<GetEventResponse>(url, {
-      headers: new HttpHeaders({
-        Authorization: `Bearer ${token}`,
-      })
-    });
+    return this.http.get<GetEventResponse>(url);
   }
 
   update(id: string, event: Event) {
-    const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/events/${id}`;
     const formData = new FormData();
     if (event.cover) {
@@ -129,20 +101,11 @@ export class EventService {
     formData.append("timezone", this.browserTimezone());
     formData.append("category", event.category);
     formData.append("type", event.type);
-    return this.http.put<CreateEventResponse>(url, formData, {
-      headers: new HttpHeaders({
-        Authorization: `Bearer ${token}`,
-      })
-    });
+    return this.http.put<CreateEventResponse>(url, formData);
   }
-  
+
   delete(id: string) {
-    const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/events/${id}`;
-    return this.http.delete<GeneralResponse>(url, {
-      headers: new HttpHeaders({
-        Authorization: `Bearer ${token}`,
-      })
-    });
+    return this.http.delete<GeneralResponse>(url);
   }
 }

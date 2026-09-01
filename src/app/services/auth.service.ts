@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { GeneralResponse, Response } from '../models/Utils';
 import { SignUpData } from '../models/User';
 
@@ -22,17 +22,8 @@ export class AuthService {
   }
 
   setRole(role: string) {
-    const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/auth/role`;
-    return this.http.post<Response<"token", string>>(
-      url,
-      { role },
-      {
-        headers: new HttpHeaders({
-          Authorization: `Bearer ${token}`
-        })
-      }
-    );
+    return this.http.post<Response<"token", string>>(url, { role });
   }
 
   isLoggedIn() {
@@ -69,5 +60,5 @@ export class AuthService {
     params = params.set("token", token);
     return this.http.post<GeneralResponse>(url, { password }, { params });
   }
-  
+
 }

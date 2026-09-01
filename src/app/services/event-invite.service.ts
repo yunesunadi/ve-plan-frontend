@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { GeneralResponse } from '../models/Utils';
@@ -13,92 +13,37 @@ export class EventInviteService {
   constructor() { }
 
   invite(user_id_list: string[], event_id: string) {
-    const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/event_invites`;
-    return this.http.post<GeneralResponse>(
-      url, 
-      {
-        user_id_list,
-        event_id
-      },
-      {
-        headers: new HttpHeaders({
-          Authorization: `Bearer ${token}`,
-        })
-      }
-    );
+    return this.http.post<GeneralResponse>(url, { user_id_list, event_id });
   }
-  
+
   getAllByEventId(event_id: string) {
-    const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/event_invites/${event_id}/users`;
-    return this.http.get<GetEventInvitesResponse>(url, {
-      headers: new HttpHeaders({
-        Authorization: `Bearer ${token}`,
-      })
-    });
+    return this.http.get<GetEventInvitesResponse>(url);
   }
 
   getAllAcceptedByEventId(event_id: string) {
-    const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/event_invites/${event_id}/accepted_users`;
-    return this.http.get<GetEventAcceptedInvitesResponse>(url, {
-      headers: new HttpHeaders({
-        Authorization: `Bearer ${token}`,
-      })
-    });
+    return this.http.get<GetEventAcceptedInvitesResponse>(url);
   }
 
   getAllByUserId() {
-    const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/event_invites/events`;
-    return this.http.get<GetEventInvitesResponse>(url, {
-      headers: new HttpHeaders({
-        Authorization: `Bearer ${token}`,
-      })
-    });
+    return this.http.get<GetEventInvitesResponse>(url);
   }
 
   getAllAcceptedByUserId() {
-    const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/event_invites/accepted_events`;
-    return this.http.get<GetEventAcceptedInvitesResponse>(url, {
-      headers: new HttpHeaders({
-        Authorization: `Bearer ${token}`,
-      })
-    });
+    return this.http.get<GetEventAcceptedInvitesResponse>(url);
   }
 
   accept_invite(event_id: string) {
-    const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/event_invites/accept`;
-    return this.http.put<GeneralResponse>(
-      url,
-      {
-        event_id
-      },
-      {
-        headers: new HttpHeaders({
-          Authorization: `Bearer ${token}`,
-        })
-      }
-    );
+    return this.http.put<GeneralResponse>(url, { event_id });
   }
 
   startMeeting(user_id_list: string[], event_id: string) {
-    const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/event_invites/meeting_started`;
-    return this.http.put<GeneralResponse>(
-      url,
-      {
-        user_id_list,
-        event_id
-      },
-      {
-        headers: new HttpHeaders({
-          Authorization: `Bearer ${token}`,
-        })
-      }
-    );
+    return this.http.put<GeneralResponse>(url, { user_id_list, event_id });
   }
 }

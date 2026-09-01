@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { ElementRef, inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { AttendeeMeetingResponse, CreateMeetingResponse, CreateTokenResponse, GetMeetingResponse } from '../models/Meeting';
@@ -47,117 +47,53 @@ export class MeetingService {
   }
 
   createToken(eventId: string) {
-    const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/meetings/token`;
-    return this.http.post<CreateTokenResponse>(
-      url,
-      { event_id: eventId },
-      {
-        headers: new HttpHeaders({
-          Authorization: `Bearer ${token}`,
-        })
-      }
-    );
+    return this.http.post<CreateTokenResponse>(url, { event_id: eventId });
   }
 
   start(event: string) {
-    const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/meetings`;
-    return this.http.post<CreateMeetingResponse>(
-      url,
-      { event },
-      {
-        headers: new HttpHeaders({
-          Authorization: `Bearer ${token}`,
-        })
-      }
-    );
+    return this.http.post<CreateMeetingResponse>(url, { event });
   }
 
   isCreated(event_id: string) {
-    const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/meetings/${event_id}/is_created`;
-    return this.http.get<GeneralResponse & { is_created: boolean; }>(
-      url,
-      {
-        headers: new HttpHeaders({
-          Authorization: `Bearer ${token}`
-        })
-      }
-    );
+    return this.http.get<GeneralResponse & { is_created: boolean; }>(url);
   }
 
   isStarted(event_id: string) {
-    const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/meetings/${event_id}/is_started`;
-    return this.http.get<GeneralResponse & { is_started: boolean; }>(
-      url,
-      {
-        headers: new HttpHeaders({
-          Authorization: `Bearer ${token}`
-        })
-      }
-    );
+    return this.http.get<GeneralResponse & { is_started: boolean; }>(url);
   }
 
   getOneById(event_id: string) {
-    const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/meetings/${event_id}`;
-    return this.http.get<GetMeetingResponse>(url, {
-      headers: new HttpHeaders({
-        Authorization: `Bearer ${token}`,
-      })
-    });
+    return this.http.get<GetMeetingResponse>(url);
   }
 
   getOneByEventId(event_id: string) {
-    const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/meetings/${event_id}/attendee`;
-    return this.http.get<AttendeeMeetingResponse>(url, {
-      headers: new HttpHeaders({
-        Authorization: `Bearer ${token}`,
-      })
-    });
+    return this.http.get<AttendeeMeetingResponse>(url);
   }
 
   updateStartTime(event_id: string) {
-    const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/meetings/${event_id}/start_time`;
-    return this.http.put<GeneralResponse>(url, {}, {
-      headers: new HttpHeaders({
-        Authorization: `Bearer ${token}`,
-      })
-    });
+    return this.http.put<GeneralResponse>(url, {});
   }
 
   updateEndTime(event_id: string) {
-    const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/meetings/${event_id}/end_time`;
-    return this.http.put<GeneralResponse>(url, {}, {
-      headers: new HttpHeaders({
-        Authorization: `Bearer ${token}`,
-      })
-    });
+    return this.http.put<GeneralResponse>(url, {});
   }
 
   end(event_id: string) {
-    const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/meetings/${event_id}/end`;
-    return this.http.put<GeneralResponse>(url, {}, {
-      headers: new HttpHeaders({
-        Authorization: `Bearer ${token}`,
-      })
-    });
+    return this.http.put<GeneralResponse>(url, {});
   }
 
   reopen(event_id: string) {
-    const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/meetings/${event_id}/reopen`;
-    return this.http.put<GeneralResponse>(url, {}, {
-      headers: new HttpHeaders({
-        Authorization: `Bearer ${token}`,
-      })
-    });
+    return this.http.put<GeneralResponse>(url, {});
   }
 
 }

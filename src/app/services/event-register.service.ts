@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { GeneralResponse, PageQuery, Response } from '../models/Utils';
@@ -13,47 +13,26 @@ export class EventRegisterService {
   constructor() { }
 
   register(event_id: string) {
-    const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/event_registers`;
-    return this.http.post<GeneralResponse>(url, { event_id }, {
-      headers: new HttpHeaders({
-        Authorization: `Bearer ${token}`,
-      })
-    });
+    return this.http.post<GeneralResponse>(url, { event_id });
   }
 
   unregister(event_id: string) {
-    const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/event_registers/${event_id}`;
-    return this.http.delete<GeneralResponse>(url, {
-      headers: new HttpHeaders({
-        Authorization: `Bearer ${token}`,
-      })
-    });
+    return this.http.delete<GeneralResponse>(url);
   }
 
   hasRegistered(event_id: string) {
-    const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/event_registers/${event_id}`;
-    return this.http.get<Response<"has_registered", boolean>>(url, {
-      headers: new HttpHeaders({
-        Authorization: `Bearer ${token}`,
-      })
-    });
+    return this.http.get<Response<"has_registered", boolean>>(url);
   }
 
   isRegisterApproved(event_id: string) {
-    const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/event_registers/${event_id}/approved`;
-    return this.http.get<Response<"is_register_approved", boolean>>(url, {
-      headers: new HttpHeaders({
-        Authorization: `Bearer ${token}`,
-      })
-    });
+    return this.http.get<Response<"is_register_approved", boolean>>(url);
   }
 
   getAllByEventId(event_id: string, query?: Partial<PageQuery>) {
-    const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/event_registers/${event_id}/users`;
     let params = new HttpParams();
 
@@ -66,75 +45,31 @@ export class EventRegisterService {
       }
     }
 
-    return this.http.get<GetEventRegistersResponse>(url, {
-      headers: new HttpHeaders({
-        Authorization: `Bearer ${token}`,
-      }),
-      params
-    });
+    return this.http.get<GetEventRegistersResponse>(url, { params });
   }
 
   getAllApprovedByEventId(event_id: string) {
-    const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/event_registers/${event_id}/users/approved`;
-    return this.http.get<GetEventRegistersResponse>(url, {
-      headers: new HttpHeaders({
-        Authorization: `Bearer ${token}`,
-      })
-    });
+    return this.http.get<GetEventRegistersResponse>(url);
   }
 
   getAllByUserId() {
-    const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/event_registers/events`;
-    return this.http.get<GetEventRegistersResponse>(url, {
-      headers: new HttpHeaders({
-        Authorization: `Bearer ${token}`,
-      })
-    });
+    return this.http.get<GetEventRegistersResponse>(url);
   }
 
   getAllApprovedByUserId() {
-    const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/event_registers/events/approved`;
-    return this.http.get<GetEventRegistersResponse>(url, {
-      headers: new HttpHeaders({
-        Authorization: `Bearer ${token}`,
-      })
-    });
+    return this.http.get<GetEventRegistersResponse>(url);
   }
 
   approve(user_id_list: string[], event_id: string) {
-    const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/event_registers/approve`;
-    return this.http.put<GeneralResponse>(
-      url,
-      {
-        user_id_list,
-        event_id
-      },
-      {
-        headers: new HttpHeaders({
-          Authorization: `Bearer ${token}`,
-        })
-      }
-    );
+    return this.http.put<GeneralResponse>(url, { user_id_list, event_id });
   }
 
   startMeeting(user_id_list: string[], event_id: string) {
-    const token = localStorage.getItem("token");
     const url = `${environment.apiUrl}/event_registers/meeting_started`;
-    return this.http.put<GeneralResponse>(
-      url,
-      {
-        user_id_list,
-        event_id
-      },
-      {
-        headers: new HttpHeaders({
-          Authorization: `Bearer ${token}`,
-        })
-      }
-    );
+    return this.http.put<GeneralResponse>(url, { user_id_list, event_id });
   }
 }
