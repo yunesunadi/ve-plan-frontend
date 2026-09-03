@@ -9,6 +9,14 @@ export type EventType = "public" | "private";
 
 export type MyEventType = "all" | "public" | "private";
 
+export type ParticipationState =
+  "none" | "registered" | "registration_approved" | "invited" | "invitation_accepted";
+
+export interface Participation {
+  state: ParticipationState;
+  meeting_started: boolean;
+}
+
 export interface Event {
   _id: string;
   cover: string;
@@ -23,6 +31,7 @@ export interface Event {
   category: EventCategoryType;
   type: EventType;
   user: User;
+  participation?: Participation | null;
 }
 
 export interface EventQuery {

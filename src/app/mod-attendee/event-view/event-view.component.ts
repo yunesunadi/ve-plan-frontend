@@ -2,11 +2,9 @@ import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/cor
 import { EventService } from '../../services/event.service';
 import { SessionService } from '../../services/session.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BehaviorSubject, catchError, concatMap, EMPTY, map, shareReplay, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, EMPTY, map, shareReplay, switchMap, tap } from 'rxjs';
 import { CommonService } from '../../services/common.service';
 import { EventRegisterService } from '../../services/event-register.service';
-import { EventInviteService } from '../../services/event-invite.service';
-import { MeetingService } from '../../services/meeting.service';
 import { MatDialog } from '@angular/material/dialog';
 import { AttendeeMeetingDialogComponent } from '../../components/attendee-meeting-dialog/attendee-meeting-dialog.component';
 import { Location, AsyncPipe } from '@angular/common';
@@ -33,8 +31,6 @@ export class EventViewComponent {
   private route = inject(Router);
   private commonService = inject(CommonService);
   private eventRegisterService = inject(EventRegisterService);
-  private eventInviteService = inject(EventInviteService);
-  private meetingService = inject(MeetingService);
   private refresh$ = new BehaviorSubject(null);
   private dialog = inject(MatDialog);
   location = inject(Location);
@@ -42,8 +38,8 @@ export class EventViewComponent {
 
   isLoading = signal(true);
 
-  event$ = this.aroute.params.pipe(
-    switchMap((params: any) => this.eventService.getOneById(params.id).pipe(
+  event$ = combineLatest([this.aroute.params, this.refresh$]).pipe(
+    switchMap(([params]: any) => this.eventService.getOneById(params.id).pipe(
       map((res) => res.data),
       tap(() => this.isLoading.set(false)),
       catchError(() => {
@@ -61,45 +57,16 @@ export class EventViewComponent {
     shareReplay(1)
   );
 
-  has_registered$ = this.refresh$.pipe(
-    switchMap(() => this.event$.pipe(
-      concatMap((event) => this.eventRegisterService.hasRegistered(event._id).pipe(
-        map((res) => res.has_registered)
-      )),
-      shareReplay(1)
-    ))
-  );
-
-  is_register_approved$ = this.refresh$.pipe(
-    switchMap(() => this.event$.pipe(
-      concatMap((event) => this.eventRegisterService.isRegisterApproved(event._id).pipe(
-        map((res) => res.is_register_approved)
-      )),
-      shareReplay(1)
-    ))
-  );
-
-  is_invited$ = this.eventInviteService.getAllByUserId({ limit: 50 }).pipe(
-    map((res) => res.data),
-    concatMap((invites) => this.event$.pipe(
-      map((event) => !!invites.find((item) => item.event._id === event._id))
-    )),
+  private participation$ = this.event$.pipe(
+    map((event) => event.participation ?? { state: 'none' as const, meeting_started: false }),
     shareReplay(1)
   );
 
-  is_invite_accepted$ = this.eventInviteService.getAllAcceptedByUserId({ limit: 50 }).pipe(
-    map((res) => res.data),
-    concatMap((accepts) => this.event$.pipe(
-      map((event) => !!accepts.find((item) => item.event._id === event._id))
-    )),
-    shareReplay(1)
-  );
-
-  has_meeting_started$ = this.aroute.params.pipe(
-    switchMap((params: any) => this.meetingService.isStarted(params.id)),
-    map((res) => res.is_started),
-    shareReplay(1)
-  );
+  has_registered$ = this.participation$.pipe(map((p) => p.state === 'registered'));
+  is_register_approved$ = this.participation$.pipe(map((p) => p.state === 'registration_approved'));
+  is_invited$ = this.participation$.pipe(map((p) => p.state === 'invited'));
+  is_invite_accepted$ = this.participation$.pipe(map((p) => p.state === 'invitation_accepted'));
+  has_meeting_started$ = this.participation$.pipe(map((p) => p.meeting_started));
 
   constructor() {}
 
