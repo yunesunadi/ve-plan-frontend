@@ -24,16 +24,24 @@ export class InvitationSentDialogComponent {
   send() {
     const user_id_list = this.dialog_data.map((item: any) => item.user_id);
     this.eventInviteService.invite(user_id_list, this.dialog_data[0].event_id).subscribe({
+      next: (res) => {
+        this.dialog.close(true);
+        const invited = res.data?.invited?.length ?? 0;
+        const skipped = res.data?.skipped?.length ?? 0;
+        if (invited === 0 && skipped > 0) {
+          this.commonService.openSnackBar("All selected attendees were already invited.");
+        } else if (skipped > 0) {
+          this.commonService.openSnackBar(`Invited ${invited}. Skipped ${skipped} already invited.`);
+        } else {
+          this.commonService.openSnackBar("Send invitation successfully.");
+        }
+      },
       error: (err) => {
         this.dialog.close();
 
         if (err instanceof HttpErrorResponse) {
           this.commonService.openSnackBar(err.error.message);
         }
-      },
-      complete: () => {
-        this.dialog.close(true);
-        this.commonService.openSnackBar("Send invitation successfully.");
       }
     });
   }

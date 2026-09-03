@@ -3,6 +3,7 @@ import { EventInviteService } from '../../services/event-invite.service';
 import { BehaviorSubject, concatMap, map, scan, shareReplay, tap } from 'rxjs';
 import { CommonService } from '../../services/common.service';
 import { Location, AsyncPipe } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Timestamp } from '../../models/Utils';
 import { EventInvite } from '../../models/EventInvite';
 import { PageLoadingComponent } from '../../shared/page-loading/page-loading.component';
@@ -55,6 +56,12 @@ export class InvitationsComponent {
     this.eventInviteService.accept_invite(event_id).subscribe({
       next: () => {
         this.commonService.openSnackBar("Accept invitation successfully.");
+        this.offset$.next(0);
+      },
+      error: (err) => {
+        if (err instanceof HttpErrorResponse) {
+          this.commonService.openSnackBar(err.error.message);
+        }
         this.offset$.next(0);
       }
     });

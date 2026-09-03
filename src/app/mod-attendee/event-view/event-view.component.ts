@@ -10,6 +10,7 @@ import { MeetingService } from '../../services/meeting.service';
 import { MatDialog } from '@angular/material/dialog';
 import { AttendeeMeetingDialogComponent } from '../../components/attendee-meeting-dialog/attendee-meeting-dialog.component';
 import { Location, AsyncPipe } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { UtilService } from '../../services/util.service';
 import { PageLoadingComponent } from '../../shared/page-loading/page-loading.component';
 import { OutletInnerComponent } from '../../shared/outlet-inner/outlet-inner.component';
@@ -107,6 +108,11 @@ export class EventViewComponent {
       next: (res) => {
         this.refresh$.next(null);
         this.commonService.openSnackBar(res.message);
+      },
+      error: (err) => {
+        if (err instanceof HttpErrorResponse) {
+          this.commonService.openSnackBar(err.error.message);
+        }
       }
     });
   }
@@ -119,6 +125,11 @@ export class EventViewComponent {
         next: (res) => {
           this.refresh$.next(null);
           this.commonService.openSnackBar(res.message);
+        },
+        error: (err) => {
+          if (err instanceof HttpErrorResponse) {
+            this.commonService.openSnackBar(err.error.message);
+          }
         }
       });
     }

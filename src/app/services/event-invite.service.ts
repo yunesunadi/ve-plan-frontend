@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { GeneralResponse, PageQuery } from '../models/Utils';
-import { GetEventAcceptedInvitesResponse, GetEventInvitesResponse, GetPagedEventInvitesResponse } from '../models/EventInvite';
+import { GetEventAcceptedInvitesResponse, GetEventInvitesResponse, GetPagedEventInvitesResponse, InviteResultResponse } from '../models/EventInvite';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +14,7 @@ export class EventInviteService {
 
   invite(user_id_list: string[], event_id: string) {
     const url = `${environment.apiUrl}/event_invites`;
-    return this.http.post<GeneralResponse>(url, { user_id_list, event_id });
+    return this.http.post<InviteResultResponse>(url, { user_id_list, event_id });
   }
 
   getAllByEventId(event_id: string) {

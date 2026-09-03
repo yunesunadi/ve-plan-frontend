@@ -16,3 +16,15 @@ export type GetEventInvitesResponse = GeneralResponse & Response<"data", Array<T
 export type GetEventAcceptedInvitesResponse = GetEventInvitesResponse;
 
 export type GetPagedEventInvitesResponse = GetEventInvitesResponse & { meta: PageMeta };
+
+export interface InviteResultEntry {
+  _id: string;
+  name: string;
+}
+
+export interface InviteResult {
+  invited: InviteResultEntry[];
+  skipped: InviteResultEntry[];
+}
+
+export type InviteResultResponse = GeneralResponse & Response<"data", InviteResult>;

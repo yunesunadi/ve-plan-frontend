@@ -10,6 +10,7 @@ import { jwtDecode } from 'jwt-decode';
 import { UserPayload } from '../../models/User';
 import { Event } from '../../models/Event';
 import { Location, AsyncPipe } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { CommonService } from '../../services/common.service';
 import { PageLoadingComponent } from '../../shared/page-loading/page-loading.component';
 import { OutletInnerComponent } from '../../shared/outlet-inner/outlet-inner.component';
@@ -134,6 +135,11 @@ export class EventViewComponent {
         next: (res) => {
           this.commonService.openSnackBar(res.message);
           this.route.navigateByUrl("organizer/dashboard/events");
+        },
+        error: (err) => {
+          if (err instanceof HttpErrorResponse) {
+            this.commonService.openSnackBar(err.error.message);
+          }
         }
       });
     }
