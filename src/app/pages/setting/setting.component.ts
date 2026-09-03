@@ -13,7 +13,7 @@ import { MatIcon } from '@angular/material/icon';
 import { MatFormField, MatLabel, MatInput, MatError, MatSuffix, MatHint } from '@angular/material/input';
 import { MatDivider } from '@angular/material/divider';
 
-const MIN_LENGTH = 6;
+const MIN_LENGTH = 8;
 
 @Component({
     selector: 'app-setting',
@@ -54,7 +54,7 @@ export class SettingComponent {
 
     this.change_password_form = this.form_builder.group(
       {
-        current_password: ['', [Validators.required, Validators.minLength(MIN_LENGTH)]],
+        current_password: ['', [Validators.required]],
         new_password: ['', [Validators.required, Validators.minLength(MIN_LENGTH)]],
         confirm_password: ['', [Validators.required, Validators.minLength(MIN_LENGTH)]]
       },

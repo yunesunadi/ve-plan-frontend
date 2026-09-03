@@ -10,7 +10,7 @@ import { MatFormField, MatLabel, MatInput, MatError, MatSuffix, MatHint } from '
 import { MatIconButton, MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 
-const MIN_LENGTH = 6;
+const MIN_LENGTH = 8;
 @Component({
     selector: 'app-signup',
     templateUrl: './signup.component.html',

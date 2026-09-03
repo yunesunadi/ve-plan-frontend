@@ -57,9 +57,6 @@
           @if (currentPasswordControl.hasError('required')) {
             Current password is required.
           }
-          @else if (currentPasswordControl.hasError('minlength')) {
-            Current password must be more than {{ currentPasswordControl.errors && currentPasswordControl.errors['minlength'].requiredLength }} characters.
-          }
         </mat-error>
       }
     </mat-form-field>
@@ -81,7 +78,7 @@
             New password is required.
           }
           @else if (newPasswordControl.hasError('minlength')) {
-            New password must be more than {{ newPasswordControl.errors && newPasswordControl.errors['minlength'].requiredLength }} characters.
+            New password must be at least {{ newPasswordControl.errors && newPasswordControl.errors['minlength'].requiredLength }} characters.
           }
         </mat-error>
       }
@@ -102,7 +99,7 @@
         <mat-error>Confirm new password is required.</mat-error>
       }
       @else if (confirmPasswordControl.touched && confirmPasswordControl.errors && confirmPasswordControl.hasError('minlength')) {
-        <mat-error>Confirm new password must be more than {{ confirmPasswordControl.errors['minlength'].requiredLength }} characters.</mat-error>
+        <mat-error>Confirm new password must be at least {{ confirmPasswordControl.errors['minlength'].requiredLength }} characters.</mat-error>
       }
       @else if (newPasswordControl.value && confirmPasswordControl.value && change_password_form.errors && change_password_form.hasError('passwordsNotMatched')) {
         <mat-hint class="text-danger">Two passwords do not match.</mat-hint>

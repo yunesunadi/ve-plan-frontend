@@ -48,7 +48,7 @@
               Password is required.
             }
             @else if (passwordControl.hasError('minlength')) {
-              Password must be more than {{ passwordControl.errors && passwordControl.errors['minlength'].requiredLength }} characters.
+              Password must be at least {{ passwordControl.errors && passwordControl.errors['minlength'].requiredLength }} characters.
             }
           </mat-error>
         }
@@ -68,7 +68,7 @@
           <mat-error>Confirm password is required.</mat-error>
         }
         @else if (confirmPasswordControl.touched && confirmPasswordControl.errors && confirmPasswordControl.hasError('minlength')) {
-          <mat-error>Confirm password must be more than {{ confirmPasswordControl.errors['minlength'].requiredLength }} characters.</mat-error>
+          <mat-error>Confirm password must be at least {{ confirmPasswordControl.errors['minlength'].requiredLength }} characters.</mat-error>
         }
         @else if (passwordControl.value && confirmPasswordControl.value && signup_form.errors && signup_form.hasError('passwordsNotMatched')) {
           <mat-hint class="text-danger">Two passwords do not match.</mat-hint>
