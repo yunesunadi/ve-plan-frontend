@@ -43,6 +43,17 @@
   } @else {
     <p class="text-center mt-3">There is no invitations.</p>
   }
+
+  @if (invitations && invitations.length < total()) {
+    <button
+      mat-stroked-button
+      type="button"
+      class="bg-secondary-clr text-primary-clr mt-2"
+      (click)="loadMore(invitations.length)"
+    >
+      Load more
+    </button>
+  }
   </section>
 </app-outlet-inner>
 }

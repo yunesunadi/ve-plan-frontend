@@ -1,8 +1,8 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { GeneralResponse } from '../models/Utils';
-import { GetEventAcceptedInvitesResponse, GetEventInvitesResponse } from '../models/EventInvite';
+import { GeneralResponse, PageQuery } from '../models/Utils';
+import { GetEventAcceptedInvitesResponse, GetEventInvitesResponse, GetPagedEventInvitesResponse } from '../models/EventInvite';
 
 @Injectable({
   providedIn: 'root'
@@ -27,14 +27,27 @@ export class EventInviteService {
     return this.http.get<GetEventAcceptedInvitesResponse>(url);
   }
 
-  getAllByUserId() {
+  getAllByUserId(query?: Partial<PageQuery>) {
     const url = `${environment.apiUrl}/event_invites/events`;
-    return this.http.get<GetEventInvitesResponse>(url);
+    return this.http.get<GetPagedEventInvitesResponse>(url, { params: this.pageParams(query) });
   }
 
-  getAllAcceptedByUserId() {
+  getAllAcceptedByUserId(query?: Partial<PageQuery>) {
     const url = `${environment.apiUrl}/event_invites/accepted_events`;
-    return this.http.get<GetEventAcceptedInvitesResponse>(url);
+    return this.http.get<GetPagedEventInvitesResponse>(url, { params: this.pageParams(query) });
+  }
+
+  private pageParams(query?: Partial<PageQuery>) {
+    let params = new HttpParams();
+    if (query) {
+      if (query.limit) {
+        params = params.set("limit", query.limit);
+      }
+      if (query.offset) {
+        params = params.set("offset", query.offset);
+      }
+    }
+    return params;
   }
 
   accept_invite(event_id: string) {

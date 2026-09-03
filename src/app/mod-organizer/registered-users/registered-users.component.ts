@@ -36,6 +36,8 @@ export class RegisteredUsersComponent {
 
   readonly PAGE_LIMIT = 10;
 
+  total = signal(0);
+
   refresh$ = new BehaviorSubject(null);
 
   private eventRegisterService = inject(EventRegisterService);
@@ -76,6 +78,7 @@ export class RegisteredUsersComponent {
     switchMap(() => this.query$.pipe(
       switchMap((query) => this.event$.pipe(
         switchMap((event) => this.eventRegisterService.getAllByEventId(event._id, query).pipe(
+          tap((res) => this.total.set(res.meta?.total ?? 0)),
           map((res) => res.data.map((item, index) => ({
             id: index + 1 * ((+(query.offset as any) + 1) || 1),
             name: item.user.name,
@@ -90,12 +93,6 @@ export class RegisteredUsersComponent {
       map((event_registers) => (new MatTableDataSource(event_registers)))
     )),
     shareReplay(1)
-  );
-
-  all_registered_users$ = this.event$.pipe(
-    switchMap((event) => this.eventRegisterService.getAllByEventId(event._id).pipe(
-      map((res) => res.data)
-    ))
   );
 
   constructor() {}

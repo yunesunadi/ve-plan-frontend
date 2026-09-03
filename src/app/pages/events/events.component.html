@@ -123,29 +123,15 @@
     }
     </div>
     
-    @if(events) {
-      @if (!(!offset && events && events.length < LIMIT)) {
-      <div class="d-flex justify-content-end mt-3" style="gap: .5rem;">
-        <button
-          mat-raised-button
-          type="button"
-          class="bg-secondary-clr text-primary-clr"
-          (click)="goPrev(query)"
-          [disabled]="!offset"
-        >
-          Prev
-        </button>
-        <button
-          mat-raised-button
-          type="button"
-          class="bg-secondary-clr text-primary-clr"
-          (click)="goNext(query)"
-          [disabled]="events.length < LIMIT"
-          >
-          Next
-        </button>
-      </div>
-      }
+    @if (events && cache.eventsTotal() > LIMIT) {
+      <mat-paginator
+        class="mt-3"
+        [length]="cache.eventsTotal()"
+        [pageSize]="LIMIT"
+        [pageIndex]="offset / LIMIT"
+        [hidePageSize]="true"
+        (page)="handlePageChange($event, query)"
+      ></mat-paginator>
     }
   </section>
 </app-outlet-inner>

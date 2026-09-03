@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { GeneralResponse, PageQuery, Response } from '../models/Utils';
-import { GetEventRegistersResponse } from '../models/EventRegister';
+import { GetEventRegistersResponse, GetPagedEventRegistersResponse } from '../models/EventRegister';
 
 @Injectable({
   providedIn: 'root'
@@ -32,10 +32,8 @@ export class EventRegisterService {
     return this.http.get<Response<"is_register_approved", boolean>>(url);
   }
 
-  getAllByEventId(event_id: string, query?: Partial<PageQuery>) {
-    const url = `${environment.apiUrl}/event_registers/${event_id}/users`;
+  private pageParams(query?: Partial<PageQuery>) {
     let params = new HttpParams();
-
     if (query) {
       if (query.limit) {
         params = params.set("limit", query.limit);
@@ -44,8 +42,12 @@ export class EventRegisterService {
         params = params.set("offset", query.offset);
       }
     }
+    return params;
+  }
 
-    return this.http.get<GetEventRegistersResponse>(url, { params });
+  getAllByEventId(event_id: string, query?: Partial<PageQuery>) {
+    const url = `${environment.apiUrl}/event_registers/${event_id}/users`;
+    return this.http.get<GetPagedEventRegistersResponse>(url, { params: this.pageParams(query) });
   }
 
   getAllApprovedByEventId(event_id: string) {
@@ -53,14 +55,14 @@ export class EventRegisterService {
     return this.http.get<GetEventRegistersResponse>(url);
   }
 
-  getAllByUserId() {
+  getAllByUserId(query?: Partial<PageQuery>) {
     const url = `${environment.apiUrl}/event_registers/events`;
-    return this.http.get<GetEventRegistersResponse>(url);
+    return this.http.get<GetPagedEventRegistersResponse>(url, { params: this.pageParams(query) });
   }
 
-  getAllApprovedByUserId() {
+  getAllApprovedByUserId(query?: Partial<PageQuery>) {
     const url = `${environment.apiUrl}/event_registers/events/approved`;
-    return this.http.get<GetEventRegistersResponse>(url);
+    return this.http.get<GetPagedEventRegistersResponse>(url, { params: this.pageParams(query) });
   }
 
   approve(user_id_list: string[], event_id: string) {

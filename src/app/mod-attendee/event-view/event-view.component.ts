@@ -78,7 +78,7 @@ export class EventViewComponent {
     ))
   );
 
-  is_invited$ = this.eventInviteService.getAllByUserId().pipe(
+  is_invited$ = this.eventInviteService.getAllByUserId({ limit: 50 }).pipe(
     map((res) => res.data),
     concatMap((invites) => this.event$.pipe(
       map((event) => !!invites.find((item) => item.event._id === event._id))
@@ -86,7 +86,7 @@ export class EventViewComponent {
     shareReplay(1)
   );
 
-  is_invite_accepted$ = this.eventInviteService.getAllAcceptedByUserId().pipe(
+  is_invite_accepted$ = this.eventInviteService.getAllAcceptedByUserId({ limit: 50 }).pipe(
     map((res) => res.data),
     concatMap((accepts) => this.event$.pipe(
       map((event) => !!accepts.find((item) => item.event._id === event._id))

@@ -1,6 +1,6 @@
 import { Event } from "./Event";
 import { User } from "./User";
-import { GeneralResponse, Response, Timestamp } from "./Utils";
+import { GeneralResponse, Response, Timestamp, PageMeta } from "./Utils";
 
 export interface EventInvite {
   _id: string;
@@ -14,3 +14,5 @@ export interface EventInvite {
 export type GetEventInvitesResponse = GeneralResponse & Response<"data", Array<Timestamp & EventInvite>>;
 
 export type GetEventAcceptedInvitesResponse = GetEventInvitesResponse;
+
+export type GetPagedEventInvitesResponse = GetEventInvitesResponse & { meta: PageMeta };

@@ -15,6 +15,7 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatSelect, MatOption } from '@angular/material/select';
 import { MatDatepickerInput, MatDatepickerToggle, MatDatepicker } from '@angular/material/datepicker';
 import { MatCard, MatCardTitle, MatCardSubtitle, MatCardActions } from '@angular/material/card';
+import { PageEvent, MatPaginator } from '@angular/material/paginator';
 import { AsyncPipe } from '@angular/common';
 
 @Component({
@@ -29,7 +30,7 @@ import { AsyncPipe } from '@angular/common';
             useValue: "en-GB"
         },
     ],
-    imports: [PageLoadingComponent, OutletInnerComponent, MatButton, MatBadge, MatIcon, MatAccordion, MatExpansionPanel, MatFormField, MatLabel, MatInput, ReactiveFormsModule, FormsModule, MatPrefix, MatIconButton, MatSuffix, MatSelect, MatOption, MatDatepickerInput, MatHint, MatDatepickerToggle, MatDatepicker, MatCard, MatCardTitle, MatCardSubtitle, MatCardActions, RouterLink, AsyncPipe]
+    imports: [PageLoadingComponent, OutletInnerComponent, MatButton, MatBadge, MatIcon, MatAccordion, MatExpansionPanel, MatFormField, MatLabel, MatInput, ReactiveFormsModule, FormsModule, MatPrefix, MatIconButton, MatSuffix, MatSelect, MatOption, MatDatepickerInput, MatHint, MatDatepickerToggle, MatDatepicker, MatCard, MatCardTitle, MatCardSubtitle, MatCardActions, MatPaginator, RouterLink, AsyncPipe]
 })
 export class EventsComponent {
   @ViewChild(MatAccordion) accordion!: MatAccordion;
@@ -101,16 +102,9 @@ export class EventsComponent {
     });
   }
 
-  goPrev(query: Partial<EventQuery>) {
+  handlePageChange(event: PageEvent, query: Partial<EventQuery>) {
     this.router.navigate([`/${this.role()}/dashboard/events`], {
-      queryParams: { ...query, offset: +(query.offset || 0) - this.LIMIT },
-      replaceUrl: true
-    });
-  }
-
-  goNext(query: Partial<EventQuery>) {
-    this.router.navigate([`/${this.role()}/dashboard/events`], {
-      queryParams: { ...query, offset: +(query.offset || 0) + this.LIMIT },
+      queryParams: { ...query, offset: event.pageIndex ? event.pageIndex * this.LIMIT : 0 },
       replaceUrl: true
     });
   }

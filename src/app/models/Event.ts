@@ -1,5 +1,5 @@
 import { User } from "./User";
-import { Timestamp, GeneralResponse, Response } from "./Utils";
+import { Timestamp, GeneralResponse, Response, PageMeta } from "./Utils";
 
 export type EventTimeType = "upcoming" | "happening" | "past";
 
@@ -42,6 +42,6 @@ export interface MyEventQuery {
 
 export type CreateEventResponse = GeneralResponse & Response<"data", Timestamp & Event>;
 
-export type GetEventsResponse = GeneralResponse & Response<"data", Array<Timestamp & Event>>;
+export type GetEventsResponse = GeneralResponse & Response<"data", Array<Timestamp & Event>> & { meta: PageMeta };
 
 export type GetEventResponse = GeneralResponse & Response<"data", Timestamp & Event>;

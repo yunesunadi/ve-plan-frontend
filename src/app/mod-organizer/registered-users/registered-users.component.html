@@ -87,9 +87,10 @@
     </table>
 
     <mat-paginator
-      [length]="$safeNavigationMigration((all_registered_users$ | async)?.length)"
+      [length]="total()"
       [pageIndex]="(query?.offset ?? 0) / PAGE_LIMIT"
       [pageSize]="PAGE_LIMIT"
+      [hidePageSize]="true"
       (page)="handlePageChange($event, query, event._id)"
     ></mat-paginator>
   </div>

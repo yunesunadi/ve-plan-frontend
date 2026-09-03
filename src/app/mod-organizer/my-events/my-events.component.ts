@@ -74,6 +74,7 @@ export class MyEventsComponent {
   }
 
   onScroll(query: Partial<MyEventQuery>, result_length: number) {
+    if (result_length >= this.cache.myEventsTotal()) return;
     const new_query = { ...query, offset: result_length };
     this.cache.loadMoreMyEvents(new_query);
   }

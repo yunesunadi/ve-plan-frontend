@@ -80,6 +80,19 @@
     } @else {
       <p class="text-center mt-3">There is no event.</p>
     }
+
+    @if (joined_events && joined_events.length > 0 && hasMore(query?.category)) {
+      <div class="d-flex justify-content-center mt-3">
+        <button
+          mat-stroked-button
+          type="button"
+          class="bg-secondary-clr text-primary-clr"
+          (click)="loadMore(query?.category)"
+        >
+          Load more
+        </button>
+      </div>
+    }
   </section>
 </app-outlet-inner>
 }

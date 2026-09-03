@@ -28,6 +28,9 @@ export class EventCacheService {
   isEventsLoading = signal(true);
   isMyEventsLoading = signal(true);
 
+  eventsTotal = signal(0);
+  myEventsTotal = signal(0);
+
   query$ = this.activatedRoute.queryParams.pipe(
     filter(() => location.href.includes("dashboard/events")),
     switchMap((query) => {
@@ -71,7 +74,10 @@ export class EventCacheService {
     if (!this.cache.events$) {
       this.cache.events$ = this.query$.pipe(
         switchMap((query) => this.eventService.getAllByQuery(query).pipe(
-          tap(() => this.isEventsLoading.set(false)),
+          tap((res) => {
+            this.isEventsLoading.set(false);
+            this.eventsTotal.set(res.meta?.total ?? 0);
+          }),
           map((res) => res.data)
         )),
         tap(() => {
@@ -93,7 +99,10 @@ export class EventCacheService {
 
       this.cache.my_events$ = allQueries$.pipe(
         switchMap((query) => this.eventService.getMyEvents(query).pipe(
-          tap(() => this.isMyEventsLoading.set(false)),
+          tap((res) => {
+            this.isMyEventsLoading.set(false);
+            this.myEventsTotal.set(res.meta?.total ?? 0);
+          }),
           map(res => ({ data: res.data, query })),
         )),
         scan((acc: Event[], { data, query }) => {

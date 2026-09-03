@@ -18,6 +18,12 @@ export interface Timestamp {
 }
 
 export interface PageQuery {
-  offset?: number; 
+  offset?: number;
   limit: number;
 };
+
+export interface PageMeta {
+  total: number;
+  offset: number;
+  limit: number;
+}
