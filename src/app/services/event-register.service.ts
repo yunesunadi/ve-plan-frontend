@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { GeneralResponse, PageQuery, Response } from '../models/Utils';
-import { GetEventRegistersResponse, GetPagedEventRegistersResponse } from '../models/EventRegister';
+import { ApproveResultResponse, GetEventRegistersResponse, GetPagedEventRegistersResponse } from '../models/EventRegister';
 
 @Injectable({
   providedIn: 'root'
@@ -67,7 +67,7 @@ export class EventRegisterService {
 
   approve(user_id_list: string[], event_id: string) {
     const url = `${environment.apiUrl}/event_registers/approve`;
-    return this.http.put<GeneralResponse>(url, { user_id_list, event_id });
+    return this.http.put<ApproveResultResponse>(url, { user_id_list, event_id });
   }
 
   startMeeting(user_id_list: string[], event_id: string) {

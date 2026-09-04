@@ -13,3 +13,15 @@ export interface EventRegister {
 export type GetEventRegistersResponse = GeneralResponse & Response<"data", Array<Timestamp & EventRegister>>;
 
 export type GetPagedEventRegistersResponse = GetEventRegistersResponse & { meta: PageMeta };
+
+export interface ApproveResultEntry {
+  _id: string;
+  name: string;
+}
+
+export interface ApproveResult {
+  approved: ApproveResultEntry[];
+  skipped: ApproveResultEntry[];
+}
+
+export type ApproveResultResponse = GeneralResponse & Response<"data", ApproveResult>;

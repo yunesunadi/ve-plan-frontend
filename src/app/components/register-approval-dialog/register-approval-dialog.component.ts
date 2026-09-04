@@ -23,13 +23,21 @@ export class RegisterApprovalDialogComponent {
   send() {
     const user_id_list = this.dialog_data.map((item: any) => item.user_id);
     this.eventRegisterService.approve(user_id_list, this.dialog_data[0].event_id).subscribe({
+      next: (res) => {
+        this.dialog.close(true);
+        const approved = res.data?.approved?.length ?? 0;
+        const skipped = res.data?.skipped?.length ?? 0;
+        if (approved === 0 && skipped > 0) {
+          this.commonService.openSnackBar("All selected users were already approved.");
+        } else if (skipped > 0) {
+          this.commonService.openSnackBar(`Approved ${approved}. Skipped ${skipped} already approved.`);
+        } else {
+          this.commonService.openSnackBar("Send approval successfully.");
+        }
+      },
       error: () => {
         this.dialog.close();
         this.commonService.openSnackBar("Failed to send approval.");
-      },
-      complete: () => {
-        this.dialog.close(true);
-        this.commonService.openSnackBar("Send approval successfully.");
       }
     });
   }

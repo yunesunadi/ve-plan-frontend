@@ -47,7 +47,8 @@
           <div class="d-flex" style="gap: .5rem;">
             <mat-checkbox
               (click)="$event.stopPropagation()"
-              (change)="onChange(notification._id)"
+              [checked]="selection.isSelected(notification._id)"
+              (change)="selection.toggle(notification._id)"
               color="primary"
             ></mat-checkbox>
             <div class="d-flex flex-column">

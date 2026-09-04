@@ -7,6 +7,7 @@ import { environment } from '../../../environments/environment';
 import { Location } from '@angular/common';
 import { Router } from '@angular/router';
 import { DashboardCacheService } from '../../caches/dashboard-cache.service';
+import { SocketService } from '../../services/socket.service';
 import { OutletInnerComponent } from '../../shared/outlet-inner/outlet-inner.component';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
@@ -39,6 +40,7 @@ export class SettingComponent {
   private userService = inject(UserService);
   private cacheService = inject(DashboardCacheService);
   private commonService = inject(CommonService);
+  private socketService = inject(SocketService);
   private changeDetectorRef = inject(ChangeDetectorRef);
   private router = inject(Router);
   location = inject(Location);
@@ -206,6 +208,7 @@ export class SettingComponent {
     this.userService.updatePassword(current_password, new_password).subscribe({
       next: (res) => {
         localStorage.setItem("token", res.token);
+        this.socketService.connect(res.token);
         this.commonService.openSnackBar(res.message);
         this.change_password_form.reset();
         this.currentPasswordControl.setErrors(null);

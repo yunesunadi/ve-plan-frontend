@@ -1,4 +1,5 @@
 @let current_user = current_user$ | async;
+@let notifications_count = notifications_count$ | async;
 
 <mat-toolbar class="bg-primary-clr">
   <button mat-icon-button class="text-secondary-clr" (click)="drawer.toggle()">
@@ -6,13 +7,16 @@
   </button>
   <p class="text-secondary-clr mb-0 ms-3">VE-Plan</p>
   <span class="spacer"></span>
-  <button 
-    mat-icon-button 
-    class="text-secondary-clr me-3" 
-    routerLink="notifications" 
-    [matBadge]="notifications_count$ | async"
-    matBadgeColor="primary" 
-    [matBadgeHidden]="(notifications_count$ | async) === 0"
+  @if ((socketConnected$ | async) === false) {
+    <mat-icon class="text-secondary-clr me-3" matTooltip="Reconnecting…">cloud_off</mat-icon>
+  }
+  <button
+    mat-icon-button
+    class="text-secondary-clr me-3"
+    routerLink="notifications"
+    [matBadge]="notifications_count"
+    matBadgeColor="primary"
+    [matBadgeHidden]="notifications_count === 0"
   >
     <mat-icon>notifications_active</mat-icon>
   </button>

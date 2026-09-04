@@ -1,4 +1,6 @@
-import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, DestroyRef, ChangeDetectionStrategy } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { SelectionModel } from '@angular/cdk/collections';
 import { Subject, catchError, combineLatest, concatMap, map, of, scan, startWith, switchMap, tap } from 'rxjs';
 import { Notification } from '../../models/Notification';
 import { SocketService } from '../../services/socket.service';
@@ -27,11 +29,13 @@ export class NotificationsComponent {
   private commonService = inject(CommonService);
   private dashboardCache = inject(DashboardCacheService);
   private router = inject(Router);
+  private destroyRef = inject(DestroyRef);
 
   private readonly LIMIT = 20;
   private nextOffset = 0;
 
-  readNotifications = signal<string[]>([]);
+  selection = new SelectionModel<string>(true, []);
+
   isLoading = signal(true);
   total = signal(0);
   unread = signal(0);
@@ -40,9 +44,11 @@ export class NotificationsComponent {
 
   private loadMore$ = new Subject<number>();
 
-  realtime_notifications$ = this.socketService.onNotification().pipe(
-    scan((acc, curr) => [curr, ...acc], [] as Notification[]),
-    startWith([] as Notification[]),
+  private realtime$ = this.notificationService.markAsRead$.pipe(
+    switchMap(() => this.socketService.onNotification().pipe(
+      scan((acc, curr) => this.dedupe([curr, ...acc]), [] as Notification[]),
+      startWith([] as Notification[])
+    )),
     catchError(() => of([] as Notification[]))
   );
 
@@ -73,20 +79,18 @@ export class NotificationsComponent {
     })
   );
 
-  notifications$ = combineLatest([this.pages$, this.realtime_notifications$]).pipe(
+  notifications$ = combineLatest([this.pages$, this.realtime$]).pipe(
     map(([existing, realtime]) => this.dedupe([...realtime, ...existing]))
   );
 
   constructor() {}
 
   ngOnInit() {
-    this.dashboardCache.has_role.subscribe({
+    this.dashboardCache.has_role.pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
       next: (res) => this.role.set(res.role)
     });
-
-    const token = localStorage.getItem("token");
-    if (!token) return;
-    this.socketService.connect(token);
   }
 
   private dedupe(list: Notification[]): Notification[] {
@@ -117,14 +121,14 @@ export class NotificationsComponent {
   }
 
   markAsRead() {
-    if (this.readNotifications().length === 0) {
+    if (this.selection.isEmpty()) {
       this.commonService.openSnackBar('Please select at least one notification to mark as read');
       return;
     }
 
-    this.notificationService.markAsRead(this.readNotifications()).subscribe({
+    this.notificationService.markAsRead(this.selection.selected).subscribe({
       next: () => {
-        this.readNotifications.set([]);
+        this.selection.clear();
         this.notificationService.markAsRead$.next(null);
       }
     });
@@ -133,27 +137,23 @@ export class NotificationsComponent {
   markAllRead() {
     this.notificationService.markAllRead().subscribe({
       next: () => {
-        this.readNotifications.set([]);
+        this.selection.clear();
         this.notificationService.markAsRead$.next(null);
       }
     });
   }
 
   deleteSelected() {
-    if (this.readNotifications().length === 0) {
+    if (this.selection.isEmpty()) {
       this.commonService.openSnackBar('Please select at least one notification to delete');
       return;
     }
 
-    this.notificationService.deleteNotifications(this.readNotifications()).subscribe({
+    this.notificationService.deleteNotifications(this.selection.selected).subscribe({
       next: () => {
-        this.readNotifications.set([]);
+        this.selection.clear();
         this.notificationService.markAsRead$.next(null);
       }
     });
-  }
-
-  onChange(notificationId: string) {
-    this.readNotifications.update(prev => [...prev, notificationId]);
   }
 }
