@@ -33,20 +33,29 @@ export class OrganizerMeetingDialogComponent {
   }
 
   ngAfterViewInit(): void {
-    this.meetingService.createToken(this.dialog_data.event_id).subscribe({
-      next: (res) => {
-        this.room_name.set(res.room_name);
-        this.api = this.meetingService.createJitsiMeeting(
-          { room_name: res.room_name, token: res.token },
-          this.jitsi_iframe,
-          true
-        );
+    void this.initMeeting();
+  }
 
-        this.api.addEventListeners({
-          readyToClose: this.handleClose,
-          videoConferenceJoined: this.handleVideoConferenceJoined,
-          videoConferenceLeft: this.handleVideoConferenceLeft,
-        });
+  private async initMeeting(): Promise<void> {
+    this.meetingService.createToken(this.dialog_data.event_id).subscribe({
+      next: async (res) => {
+        try {
+          this.room_name.set(res.room_name);
+          this.api = await this.meetingService.createJitsiMeeting(
+            { room_name: res.room_name, token: res.token },
+            this.jitsi_iframe,
+            true
+          );
+
+          this.api.addEventListeners({
+            readyToClose: this.handleClose,
+            videoConferenceJoined: this.handleVideoConferenceJoined,
+            videoConferenceLeft: this.handleVideoConferenceLeft,
+          });
+        } catch {
+          this.commonService.openSnackBar("The meeting failed to load. Please try again.");
+          this.dialog.close();
+        }
       },
       error: (err) => {
         if (err instanceof HttpErrorResponse) {

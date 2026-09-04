@@ -50,24 +50,29 @@ export class AttendeeMeetingDialogComponent {
         );
       }),
     ).subscribe({
-      next: (data) => {
+      next: async (data) => {
         if (data.ended) {
           confirm("This meeting has ended.");
           this.dialog.close();
           return;
         }
 
-        this.room_name.set(data.room_name);
-        this.api = this.meetingService.createJitsiMeeting(
-          { room_name: data.room_name, token: data.token },
-          this.jitsi_iframe
-        );
+        try {
+          this.room_name.set(data.room_name);
+          this.api = await this.meetingService.createJitsiMeeting(
+            { room_name: data.room_name, token: data.token },
+            this.jitsi_iframe
+          );
 
-        this.api.addEventListeners({
-          readyToClose: this.handleClose,
-          videoConferenceJoined: this.handleVideoConferenceJoined,
-          videoConferenceLeft: this.handleVideoConferenceLeft,
-        });
+          this.api.addEventListeners({
+            readyToClose: this.handleClose,
+            videoConferenceJoined: this.handleVideoConferenceJoined,
+            videoConferenceLeft: this.handleVideoConferenceLeft,
+          });
+        } catch {
+          this.commonService.openSnackBar("The meeting failed to load. Please try again.");
+          this.dialog.close();
+        }
       },
       error: (err) => {
         if (err instanceof HttpErrorResponse) {

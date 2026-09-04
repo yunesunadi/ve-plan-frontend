@@ -22,6 +22,7 @@ export interface ApproveResultEntry {
 export interface ApproveResult {
   approved: ApproveResultEntry[];
   skipped: ApproveResultEntry[];
+  email?: { queued: number };
 }
 
 export type ApproveResultResponse = GeneralResponse & Response<"data", ApproveResult>;

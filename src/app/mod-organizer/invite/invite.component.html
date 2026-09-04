@@ -15,7 +15,9 @@
     </button>
     <h3 class="text-primary-clr mb-0">Invite Users</h3>
   </div>
-  
+
+  <app-email-delivery-status [eventId]="event._id"></app-email-delivery-status>
+
   <div class="d-flex flex-column flex-md-row justify-content-md-between">
     <div [formGroup]="form">
       <mat-form-field appearance="outline" class="w-100" style="max-width: 300px;">

@@ -27,13 +27,22 @@ export class RegisterApprovalDialogComponent {
         this.dialog.close(true);
         const approved = res.data?.approved?.length ?? 0;
         const skipped = res.data?.skipped?.length ?? 0;
+        const queued = res.data?.email?.queued ?? 0;
+
+        let message: string;
         if (approved === 0 && skipped > 0) {
-          this.commonService.openSnackBar("All selected users were already approved.");
+          message = "All selected users were already approved.";
         } else if (skipped > 0) {
-          this.commonService.openSnackBar(`Approved ${approved}. Skipped ${skipped} already approved.`);
+          message = `Approved ${approved}. Skipped ${skipped} already approved.`;
         } else {
-          this.commonService.openSnackBar("Send approval successfully.");
+          message = "Send approval successfully.";
         }
+
+        if (queued > 0) {
+          message += ` ${queued} email(s) queued.`;
+        }
+
+        this.commonService.openSnackBar(message);
       },
       error: () => {
         this.dialog.close();

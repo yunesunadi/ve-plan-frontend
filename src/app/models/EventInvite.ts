@@ -25,6 +25,7 @@ export interface InviteResultEntry {
 export interface InviteResult {
   invited: InviteResultEntry[];
   skipped: InviteResultEntry[];
+  email?: { queued: number };
 }
 
 export type InviteResultResponse = GeneralResponse & Response<"data", InviteResult>;

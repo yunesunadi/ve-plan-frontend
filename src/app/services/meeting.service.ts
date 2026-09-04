@@ -12,9 +12,47 @@ declare var JitsiMeetExternalAPI: any;
 export class MeetingService {
   private http = inject(HttpClient);
 
+  private apiReady?: Promise<void>;
+
   constructor() { }
 
-  createJitsiMeeting(data: { room_name: string; token: string; }, jitsi_iframe: ElementRef, hide_hangup = false) {
+  loadExternalApi(): Promise<void> {
+    if (this.apiReady) {
+      return this.apiReady;
+    }
+
+    this.apiReady = new Promise<void>((resolve, reject) => {
+      if (typeof JitsiMeetExternalAPI !== 'undefined' || (window as any).JitsiMeetExternalAPI) {
+        resolve();
+        return;
+      }
+
+      const existing = document.querySelector<HTMLScriptElement>('script[data-veplan-jitsi]');
+      if (existing) {
+        existing.addEventListener('load', () => resolve());
+        existing.addEventListener('error', () => {
+          this.apiReady = undefined;
+          reject(new Error('Failed to load the 8x8 meeting library.'));
+        });
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = `https://8x8.vc/${environment.appId}/external_api.js`;
+      script.async = true;
+      script.dataset['veplanJitsi'] = 'true';
+      script.onload = () => resolve();
+      script.onerror = () => {
+        this.apiReady = undefined;
+        reject(new Error('Failed to load the 8x8 meeting library.'));
+      };
+      document.body.appendChild(script);
+    });
+
+    return this.apiReady;
+  }
+
+  async createJitsiMeeting(data: { room_name: string; token: string; }, jitsi_iframe: ElementRef, hide_hangup = false) {
     const configOverwrite: any = {
       prejoinPageEnabled: true,
       disableInviteFunctions: true,
@@ -40,6 +78,8 @@ export class MeetingService {
       parentNode: jitsi_iframe.nativeElement,
       jwt: data.token
     };
+
+    await this.loadExternalApi();
 
     const api = new JitsiMeetExternalAPI(environment.meeting_domain, options);
 

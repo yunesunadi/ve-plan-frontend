@@ -1,5 +1,5 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatNoDataRow } from '@angular/material/table';
 import { ActivatedRoute } from '@angular/router';
@@ -19,15 +19,17 @@ import { MatIcon } from '@angular/material/icon';
 import { MatFormField, MatPrefix, MatLabel, MatInput } from '@angular/material/input';
 import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
 import { MatCheckbox } from '@angular/material/checkbox';
+import { EmailDeliveryStatusComponent } from '../../components/email-delivery-status/email-delivery-status.component';
 
 @Component({
     selector: 'app-invite',
     templateUrl: './invite.component.html',
     changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './invite.component.scss',
-    imports: [PageLoadingComponent, OutletInnerComponent, MatButton, MatIcon, ReactiveFormsModule, MatFormField, MatPrefix, MatLabel, MatInput, MatIconButton, MatMenuTrigger, MatMenu, MatMenuItem, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCheckbox, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatNoDataRow, AsyncPipe]
+    imports: [PageLoadingComponent, OutletInnerComponent, MatButton, MatIcon, ReactiveFormsModule, MatFormField, MatPrefix, MatLabel, MatInput, MatIconButton, MatMenuTrigger, MatMenu, MatMenuItem, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCheckbox, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatNoDataRow, AsyncPipe, EmailDeliveryStatusComponent]
 })
 export class InviteComponent {
+  @ViewChild(EmailDeliveryStatusComponent) emailStatus?: EmailDeliveryStatusComponent;
   displayedColumns: string[] = ['select', 'id', 'name'];
   selection = new SelectionModel<any>(true, []);
   form = new FormGroup({
@@ -107,10 +109,14 @@ export class InviteComponent {
     });
 
     dialogRef.afterClosed().subscribe({
-      next: () => {
+      next: (sent) => {
         this.selection.deselect(...dataSource.data);
         this.selection.clear();
         this.form.controls.search_input.setValue("");
+        if (sent) {
+          this.emailStatus?.refresh();
+          setTimeout(() => this.emailStatus?.refresh(), 6000);
+        }
       }
     });
   }

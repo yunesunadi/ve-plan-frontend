@@ -1,0 +1,45 @@
+@if (visibleStatus(); as s) {
+  <mat-card appearance="outlined" class="email-delivery-status mb-4">
+    <mat-card-content
+      class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between"
+      style="gap: .75rem;"
+    >
+      <div
+        class="d-flex align-items-center flex-wrap text-primary-clr"
+        style="gap: 1rem;"
+        role="status"
+        aria-live="polite"
+      >
+        <span class="email-delivery-status__stat">
+          <mat-icon class="m-0 email-delivery-status__icon email-delivery-status__icon--sent" aria-hidden="true">check_circle</mat-icon>
+          <span><strong>{{ s.sent }}</strong> sent</span>
+        </span>
+        <span class="email-delivery-status__stat">
+          <mat-icon class="m-0 email-delivery-status__icon email-delivery-status__icon--pending" aria-hidden="true">schedule</mat-icon>
+          <span><strong>{{ s.pending }}</strong> pending</span>
+        </span>
+        <span class="email-delivery-status__stat">
+          <mat-icon class="m-0 email-delivery-status__icon email-delivery-status__icon--failed" aria-hidden="true">error</mat-icon>
+          <span><strong>{{ s.failed }}</strong> failed</span>
+        </span>
+      </div>
+
+      @if (s.retryableFailed > 0) {
+        <button
+          mat-stroked-button
+          type="button"
+          class="text-primary-clr flex-shrink-0"
+          [disabled]="retrying()"
+          (click)="retryFailed()"
+        >
+          @if (retrying()) {
+            <mat-spinner diameter="18" aria-label="Retrying failed emails"></mat-spinner>
+          } @else {
+            <mat-icon>refresh</mat-icon>
+          }
+          Retry failed
+        </button>
+      }
+    </mat-card-content>
+  </mat-card>
+}

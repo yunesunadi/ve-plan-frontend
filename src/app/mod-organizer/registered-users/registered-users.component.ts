@@ -18,16 +18,18 @@ import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatFormField, MatPrefix, MatLabel, MatInput } from '@angular/material/input';
 import { MatCheckbox } from '@angular/material/checkbox';
+import { EmailDeliveryStatusComponent } from '../../components/email-delivery-status/email-delivery-status.component';
 
 @Component({
     selector: 'app-registered-users',
     templateUrl: './registered-users.component.html',
     changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './registered-users.component.scss',
-    imports: [PageLoadingComponent, OutletInnerComponent, MatButton, MatIcon, MatFormField, MatPrefix, MatLabel, MatInput, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCheckbox, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatNoDataRow, MatPaginator, AsyncPipe]
+    imports: [PageLoadingComponent, OutletInnerComponent, MatButton, MatIcon, MatFormField, MatPrefix, MatLabel, MatInput, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCheckbox, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatNoDataRow, MatPaginator, AsyncPipe, EmailDeliveryStatusComponent]
 })
 export class RegisteredUsersComponent {
   @ViewChild("input") input!: ElementRef;
+  @ViewChild(EmailDeliveryStatusComponent) emailStatus?: EmailDeliveryStatusComponent;
   
   displayedColumns: string[] = ['select', 'id', 'name', 'register_approved'];
   selection = new SelectionModel<any>(true, []);
@@ -154,6 +156,8 @@ export class RegisteredUsersComponent {
           this.selection.deselect(...dataSource.data);
           this.selection.clear();
           this.input.nativeElement.value = "";
+          this.emailStatus?.refresh();
+          setTimeout(() => this.emailStatus?.refresh(), 6000);
         }
       }
     });

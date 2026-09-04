@@ -28,13 +28,22 @@ export class InvitationSentDialogComponent {
         this.dialog.close(true);
         const invited = res.data?.invited?.length ?? 0;
         const skipped = res.data?.skipped?.length ?? 0;
+        const queued = res.data?.email?.queued ?? 0;
+
+        let message: string;
         if (invited === 0 && skipped > 0) {
-          this.commonService.openSnackBar("All selected attendees were already invited.");
+          message = "All selected attendees were already invited.";
         } else if (skipped > 0) {
-          this.commonService.openSnackBar(`Invited ${invited}. Skipped ${skipped} already invited.`);
+          message = `Invited ${invited}. Skipped ${skipped} already invited.`;
         } else {
-          this.commonService.openSnackBar("Send invitation successfully.");
+          message = "Send invitation successfully.";
         }
+
+        if (queued > 0) {
+          message += ` ${queued} email(s) queued.`;
+        }
+
+        this.commonService.openSnackBar(message);
       },
       error: (err) => {
         this.dialog.close();
