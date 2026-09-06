@@ -1,0 +1,7 @@
+<span class="avatar" [class]="'avatar--' + size()" role="img" [attr.aria-label]="altText()">
+  @if (showImage()) {
+    <img class="avatar__image" [src]="imageUrl()" alt="" (error)="onImageError()" />
+  } @else {
+    <span class="avatar__initials" aria-hidden="true">{{ initials() }}</span>
+  }
+</span>

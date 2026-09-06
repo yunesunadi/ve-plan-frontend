@@ -1,0 +1,59 @@
+@use 'sass:map';
+
+:root {
+  --app-space-1: 4px;
+  --app-space-2: 8px;
+  --app-space-3: 12px;
+  --app-space-4: 16px;
+  --app-space-5: 24px;
+  --app-space-6: 32px;
+  --app-space-7: 48px;
+
+  --app-radius-xs: var(--mat-sys-corner-extra-small);   // 4px
+  --app-radius-sm: var(--mat-sys-corner-small);         // 8px
+  --app-radius-md: var(--mat-sys-corner-medium);        // 12px
+  --app-radius-lg: var(--mat-sys-corner-large);         // 16px
+  --app-radius-full: var(--mat-sys-corner-full);        // 9999px
+
+  --app-elev-0: var(--mat-sys-level0);
+  --app-elev-1: var(--mat-sys-level1);
+  --app-elev-2: var(--mat-sys-level2);
+  --app-elev-3: var(--mat-sys-level3);
+  --app-elev-4: var(--mat-sys-level4);
+  --app-elev-5: var(--mat-sys-level5);
+
+  --app-motion-fast: 120ms;
+  --app-motion-base: 200ms;
+  --app-motion-slow: 320ms;
+
+  --primary-clr: var(--mat-sys-primary);
+  --secondary-clr: var(--mat-sys-primary-container);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+$breakpoints: (
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+);
+
+@mixin respond-to($bp) {
+  @if map.has-key($breakpoints, $bp) {
+    @media (min-width: map.get($breakpoints, $bp)) {
+      @content;
+    }
+  } @else {
+    @warn "Unknown breakpoint `#{$bp}`. Available: #{map.keys($breakpoints)}.";
+  }
+}

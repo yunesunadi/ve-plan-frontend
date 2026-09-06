@@ -1,5 +1,13 @@
 .create-form {
-  gap: 5px;
+  --stack-gap: 5px;
+}
+
+.cover-wrap {
+  align-self: center;
+}
+
+.cover-file-input {
+  display: none;
 }
 
 .cover-img {
@@ -10,4 +18,8 @@
     width: 110px;
     height: 110px;
   }
+}
+
+.time-error {
+  margin-top: -1.3rem;
 }

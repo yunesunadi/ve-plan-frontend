@@ -1,0 +1,12 @@
+<button
+  mat-flat-button
+  type="submit"
+  class="submit-button"
+  [disabled]="busy() || disabled()"
+  [attr.aria-busy]="busy()"
+>
+  @if (busy()) {
+    <mat-spinner diameter="18" aria-hidden="true" />
+  }
+  {{ busy() ? (busyLabel() || label()) : label() }}
+</button>

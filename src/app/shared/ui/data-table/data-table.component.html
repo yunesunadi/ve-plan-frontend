@@ -1,0 +1,129 @@
+<div class="data-table" [attr.aria-busy]="loading() || null">
+  @if (selectable() && selection().length > 0) {
+    <div class="data-table__bulk-bar">
+      <span class="data-table__bulk-count">{{ selection().length }} selected</span>
+      <div class="data-table__bulk-actions">
+        <ng-content select="[table-actions]"></ng-content>
+      </div>
+    </div>
+  }
+
+  <div class="data-table__toolbar">
+    <mat-form-field appearance="outline" class="data-table__search">
+      <mat-icon matPrefix>search</mat-icon>
+      <mat-label>{{ searchLabel() }}</mat-label>
+      <input
+        matInput
+        type="text"
+        [placeholder]="searchPlaceholder()"
+        [value]="searchDraft()"
+        (input)="onSearchInput($event)"
+      />
+      @if (searchDraft()) {
+        <button type="button" mat-icon-button matSuffix (click)="clearSearch()" aria-label="Clear search">
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </mat-form-field>
+  </div>
+
+  @switch (state()) {
+    @case ('loading') {
+      <app-skeleton variant="table-row" [rows]="pageSize()"></app-skeleton>
+    }
+    @case ('error') {
+      <app-error-state [error]="error()" (retry)="retry.emit()"></app-error-state>
+    }
+    @case ('empty') {
+      <app-empty-state compact [icon]="emptyIcon()" [headline]="emptyHeadline()" [supporting]="emptySupporting()"></app-empty-state>
+    }
+    @case ('no-results') {
+      <app-empty-state
+        compact
+        icon="search_off"
+        [headline]="'No results for &quot;' + searchValue() + '&quot;'"
+        supporting="Try a different search term."
+        ctaLabel="Clear search"
+        (ctaClick)="clearSearch()"
+      ></app-empty-state>
+    }
+    @case ('table') {
+      @if (!isCompact()) {
+        <div class="data-table__surface">
+          <table mat-table [dataSource]="rows()" [trackBy]="trackRow">
+            <ng-container matColumnDef="__select">
+              <th mat-header-cell *matHeaderCellDef>
+                @if (selectable()) {
+                  <mat-checkbox
+                    [checked]="selection().length > 0 && allSelected()"
+                    [indeterminate]="selection().length > 0 && !allSelected()"
+                    [disabled]="selectableRows().length === 0"
+                    (change)="toggleAllRows()"
+                    [attr.aria-label]="allSelected() ? 'Deselect all' : 'Select all'"
+                  ></mat-checkbox>
+                }
+              </th>
+              <td mat-cell *matCellDef="let row">
+                @if (selectable() && isRowSelectable()(row)) {
+                  <mat-checkbox
+                    (click)="$event.stopPropagation()"
+                    (change)="toggleRow(row)"
+                    [checked]="isSelected(row)"
+                    aria-label="Select row"
+                  ></mat-checkbox>
+                }
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="effectiveColumns()"></tr>
+            <tr
+              mat-row
+              *matRowDef="let row; columns: effectiveColumns()"
+              tabindex="0"
+              class="data-table__row"
+              [class.data-table__row--selected]="selectable() && isSelected(row)"
+              [attr.aria-selected]="selectable() ? isSelected(row) : null"
+              (click)="onRowActivate(row)"
+              (keydown)="onRowKeydown($event, row)"
+            ></tr>
+          </table>
+        </div>
+      } @else {
+        <div class="stack data-table__cards">
+          @for (row of rows(); track trackRow($index, row)) {
+            <div
+              class="data-table__card"
+              tabindex="0"
+              [class.data-table__card--selected]="selectable() && isSelected(row)"
+              [attr.aria-selected]="selectable() ? isSelected(row) : null"
+              (click)="onRowActivate(row)"
+              (keydown)="onRowKeydown($event, row)"
+            >
+              @if (selectable()) {
+                <mat-checkbox
+                  class="data-table__card-check"
+                  (click)="$event.stopPropagation()"
+                  (change)="toggleRow(row)"
+                  [checked]="isSelected(row)"
+                  [disabled]="!isRowSelectable()(row)"
+                  aria-label="Select row"
+                ></mat-checkbox>
+              }
+              <div class="data-table__card-body">
+                <ng-container [ngTemplateOutlet]="cardRowTemplate ?? null" [ngTemplateOutletContext]="{ $implicit: row }"></ng-container>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <mat-paginator
+        [length]="total()"
+        [pageIndex]="pageIndex()"
+        [pageSize]="pageSize()"
+        [hidePageSize]="true"
+        (page)="pageChange.emit($event)"
+      ></mat-paginator>
+    }
+  }
+</div>

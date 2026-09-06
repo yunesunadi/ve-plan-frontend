@@ -1,26 +1,41 @@
-/* You can add global styles to this file, and also import other style files */
-
+@use 'styles/fonts';
 @use '@angular/material' as mat;
+@use 'styles/theme-colors' as brand;
+@use 'styles/tokens';
+@use 'styles/status-tokens';
+@use 'styles/vendor-fullcalendar';
+@use 'styles/layout';
+@use 'styles/utilities';
+@use 'styles/toast';
 
-@import url("../node_modules/bootstrap/dist/css/bootstrap.min.css");
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
-:root {
-  --primary-clr: #432E54;
-  --secondary-clr: #E8BCB9;
+html {
+  color-scheme: light;
 
-  @include mat.snack-bar-overrides((
-    container-color: var(--secondary-clr),
-    supporting-text-color: var(--primary-clr),
-    button-color: var(--primary-clr),
-  ));
+  @include mat.theme((
+    color: (
+      primary: brand.$primary-palette,
+      tertiary: brand.$tertiary-palette,
+      theme-type: color-scheme,
+    ),
+    typography: (
+      plain-family: (Ubuntu, sans-serif),
+      brand-family: (Ubuntu, sans-serif),
+      bold-weight: 700,
+      medium-weight: 500,
+      regular-weight: 400,
+    ),
+    density: 0,
+  ), $overrides: (primary: #432E54, on-primary: #FFFFFF));
 }
 
 html, body {
   height: 100%;
-
-  @include mat.theme((
-    typography: "Ubuntu",
-  ));
 }
 
 body {
@@ -28,74 +43,15 @@ body {
   font-family: "Ubuntu", sans-serif;
 }
 
-.bg {
-  &-primary-clr {
-    background-color: var(--primary-clr) !important;
-  }
-  
-  &-secondary-clr {
-    background-color: var(--secondary-clr) !important;
-  }
+:root {
+  @include mat.snack-bar-overrides((
+    container-color: var(--mat-sys-secondary-container),
+    supporting-text-color: var(--mat-sys-on-secondary-container),
+    button-color: var(--mat-sys-on-secondary-container),
+  ));
 }
-
-.text {
-  &-primary-clr {
-    color: var(--primary-clr) !important;
-  }
-
-  &-secondary-clr {
-    color: var(--secondary-clr) !important;
-  }
-}
-
-.cursor-pointer {
-  cursor: pointer;
-}
-
-/* For full calender style customization */
 
 a {
   text-decoration: none;
   color: var(--primary-clr);
-}
-
-.fc {
-  &-button {
-    background-color: var(--primary-clr) !important;
-
-    &-active {
-      background-color: var(--secondary-clr) !important;
-      color: var(--primary-clr) !important;
-    }
-  }
-
-  &-toolbar-title {
-    color: var(--primary-clr);
-  }
-
-  &-day-today {
-    background-color: var(--secondary-clr) !important;
-  }
-
-  &-h-event {
-    background-color: var(--primary-clr);
-  }
-
-  &-header-toolbar {
-    flex-direction: column;
-    gap: .5rem;
-
-    @media (min-width: 992px) {
-      flex-direction: row;
-    }
-  }
-
-  &-toolbar-chunk:nth-of-type(1) {
-    align-self: flex-start;
-  }
-
-  &-toolbar-chunk:nth-of-type(3) {
-    align-self: flex-end;
-  }
-
 }

@@ -1,119 +1,145 @@
-import { SelectionModel } from '@angular/cdk/collections';
-import { Component, inject, signal, ViewChild, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, input, signal, ViewChild, ChangeDetectionStrategy } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 import { MatDialog } from '@angular/material/dialog';
-import { MatTableDataSource, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatNoDataRow } from '@angular/material/table';
-import { ActivatedRoute } from '@angular/router';
-import { concatMap, debounceTime, iif, map, of, shareReplay, startWith, switchMap, tap } from 'rxjs';
+import { MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell } from '@angular/material/table';
+import { ActivatedRoute, Router } from '@angular/router';
+import { BehaviorSubject, catchError, map, of, shareReplay, switchMap, tap } from 'rxjs';
 import { UserService } from '../../services/user.service';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { EventService } from '../../services/event.service';
 import { InvitationSentDialogComponent } from '../../components/invitation-sent-dialog/invitation-sent-dialog.component';
 import { InvitedUsersDialogComponent } from '../../components/invited-users-dialog/invited-users-dialog.component';
 import { AcceptedUsersDialogComponent } from '../../components/accepted-users-dialog/accepted-users-dialog.component';
-import { Location, AsyncPipe } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { UtilService } from '../../services/util.service';
-import { PageLoadingComponent } from '../../shared/page-loading/page-loading.component';
 import { OutletInnerComponent } from '../../shared/outlet-inner/outlet-inner.component';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
-import { MatFormField, MatPrefix, MatLabel, MatInput } from '@angular/material/input';
 import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
-import { MatCheckbox } from '@angular/material/checkbox';
 import { EmailDeliveryStatusComponent } from '../../components/email-delivery-status/email-delivery-status.component';
+import { PageHeaderComponent } from '../../shared/ui/page-header/page-header.component';
+import { DataTableComponent } from '../../shared/ui/data-table/data-table.component';
+import { PageEvent } from '@angular/material/paginator';
+import { DashboardCacheService } from '../../caches/dashboard-cache.service';
+import { ApiError } from '../../models/ApiError';
+import { Event } from '../../models/Event';
+
+interface InviteCandidateRow {
+  id: number;
+  name: string;
+  email: string;
+  event_title: string;
+  user_id: string;
+  event_id: string;
+}
+
+const PAGE_SIZE = 50;
+const MIN_SEARCH_LENGTH = 2;
 
 @Component({
     selector: 'app-invite',
     templateUrl: './invite.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrl: './invite.component.scss',
-    imports: [PageLoadingComponent, OutletInnerComponent, MatButton, MatIcon, ReactiveFormsModule, MatFormField, MatPrefix, MatLabel, MatInput, MatIconButton, MatMenuTrigger, MatMenu, MatMenuItem, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCheckbox, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatNoDataRow, AsyncPipe, EmailDeliveryStatusComponent]
+    imports: [OutletInnerComponent, PageHeaderComponent, DataTableComponent, MatButton, MatIcon, MatIconButton, MatMenuTrigger, MatMenu, MatMenuItem, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, AsyncPipe, EmailDeliveryStatusComponent]
 })
 export class InviteComponent {
   @ViewChild(EmailDeliveryStatusComponent) emailStatus?: EmailDeliveryStatusComponent;
-  displayedColumns: string[] = ['select', 'id', 'name'];
-  selection = new SelectionModel<any>(true, []);
-  form = new FormGroup({
-    search_input: new FormControl()
-  });
+
+  readonly PAGE_SIZE = PAGE_SIZE;
+
+  event = input.required<Event>();
+  private event$ = toObservable(this.event);
+
+  role = signal("");
+  tableLoading = signal(false);
+  tableError = signal<ApiError | null>(null);
+  total = signal(0);
+  selection: InviteCandidateRow[] = [];
 
   private userService = inject(UserService);
-  private eventService = inject(EventService);
   private aroute = inject(ActivatedRoute);
+  private router = inject(Router);
   private dialog = inject(MatDialog);
-  location = inject(Location);
+  private dashboardCache = inject(DashboardCacheService);
   util = inject(UtilService);
 
-  isLoading = signal(true);
-
-  event$ = this.aroute.params.pipe(
-    switchMap((params: any) => this.eventService.getOneById(params.id).pipe(
-      tap(() => this.isLoading.set(false)),
-      map((res) => res.data)
-    )),
+  query$ = this.aroute.queryParams.pipe(
+    map((query) => ({
+      search: typeof query['search'] === 'string' ? query['search'] : '',
+      offset: Math.max(0, Number(query['offset']) || 0),
+    })),
     shareReplay(1)
   );
 
-  dataSource$ = this.form.controls.search_input.valueChanges.pipe(
-    debounceTime(500),
-    switchMap((value) => iif(
-      () => !!value && value.trim().length >= 2,
-      this.userService.getAttendees(value).pipe(
-        concatMap((users) => this.event$.pipe(
-          map((event) => (users.data.map((item) => ({ ...item, event_id: event._id, event_title: event.title }))))
-        ))
-      ),
-      of([])
+  private refresh$ = new BehaviorSubject(null);
+
+  dataSource$ = this.refresh$.pipe(
+    switchMap(() => this.query$.pipe(
+      tap(() => {
+        this.tableLoading.set(true);
+        this.tableError.set(null);
+      }),
+      switchMap((query) => this.event$.pipe(
+        switchMap((event) => {
+          if (query.search.trim().length < MIN_SEARCH_LENGTH) {
+            this.total.set(query.offset);
+            return of({ event, data: [] as InviteCandidateRow[] });
+          }
+
+          const page = Math.floor(query.offset / PAGE_SIZE) + 1;
+
+          return this.userService.getAttendees(query.search, page).pipe(
+            tap((res) => {
+              const full = res.data.length === PAGE_SIZE;
+              this.total.set(query.offset + res.data.length + (full ? PAGE_SIZE : 0));
+            }),
+            map((res): { event: typeof event; data: InviteCandidateRow[] } => ({
+              event,
+              data: res.data.map((item, index) => ({
+                id: query.offset + index + 1,
+                name: item.name,
+                email: item.email,
+                event_id: event._id,
+                event_title: event.title,
+                user_id: item._id,
+              })),
+            })),
+          );
+        }),
+      )),
+      map(({ data }) => data),
+      tap(() => this.tableLoading.set(false)),
+      catchError((err: ApiError) => {
+        this.tableLoading.set(false);
+        this.tableError.set(err);
+        return of([] as InviteCandidateRow[]);
+      }),
     )),
-    map((res) => res.map((item, index) => ({
-      id: index + 1,
-      name: item.name,
-      email: item.email,
-      event_title: item.event_title,
-      user_id: item._id,
-      event_id: item.event_id,
-    }))),
-    map((users) => new MatTableDataSource(users)),
-    startWith(new MatTableDataSource<any>([])),
     shareReplay(1)
   );
 
   constructor() {}
 
-  isAllSelected(dataSource: MatTableDataSource<any>) {
-    const numSelected = this.selection.selected.length;
-    const numRows = dataSource.data.length;
-    return numSelected === numRows;
+  ngOnInit() {
+    this.dashboardCache.has_role.subscribe({
+      next: (res) => {
+        this.role.set(res.role);
+      }
+    });
   }
 
-  toggleAllRows(dataSource: MatTableDataSource<any>) {
-    if (this.isAllSelected(dataSource)) {
-      this.selection.clear();
-      return;
-    }
-
-    this.selection.select(...dataSource.data);
-  }
-
-  checkboxLabel(dataSource: MatTableDataSource<any>, row?: any): string {
-    if (!row) {
-      return `${this.isAllSelected(dataSource) ? 'deselect' : 'select'} all`;
-    }
-    return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.position + 1}`;
-  }
-
-  sendInvitation(dataSource: MatTableDataSource<any>) {
+  sendInvitation(rows: InviteCandidateRow[], event_id: string) {
     const dialogRef = this.dialog.open(InvitationSentDialogComponent, {
-      data: this.selection.selected,
+      data: rows,
       disableClose: true,
       width: "500px"
     });
 
     dialogRef.afterClosed().subscribe({
       next: (sent) => {
-        this.selection.deselect(...dataSource.data);
-        this.selection.clear();
-        this.form.controls.search_input.setValue("");
+        this.selection = [];
         if (sent) {
+          this.handleSearchChange('', { search: '', offset: 0 }, event_id);
+          this.refresh$.next(null);
           this.emailStatus?.refresh();
           setTimeout(() => this.emailStatus?.refresh(), 6000);
         }
@@ -136,6 +162,25 @@ export class InviteComponent {
         id: event_id
       },
       width: "500px"
+    });
+  }
+
+  retry() {
+    this.refresh$.next(null);
+  }
+
+  handleSearchChange(search: string, query: { search: string; offset: number }, event_id: string) {
+    this.router.navigate([`/organizer/dashboard/events/${event_id}/invite`], {
+      queryParams: { ...query, search: search || undefined, offset: undefined },
+      replaceUrl: true
+    });
+  }
+
+  handlePageChange(event: PageEvent, query: { search: string; offset: number }, event_id: string) {
+    const offset = event.pageIndex ? event.pageIndex * PAGE_SIZE : undefined;
+    this.router.navigate([`/organizer/dashboard/events/${event_id}/invite`], {
+      queryParams: { ...query, offset },
+      replaceUrl: true
     });
   }
 }

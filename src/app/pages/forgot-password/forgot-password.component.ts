@@ -1,20 +1,21 @@
-import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
-import { HttpErrorResponse } from '@angular/common/http';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { ApiError } from '../../models/ApiError';
 import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { CommonService } from '../../services/common.service';
 import { RegisterWrapperComponent } from '../../shared/register-wrapper/register-wrapper.component';
 import { MatFormField, MatLabel, MatInput, MatError } from '@angular/material/input';
-import { MatButton } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
 import { MatIcon } from '@angular/material/icon';
+import { FormErrorComponent } from '../../shared/ui/form-error/form-error.component';
+import { SubmitButtonComponent } from '../../shared/ui/submit-button/submit-button.component';
 
 @Component({
     selector: 'app-forgot-password',
     templateUrl: './forgot-password.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrl: './forgot-password.component.scss',
-    imports: [RegisterWrapperComponent, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, MatButton, RouterLink, MatIcon]
+    imports: [RegisterWrapperComponent, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, RouterLink, MatIcon, FormErrorComponent, SubmitButtonComponent]
 })
 export class ForgotPasswordComponent {
 
@@ -25,6 +26,8 @@ export class ForgotPasswordComponent {
     email: new FormControl('', [Validators.required, Validators.email]),
   });
 
+  submitting = signal(false);
+
   onSubmit() {
     this.forgotPasswordForm.markAllAsTouched();
 
@@ -32,15 +35,18 @@ export class ForgotPasswordComponent {
 
     const email = this.forgotPasswordForm.value.email as string;
 
+    this.submitting.set(true);
     this.authService.forgotPassword(email).subscribe({
       next: () => {
-        this.commonService.openSnackBar("Sent password reset email successfully. Please check your email.");
+        this.submitting.set(false);
+        this.commonService.success("Sent password reset email successfully. Please check your email.");
       },
       error: (err) => {
-        const message = err instanceof HttpErrorResponse && err.error?.message
-          ? err.error.message
+        this.submitting.set(false);
+        const message = err instanceof ApiError && err.message
+          ? err.message
           : "Failed to sent password reset email.";
-        this.commonService.openSnackBar(message);
+        this.commonService.error(message);
       }
     });
   }

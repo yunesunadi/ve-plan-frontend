@@ -1,67 +1,119 @@
-.sidenav {
-  width: 55px;
-  border-right: 1px solid var(--primary-clr);
-  background-color: var(--secondary-clr);
+@use '@angular/material' as mat;
 
-  @media (min-width: 599px) {
-    width: 200px;
-  }
+.app-shell {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-block-size: 100dvh;
+}
 
-  &-container {
-    width: 100%;
-    height: calc(100% - 56px);
+.app-shell__body {
+  min-block-size: 0;
+}
 
-    @media (min-width: 599px) {
-      height: calc(100% - 64px);
-    }
-  }
+.app-shell__content {
+  block-size: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-padding-block-start: var(--app-space-4);
 
-  &-content {
-    height: inherit;
-  }
-
-  &-list {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    border-bottom: 1px solid var(--primary-clr);
-  }
-
-  &-item {
-    padding: .8rem .9rem;
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-
-    span {
-      color: var(--primary-clr);
-      display: none;
-
-      @media (min-width: 599px) {
-        display: block;
-        margin-left: .7rem;
-      }
-    }
-
-    &:hover, &.active {
-      border-right: 3px solid var(--primary-clr);
-      cursor: pointer;
-
-      @media (min-width: 599px) {
-        border-right: 5px solid var(--primary-clr);
-      }
-    }
-
-    @media (min-width: 599px) {
-      padding: .8rem 1.5rem;
-    }
+  &:focus-visible {
+    outline: none;
   }
 }
 
-.spacer {
-  flex: 1 1 auto;
+.skip-link {
+  position: fixed;
+  inset-block-start: var(--app-space-2);
+  inset-inline-start: var(--app-space-2);
+  z-index: 1000;
+  padding: var(--app-space-2) var(--app-space-4);
+  border-radius: var(--app-radius-sm);
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-primary);
+  box-shadow: var(--app-elev-3);
+
+  &:focus-visible {
+    position: fixed;
+    width: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+  }
 }
 
-::ng-deep .sidenav.mat-drawer {
-  border-radius: 0;
+.app-toolbar {
+  position: relative;
+  z-index: 2;
+}
+
+.brand {
+  align-items: center;
+  text-decoration: none;
+
+  &:focus-visible {
+    outline: 2px solid var(--mat-sys-on-primary);
+    outline-offset: 2px;
+    border-radius: var(--app-radius-xs);
+  }
+}
+
+.brand__wordmark {
+  font: var(--mat-sys-title-medium);
+  display: none;
+
+  @media (min-width: 576px) {
+    display: inline;
+  }
+}
+
+.profile-trigger {
+  align-items: center;
+}
+
+.profile-trigger__name {
+  display: none;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  @media (min-width: 768px) {
+    display: inline-block;
+  }
+}
+
+.app-toolbar__bell {
+  @include mat.badge-overrides((
+    background-color: var(--mat-sys-error),
+    text-color: var(--mat-sys-on-error),
+  ));
+}
+
+.app-drawer-container {
+  background-color: transparent;
+}
+
+.app-drawer {
+  @include mat.sidenav-overrides((
+    container-width: 240px,
+    container-background-color: var(--mat-sys-surface-container),
+    container-shape: 0,
+  ));
+  transition: width var(--app-motion-base), box-shadow var(--app-motion-base);
+
+  &.mat-drawer-over {
+    box-shadow: var(--app-elev-3);
+  }
+
+  &.mat-drawer-side {
+    box-shadow: var(--app-elev-0);
+  }
+}
+
+.app-drawer--rail {
+  @include mat.sidenav-overrides((
+    container-width: 80px,
+  ));
 }

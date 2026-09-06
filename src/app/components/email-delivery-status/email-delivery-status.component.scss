@@ -15,15 +15,15 @@
     line-height: 18px;
 
     &--sent {
-      color: #2e7d32;
+      color: var(--app-status-success-on-container);
     }
 
     &--pending {
-      color: #b26a00;
+      color: var(--app-status-warning-on-container);
     }
 
     &--failed {
-      color: #c62828;
+      color: var(--mat-sys-error);
     }
   }
 
@@ -31,4 +31,24 @@
     display: inline-block;
     margin-right: .25rem;
   }
+}
+
+.status-row {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: .75rem;
+
+  @media (min-width: 576px) {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.stats-cluster {
+  --cluster-gap: var(--app-space-4);
+}
+
+.retry-btn {
+  flex-shrink: 0;
 }

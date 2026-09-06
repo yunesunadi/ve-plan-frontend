@@ -1,3 +1,35 @@
-.mat-column-select {
-  width: 50px;
+.page-header {
+  --cluster-gap: var(--app-space-4);
+}
+
+.status-pending {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--app-space-1);
+  padding: var(--app-space-1) var(--app-space-3);
+  border-radius: var(--app-radius-full);
+  font: var(--mat-sys-label-large);
+  line-height: 1;
+  width: fit-content;
+  background: var(--app-status-neutral-container);
+  color: var(--app-status-neutral-on-container);
+
+  mat-icon {
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+    line-height: 16px;
+  }
+
+  &--dense {
+    padding: 2px var(--app-space-2);
+    font: var(--mat-sys-label-medium);
+
+    mat-icon {
+      width: 14px;
+      height: 14px;
+      font-size: 14px;
+      line-height: 14px;
+    }
+  }
 }

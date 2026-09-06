@@ -8,20 +8,24 @@ import { NotificationService } from '../../services/notification.service';
 import { CommonService } from '../../services/common.service';
 import { DashboardCacheService } from '../../caches/dashboard-cache.service';
 import { Router, RouterLink } from '@angular/router';
-import { PageLoadingComponent } from '../../shared/page-loading/page-loading.component';
 import { OutletInnerComponent } from '../../shared/outlet-inner/outlet-inner.component';
 import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatCard, MatCardContent } from '@angular/material/card';
 import { NgClass, AsyncPipe } from '@angular/common';
 import { MatCheckbox } from '@angular/material/checkbox';
+import { PageHeaderComponent } from '../../shared/ui/page-header/page-header.component';
+import { SkeletonComponent } from '../../shared/ui/skeleton/skeleton.component';
+import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.component';
+import { ErrorStateComponent } from '../../shared/ui/error-state/error-state.component';
+import { ApiError } from '../../models/ApiError';
 
 @Component({
     selector: 'app-notifications',
     templateUrl: './notifications.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrl: './notifications.component.scss',
-    imports: [PageLoadingComponent, OutletInnerComponent, MatButton, MatIcon, MatCard, NgClass, MatCardContent, MatCheckbox, AsyncPipe, RouterLink]
+    imports: [OutletInnerComponent, PageHeaderComponent, MatButton, MatIcon, MatCard, NgClass, MatCardContent, MatCheckbox, AsyncPipe, RouterLink, SkeletonComponent, EmptyStateComponent, ErrorStateComponent]
 })
 export class NotificationsComponent {
   private notificationService = inject(NotificationService);
@@ -37,10 +41,13 @@ export class NotificationsComponent {
   selection = new SelectionModel<string>(true, []);
 
   isLoading = signal(true);
+  error = signal<ApiError | null>(null);
   total = signal(0);
   unread = signal(0);
   loadedCount = signal(0);
   role = signal('');
+
+  readonly skeletonPlaceholders = Array.from({ length: 5 });
 
   private loadMore$ = new Subject<number>();
 
@@ -62,9 +69,14 @@ export class NotificationsComponent {
             map(res => {
               this.total.set(res.meta?.total ?? 0);
               this.unread.set(res.meta?.unread ?? 0);
+              this.error.set(null);
               return { offset, items: res.data as Notification[] };
             }),
-            catchError(() => of({ offset, items: [] as Notification[] }))
+            catchError((err: unknown) => {
+              this.isLoading.set(false);
+              if (err instanceof ApiError) this.error.set(err);
+              return of({ offset, items: [] as Notification[] });
+            })
           )
         ),
         scan((acc, { offset, items }) => (
@@ -103,6 +115,12 @@ export class NotificationsComponent {
     this.loadMore$.next(this.nextOffset);
   }
 
+  retry() {
+    this.error.set(null);
+    this.isLoading.set(true);
+    this.notificationService.markAsRead$.next(null);
+  }
+
   hasUnread(list: Notification[] | null): boolean {
     return this.unread() > 0 || !!list?.some(n => !n.isRead);
   }
@@ -122,7 +140,7 @@ export class NotificationsComponent {
 
   markAsRead() {
     if (this.selection.isEmpty()) {
-      this.commonService.openSnackBar('Please select at least one notification to mark as read');
+      this.commonService.warning('Please select at least one notification to mark as read');
       return;
     }
 
@@ -145,7 +163,7 @@ export class NotificationsComponent {
 
   deleteSelected() {
     if (this.selection.isEmpty()) {
-      this.commonService.openSnackBar('Please select at least one notification to delete');
+      this.commonService.warning('Please select at least one notification to delete');
       return;
     }
 

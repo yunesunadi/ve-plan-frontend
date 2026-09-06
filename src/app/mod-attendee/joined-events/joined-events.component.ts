@@ -1,20 +1,25 @@
 import { Component, inject, signal, WritableSignal, ChangeDetectionStrategy } from '@angular/core';
 import { EventRegisterService } from '../../services/event-register.service';
 import { EventInviteService } from '../../services/event-invite.service';
-import { BehaviorSubject, combineLatest, concatMap, map, Observable, of, scan, shareReplay, switchMap, tap } from 'rxjs';
-import { Location, NgClass, AsyncPipe } from '@angular/common';
+import { BehaviorSubject, catchError, combineLatest, concatMap, map, Observable, of, scan, shareReplay, switchMap, tap } from 'rxjs';
+import { NgClass, AsyncPipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DashboardCacheService } from '../../caches/dashboard-cache.service';
 import { PageQuery, Timestamp } from '../../models/Utils';
 import { EventRegister } from '../../models/EventRegister';
 import { EventInvite } from '../../models/EventInvite';
-import { PageLoadingComponent } from '../../shared/page-loading/page-loading.component';
+import { ApiError } from '../../models/ApiError';
 import { OutletInnerComponent } from '../../shared/outlet-inner/outlet-inner.component';
 import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatBadge } from '@angular/material/badge';
 import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
-import { MatCard, MatCardTitle, MatCardSubtitle, MatCardActions } from '@angular/material/card';
+import { PageHeaderComponent } from '../../shared/ui/page-header/page-header.component';
+import { EventCardComponent } from '../../shared/ui/event-card/event-card.component';
+import { SkeletonComponent } from '../../shared/ui/skeleton/skeleton.component';
+import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.component';
+import { ErrorStateComponent } from '../../shared/ui/error-state/error-state.component';
+import { StatusKind } from '../../shared/ui/status-chip/status-chip.component';
 
 interface Query {
   category?: string;
@@ -26,9 +31,9 @@ type PagedResponse = { data: JoinedRow[]; meta?: { total: number } };
 @Component({
     selector: 'app-joined-events',
     templateUrl: './joined-events.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrl: './joined-events.component.scss',
-    imports: [PageLoadingComponent, OutletInnerComponent, MatButton, MatIcon, MatBadge, MatMenuTrigger, MatMenu, MatMenuItem, NgClass, MatCard, MatCardTitle, MatCardSubtitle, MatCardActions, RouterLink, AsyncPipe]
+    imports: [OutletInnerComponent, PageHeaderComponent, MatButton, MatIcon, MatBadge, MatMenuTrigger, MatMenu, MatMenuItem, NgClass, RouterLink, AsyncPipe, EventCardComponent, SkeletonComponent, EmptyStateComponent, ErrorStateComponent]
 })
 export class JoinedEventsComponent {
   private eventRegisterService = inject(EventRegisterService);
@@ -36,12 +41,13 @@ export class JoinedEventsComponent {
   private activatedRoute = inject(ActivatedRoute);
   private dashboardCache = inject(DashboardCacheService);
   private router = inject(Router);
-  location = inject(Location);
   role = signal("");
   label = signal("");
   isLoading = signal(true);
+  error = signal<ApiError | null>(null);
 
   readonly LOAD_LIMIT = 20;
+  readonly skeletonPlaceholders = Array.from({ length: this.LOAD_LIMIT });
 
   private registeredOffset$ = new BehaviorSubject<number>(0);
   private approvedOffset$ = new BehaviorSubject<number>(0);
@@ -72,8 +78,16 @@ export class JoinedEventsComponent {
   ): Observable<JoinedRow[]> {
     return offset$.pipe(
       concatMap((offset) => fetch({ offset, limit: this.LOAD_LIMIT }).pipe(
-        tap((res) => totalSig.set(res.meta?.total ?? 0)),
-        map((res) => ({ data: res.data, offset }))
+        tap((res) => {
+          totalSig.set(res.meta?.total ?? 0);
+          this.error.set(null);
+        }),
+        map((res) => ({ data: res.data, offset })),
+        catchError((err: unknown) => {
+          this.isLoading.set(false);
+          if (err instanceof ApiError) this.error.set(err);
+          return of({ data: [] as JoinedRow[], offset });
+        })
       )),
       scan((acc: JoinedRow[], { data, offset }) => (offset === 0 ? [...data] : [...acc, ...data]), []),
       tap((rows) => lenSig.set(rows.length)),
@@ -98,7 +112,7 @@ export class JoinedEventsComponent {
 
   query$ = this.activatedRoute.queryParams.pipe(
     switchMap((query) => {
-      let qry = <Query>{};
+      let qry: Query;
 
       if (Object.keys(query).length > 0) {
         qry = Object.fromEntries(new URLSearchParams(query));
@@ -184,10 +198,42 @@ export class JoinedEventsComponent {
     }
   }
 
+  activeFilterCount(query: Query | null): number {
+    return query?.category && query.category !== 'all' ? 1 : 0;
+  }
+
   changeFilter(category: string) {
     this.router.navigate([`/${this.role()}/dashboard/joined_events`], {
       queryParams: { category },
       replaceUrl: true
     });
+  }
+
+  retry(query: Query | null) {
+    this.error.set(null);
+    this.isLoading.set(true);
+
+    const advance = (offset$: BehaviorSubject<number>) => offset$.next(offset$.value);
+
+    switch (query?.category) {
+      case "registered":
+        advance(this.registeredOffset$);
+        break;
+      case "register_approved":
+        advance(this.approvedOffset$);
+        break;
+      case "invitation_accepted":
+        advance(this.acceptedOffset$);
+        break;
+      default:
+        advance(this.registeredOffset$);
+        advance(this.approvedOffset$);
+        advance(this.acceptedOffset$);
+    }
+  }
+
+  rowStatus(row: JoinedRow): StatusKind {
+    if ('invitation_accepted' in row) return 'invitation_accepted';
+    return row.register_approved ? 'register_approved' : 'registered';
   }
 }

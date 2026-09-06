@@ -1,45 +1,30 @@
 <app-outlet-inner>
-  <button
-    mat-stroked-button
-    type="button"
-    (click)="location.back()"
-    class="mb-3 mb-md-0 me-3"
-  >
-    <mat-icon class="text-primary-clr m-0">keyboard_backspace</mat-icon>
-  </button>
+  <app-page-header title="Settings"></app-page-header>
 
-  <form [formGroup]="edit_profile_form" (ngSubmit)="editProfile()" class="d-flex flex-column edit-profile-form mb-4">
+  <form [formGroup]="edit_profile_form" (ngSubmit)="editProfile()" class="stack edit-profile-form mb-4">
     <h4 class="text-primary-clr mb-3">Edit Profile</h4>
-    <div class="align-self-center mb-3">
+    <div class="profile-wrap mb-3">
       <p class="mb-1">Profile</p>
       <label for="profile" class="profile-img-container">
-        <input id="profile" type="file" accept="image/*" (change)="changeProfile($event)" class="d-none">
+        <input id="profile" type="file" accept="image/*" (change)="changeProfile($event)" class="profile-file-input">
         <img [src]="profile()" #imgView alt="Profile image" class="profile-img rounded">
       </label>
     </div>
     <mat-form-field appearance="outline">
       <mat-label>Name</mat-label>
       <input matInput type="text" formControlName="name" placeholder="Enter name">
-      @if (nameControl.touched && nameControl.errors && nameControl.hasError('required')) {
-        <mat-error>Name is required.</mat-error>
-      }
+      <mat-error appFormError [control]="nameControl" labelFor="Name" />
     </mat-form-field>
     <mat-form-field appearance="outline">
       <mat-label>Email</mat-label>
       <input type="email" matInput formControlName="email" readonly>
       <mat-hint>Email can't be changed.</mat-hint>
     </mat-form-field>
-    <button
-      mat-raised-button
-      type="submit"
-      class="bg-primary-clr text-white"
-    >
-      Edit Profile
-    </button>
+    <app-submit-button label="Edit Profile" [busy]="isSavingProfile()" />
   </form>
 
   @if (showChangePassword()) {
-  <form [formGroup]="change_password_form" (ngSubmit)="changePassword()" class="d-flex flex-column edit-profile-form mb-2">
+  <form [formGroup]="change_password_form" (ngSubmit)="changePassword()" class="stack edit-profile-form mb-2">
     <h4 class="text-primary-clr my-3">Change Password</h4>
     <mat-form-field appearance="outline">
       <mat-label>Current Password</mat-label>
@@ -52,13 +37,7 @@
       >
         <mat-icon>{{ isCurrentPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
       </button>
-      @if (currentPasswordControl.touched && currentPasswordControl.errors) {
-        <mat-error>
-          @if (currentPasswordControl.hasError('required')) {
-            Current password is required.
-          }
-        </mat-error>
-      }
+      <mat-error appFormError [control]="currentPasswordControl" labelFor="Current password" />
     </mat-form-field>
 
     <mat-form-field appearance="outline">
@@ -72,16 +51,7 @@
       >
         <mat-icon>{{ isNewPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
       </button>
-      @if (newPasswordControl.touched && newPasswordControl.errors) {
-        <mat-error>
-          @if (newPasswordControl.hasError('required')) {
-            New password is required.
-          }
-          @else if (newPasswordControl.hasError('minlength')) {
-            New password must be at least {{ newPasswordControl.errors && newPasswordControl.errors['minlength'].requiredLength }} characters.
-          }
-        </mat-error>
-      }
+      <mat-error appFormError [control]="newPasswordControl" labelFor="New password" />
     </mat-form-field>
 
     <mat-form-field appearance="outline">
@@ -95,29 +65,16 @@
       >
         <mat-icon>{{ isConfirmPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
       </button>
-      @if (confirmPasswordControl.touched && confirmPasswordControl.errors && confirmPasswordControl.hasError('required')) {
-        <mat-error>Confirm new password is required.</mat-error>
-      }
-      @else if (confirmPasswordControl.touched && confirmPasswordControl.errors && confirmPasswordControl.hasError('minlength')) {
-        <mat-error>Confirm new password must be at least {{ confirmPasswordControl.errors['minlength'].requiredLength }} characters.</mat-error>
-      }
-      @else if (newPasswordControl.value && confirmPasswordControl.value && change_password_form.errors && change_password_form.hasError('passwordsNotMatched')) {
-        <mat-hint class="text-danger">Two passwords do not match.</mat-hint>
-      }
+      <mat-error appFormError [control]="confirmPasswordControl" labelFor="Confirm new password" />
+      <mat-error appFormError [control]="change_password_form" />
     </mat-form-field>
-    <button
-      mat-raised-button
-      type="submit"
-      class="bg-primary-clr text-white"
-    >
-      Change Password
-    </button>
+    <app-submit-button label="Change Password" [busy]="isChangingPassword()" />
   </form>
   }
 
   <mat-divider class="danger-zone-divider"></mat-divider>
 
-  <form [formGroup]="delete_account_form" (ngSubmit)="deleteAccount()" class="d-flex flex-column edit-profile-form mt-4">
+  <form [formGroup]="delete_account_form" (ngSubmit)="deleteAccount()" class="stack edit-profile-form mt-4">
     <h4 class="text-danger mb-1">Danger zone</h4>
     <p class="text-muted mb-3">
       Deleting your account permanently removes your events, registrations, invitations and meeting
@@ -137,30 +94,14 @@
       >
         <mat-icon>{{ isDeletePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
       </button>
-      @if (deletePasswordControl.touched && deletePasswordControl.hasError('required')) {
-        <mat-error>Password is required to delete your account.</mat-error>
-      }
+      <mat-error appFormError [control]="deletePasswordControl" labelFor="Password" />
     </mat-form-field>
     } @else {
-    <mat-form-field appearance="outline">
-      <mat-label>Type your account email to confirm</mat-label>
-      <input matInput type="email" formControlName="confirm_email" placeholder="Enter your account email" />
-      @if (confirmEmailControl.touched && confirmEmailControl.hasError('required')) {
-        <mat-error>Your account email is required to confirm deletion.</mat-error>
-      }
-      @else if (confirmEmailControl.value && delete_account_form.hasError('emailMismatch')) {
-        <mat-hint class="text-danger">The email does not match your account email.</mat-hint>
-      }
-    </mat-form-field>
+    <p class="text-muted mb-3">
+      You'll be asked to type your account email to confirm before this goes through.
+    </p>
     }
 
-    <button
-      mat-raised-button
-      type="submit"
-      class="bg-danger text-white"
-      [disabled]="isDeleting()"
-    >
-      {{ isDeleting() ? 'Deleting…' : 'Delete account' }}
-    </button>
+    <app-submit-button label="Delete account" busyLabel="Deleting…" [busy]="isDeleting()" />
   </form>
 </app-outlet-inner>

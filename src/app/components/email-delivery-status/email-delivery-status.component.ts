@@ -53,12 +53,12 @@ export class EmailDeliveryStatusComponent implements OnInit {
       next: (res) => {
         this.retrying.set(false);
         const requeued = res.data?.requeued ?? 0;
-        this.commonService.openSnackBar(`Re-queued ${requeued} email(s).`);
+        this.commonService.success(`Re-queued ${requeued} email(s).`);
         this.refresh();
       },
       error: () => {
         this.retrying.set(false);
-        this.commonService.openSnackBar('Failed to retry emails.');
+        this.commonService.error('Failed to retry emails.');
       }
     });
   }

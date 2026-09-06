@@ -5,7 +5,12 @@
       <p class="mb-1">{{ $index + 1 }}. {{ item.name }}</p>
     }
   } @else {
-    <p class="text-center mt-3">There is no selected user to send meeting email.</p>
+    <app-empty-state
+      compact
+      icon="group_off"
+      headline="No users selected"
+      supporting="Select at least one attendee to notify."
+    />
   }
 </mat-dialog-content>
 <mat-dialog-actions [align]="'end'">

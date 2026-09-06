@@ -22,5 +22,8 @@ jobs:
 
       - run: npm ci
 
+      - name: Lint
+        run: npm run lint
+
       - name: Build (production)
         run: npm run build:prod

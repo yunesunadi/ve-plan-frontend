@@ -1,3 +1,7 @@
 .create-form {
-  gap: 5px;
+  --stack-gap: 5px;
+}
+
+.time-error {
+  margin-top: -1.3rem;
 }

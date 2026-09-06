@@ -8,7 +8,7 @@ import { DatePipe } from '@angular/common';
 @Component({
     selector: 'app-event-details-card',
     templateUrl: './event-details-card.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrl: './event-details-card.component.scss',
     imports: [MatCard, MatCardContent, MatIcon, DatePipe]
 })

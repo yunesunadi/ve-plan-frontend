@@ -1,0 +1,33 @@
+<div class="skeleton" aria-busy="true">
+  @switch (variant()) {
+    @case ('card') {
+      <div class="skeleton-card">
+        <div class="skeleton-block skeleton-card__cover" aria-hidden="true"></div>
+        <div class="skeleton-block skeleton-card__title" aria-hidden="true"></div>
+        <div class="skeleton-block skeleton-card__line" aria-hidden="true"></div>
+        <div class="skeleton-block skeleton-card__line skeleton-card__line--short" aria-hidden="true"></div>
+      </div>
+    }
+    @case ('table-row') {
+      @for (row of rowArray(); track $index) {
+        <div class="cluster skeleton-table-row" aria-hidden="true">
+          <span class="skeleton-block" style="width: 24%" aria-hidden="true"></span>
+          <span class="skeleton-block" style="width: 28%" aria-hidden="true"></span>
+          <span class="skeleton-block" style="width: 22%" aria-hidden="true"></span>
+          <span class="skeleton-block" style="width: 18%" aria-hidden="true"></span>
+        </div>
+      }
+    }
+    @default {
+      @for (barWidth of textBars(); track $index) {
+        <span
+          class="skeleton-block"
+          [class.skeleton-block--circle]="variant() === 'circle'"
+          [style.width]="barWidth"
+          [style.height]="resolvedHeight()"
+          aria-hidden="true"
+        ></span>
+      }
+    }
+  }
+</div>

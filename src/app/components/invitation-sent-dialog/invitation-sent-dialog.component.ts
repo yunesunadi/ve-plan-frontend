@@ -2,16 +2,17 @@ import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogActions, MatDialogClose } from '@angular/material/dialog';
 import { CommonService } from '../../services/common.service';
 import { EventInviteService } from '../../services/event-invite.service';
-import { HttpErrorResponse } from '@angular/common/http';
+import { ApiError } from '../../models/ApiError';
 import { CdkScrollable } from '@angular/cdk/scrolling';
 import { MatButton } from '@angular/material/button';
+import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.component';
 
 @Component({
     selector: 'app-invitation-sent-dialog',
     templateUrl: './invitation-sent-dialog.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrl: './invitation-sent-dialog.component.scss',
-    imports: [CdkScrollable, MatDialogContent, MatDialogActions, MatButton, MatDialogClose]
+    imports: [CdkScrollable, MatDialogContent, MatDialogActions, MatButton, MatDialogClose, EmptyStateComponent]
 })
 export class InvitationSentDialogComponent {
   dialog_data = inject(MAT_DIALOG_DATA);
@@ -43,13 +44,13 @@ export class InvitationSentDialogComponent {
           message += ` ${queued} email(s) queued.`;
         }
 
-        this.commonService.openSnackBar(message);
+        this.commonService.success(message);
       },
       error: (err) => {
         this.dialog.close();
 
-        if (err instanceof HttpErrorResponse) {
-          this.commonService.openSnackBar(err.error.message);
+        if (err instanceof ApiError) {
+          this.commonService.error(err);
         }
       }
     });

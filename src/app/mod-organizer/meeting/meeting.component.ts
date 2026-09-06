@@ -1,37 +1,42 @@
-import { Component, ElementRef, inject, signal, ViewChild, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ElementRef, inject, input, signal, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { BehaviorSubject, combineLatest, concatMap, map, of, shareReplay, startWith, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, concatMap, filter, map, of, shareReplay, switchMap, tap } from 'rxjs';
 import { MeetingService } from '../../services/meeting.service';
 import { CommonService } from '../../services/common.service';
-import { HttpErrorResponse } from '@angular/common/http';
+import { ConfirmService } from '../../services/confirm.service';
+import { ApiError } from '../../models/ApiError';
 import { OrganizerMeetingDialogComponent } from '../../components/organizer-meeting-dialog/organizer-meeting-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { EventRegisterService } from '../../services/event-register.service';
 import { EventInviteService } from '../../services/event-invite.service';
 import { ParticipantService } from '../../services/participant.service';
-import { MatTableDataSource, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatNoDataRow } from '@angular/material/table';
-import { SelectionModel } from '@angular/cdk/collections';
+import { MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell } from '@angular/material/table';
 import { Participant } from '../../models/Participant';
-import { Location, AsyncPipe, DatePipe } from '@angular/common';
+import { AsyncPipe, DatePipe } from '@angular/common';
 import Chart from "chart.js/auto";
-import { EventService } from '../../services/event.service';
 import { UtilService } from '../../services/util.service';
 import { PageQuery } from '../../models/Utils';
 import { DashboardCacheService } from '../../caches/dashboard-cache.service';
-import { PageEvent, MatPaginator } from '@angular/material/paginator';
-import { PageLoadingComponent } from '../../shared/page-loading/page-loading.component';
+import { PageEvent } from '@angular/material/paginator';
 import { OutletInnerComponent } from '../../shared/outlet-inner/outlet-inner.component';
 import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatCard, MatCardTitle, MatCardSubtitle } from '@angular/material/card';
-import { MatFormField, MatPrefix, MatLabel, MatInput } from '@angular/material/input';
+import { PageHeaderComponent } from '../../shared/ui/page-header/page-header.component';
+import { DataTableComponent } from '../../shared/ui/data-table/data-table.component';
+import { ErrorStateComponent } from '../../shared/ui/error-state/error-state.component';
+import { Event } from '../../models/Event';
+
+interface JoinedParticipantRow extends Participant {
+  id: number;
+}
 
 @Component({
     selector: 'app-meeting',
     templateUrl: './meeting.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrl: './meeting.component.scss',
-    imports: [PageLoadingComponent, OutletInnerComponent, MatButton, MatIcon, RouterLink, MatCard, MatCardTitle, MatCardSubtitle, MatFormField, MatPrefix, MatLabel, MatInput, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatNoDataRow, MatPaginator, AsyncPipe, DatePipe]
+    imports: [OutletInnerComponent, PageHeaderComponent, DataTableComponent, ErrorStateComponent, MatButton, MatIcon, RouterLink, MatCard, MatCardTitle, MatCardSubtitle, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, AsyncPipe, DatePipe]
 })
 export class MeetingComponent {
   @ViewChild("doughnut_canvas") doughnut_canvas!: ElementRef;
@@ -40,24 +45,25 @@ export class MeetingComponent {
   private meetingService = inject(MeetingService);
   private eventRegisterService = inject(EventRegisterService);
   private eventInviteService = inject(EventInviteService);
-  private eventService = inject(EventService);
   private participantService = inject(ParticipantService);
   private dashboardCache = inject(DashboardCacheService);
   private router = inject(Router);
   private aroute = inject(ActivatedRoute);
   private commonService = inject(CommonService);
+  private confirmService = inject(ConfirmService);
   private refresh$ = new BehaviorSubject<boolean>(false);
   private dialog = inject(MatDialog);
-  location = inject(Location);
   util = inject(UtilService);
 
-  displayedColumns: string[] = ['id', 'name', 'start_time', 'end_time', 'duration'];
-  selection = new SelectionModel<any>(true, []);
+  event = input.required<Event>();
 
   readonly PAGE_LIMIT = 10;
   role = signal("");
-  all_joined_participants = signal<Participant[]>([]);
-  isLoading = signal(true);
+  participantSearch = signal("");
+  joined_participants_total = signal(0);
+  tableLoading = signal(true);
+  tableError = signal<ApiError | null>(null);
+  summaryError = signal<ApiError | null>(null);
   stay_times_available = signal(false);
   stay_times_reason = signal("");
 
@@ -66,13 +72,13 @@ export class MeetingComponent {
 
   query$ =  this.aroute.queryParams.pipe(
     switchMap((query) => {
-      let qry = <Partial<PageQuery>>{};
+      let qry: Partial<PageQuery>;
 
       if (Object.keys(query).length > 0) {
         qry = Object.fromEntries(new URLSearchParams(query));
       } else {
         qry = {
-          limit: this.PAGE_LIMIT 
+          limit: this.PAGE_LIMIT
         };
       }
 
@@ -81,56 +87,62 @@ export class MeetingComponent {
     shareReplay(1)
   );
 
-  event$ = this.aroute.params.pipe(
-    switchMap((params: any) => this.eventService.getOneById(params.id).pipe(
-      tap(() => this.isLoading.set(false)),
-      map(res => res.data)
-    )),
-    shareReplay(1)
-  );
-
   meeting$ = this.refresh$.pipe(
-    switchMap(() => this.event$.pipe(
-      concatMap((event) => this.meetingService.getOneById(event._id).pipe(
-        map((res) => res.data)
-      ))
+    tap(() => this.summaryError.set(null)),
+    concatMap(() => this.meetingService.getOneById(this.event()._id).pipe(
+      map((res) => res.data),
+      catchError((err: ApiError) => {
+        if (err.status === 404) return of(null);
+        this.summaryError.set(err);
+        return of(null);
+      })
     )),
     shareReplay(1)
   );
 
-  registered_users$ = this.aroute.params.pipe(
-    switchMap((params: any) => this.eventRegisterService.getAllApprovedByEventId(params.id)),
-    map((res) => res.data),
+  registered_users$ = this.refresh$.pipe(
+    switchMap(() => this.aroute.params.pipe(
+      switchMap((params: any) => this.eventRegisterService.getAllApprovedByEventId(params.id)),
+      map((res) => res.data),
+      catchError((err: ApiError) => {
+        this.summaryError.set(err);
+        return of([]);
+      }),
+    )),
     shareReplay(1)
   );
 
-  invitation_accepted_users$ = this.aroute.params.pipe(
-    switchMap((params: any) => this.eventInviteService.getAllAcceptedByEventId(params.id)),
-    map((res) => res.data),
+  invitation_accepted_users$ = this.refresh$.pipe(
+    switchMap(() => this.aroute.params.pipe(
+      switchMap((params: any) => this.eventInviteService.getAllAcceptedByEventId(params.id)),
+      map((res) => res.data),
+      catchError((err: ApiError) => {
+        this.summaryError.set(err);
+        return of([]);
+      }),
+    )),
     shareReplay(1)
   );
 
   joined_participants_page$ = this.query$.pipe(
-    switchMap((query) => this.aroute.params.pipe(
-      switchMap((params: any) => this.participantService.getAllByEventId(params.id)),
-      map(res => res.data),
-      tap((result) => this.all_joined_participants.set(result)),
-      map((result: Participant[]) => ({ result, query }))
-    )),
-    shareReplay(1)
-  );
-
-  joined_participants$ = this.joined_participants_page$.pipe(
-    map(({ result }) => result)
-  );
-
-  dataSource$ = this.joined_participants_page$.pipe(
-    map(({ result, query }) => {
-      const participants = result.map((data: Participant, index: number) => ({ id: index + 1, ...data }));
-      const paginated_result = participants.slice(query.offset || 0, (query.offset || 0) + (query.limit || 0));
-      return new MatTableDataSource(paginated_result);
+    tap(() => {
+      this.tableLoading.set(true);
+      this.tableError.set(null);
     }),
-    startWith(new MatTableDataSource<any>([])),
+    switchMap((query) => this.aroute.params.pipe(
+      switchMap((params: any) => this.participantService.getAllByEventId(params.id, query)),
+      tap((res) => this.joined_participants_total.set(res.meta?.total ?? 0)),
+      map((res): JoinedParticipantRow[] => res.data.map((data, index) => ({
+        id: (query.offset ?? 0) + index + 1,
+        ...data,
+      }))),
+    )),
+    tap(() => this.tableLoading.set(false)),
+    catchError((err: ApiError) => {
+      this.tableLoading.set(false);
+      this.tableError.set(err);
+      return of([] as JoinedParticipantRow[]);
+    }),
     shareReplay(1)
   );
 
@@ -144,6 +156,10 @@ export class MeetingComponent {
       this.stay_times_reason.set(res.meta?.reason || "");
     }),
     map((res) => res.data),
+    catchError((err: ApiError) => {
+      this.summaryError.set(err);
+      return of([]);
+    }),
     shareReplay(1)
   );
 
@@ -158,16 +174,18 @@ export class MeetingComponent {
   );
 
   is_created$ = this.refresh$.pipe(
-    switchMap(() => this.event$.pipe(
-      concatMap((event) => this.meetingService.isCreated(event._id).pipe(
-        map((res) => res.is_created),
-      ))
+    concatMap(() => this.meetingService.isCreated(this.event()._id).pipe(
+      map((res) => res.is_created),
+      catchError((err: ApiError) => {
+        this.summaryError.set(err);
+        return of(false);
+      }),
     )),
     shareReplay(1)
   );
 
   ngOnInit() {
-    this.joined_participants$.subscribe();
+    this.joined_participants_page$.subscribe();
 
     this.dashboardCache.has_role.subscribe({
       next: (res) => {
@@ -177,10 +195,10 @@ export class MeetingComponent {
 
     combineLatest([
       this.event_attendees$,
-      this.joined_participants$
+      this.joined_participants_page$
     ]).subscribe({
-      next: ([event_attendees, joined_participants]) => {
-        if (!this.doughnut_chart && !this.isLoading()) {
+      next: ([event_attendees]) => {
+        if (!this.doughnut_chart && this.doughnut_canvas?.nativeElement) {
           this.doughnut_chart = new Chart(this.doughnut_canvas.nativeElement, {
             type: "doughnut",
             data: {
@@ -190,7 +208,7 @@ export class MeetingComponent {
               ],
               datasets: [{
                 label: "No. of person",
-                data: [event_attendees.length, joined_participants.length],
+                data: [event_attendees.length, this.joined_participants_total()],
                 backgroundColor: [
                   "#E8BCB9",
                   "#432E54",
@@ -204,7 +222,7 @@ export class MeetingComponent {
 
     this.line_chart_data$.subscribe({
       next: (line_chart_data) => {
-        if (this.isLoading() || !this.stay_times_available()) {
+        if (!this.stay_times_available() || !this.line_canvas?.nativeElement) {
           this.line_chart?.destroy();
           this.line_chart = undefined as any;
           return;
@@ -238,53 +256,57 @@ export class MeetingComponent {
   }
 
   create() {
-    this.event$.pipe(
-      concatMap((event) => this.meetingService.start(event._id))
-    )
-    .subscribe({
+    this.meetingService.start(this.event()._id).subscribe({
       next: (res) => {
         this.refresh$.next(true);
-        this.commonService.openSnackBar(res.message);
+        this.commonService.success(res.message);
       },
       error: (err) => {
-        if (err instanceof HttpErrorResponse) {
-          this.commonService.openSnackBar(err.error.message);
+        if (err instanceof ApiError) {
+          this.commonService.error(err);
         }
       }
     });
   }
 
   endMeeting(event_id: string) {
-    const isConfirmed = confirm("End this meeting? Attendees will no longer be able to join.");
-
-    if (!isConfirmed) return;
-
-    this.meetingService.end(event_id).subscribe({
+    this.confirmService.confirm({
+      title: "End this meeting?",
+      body: "Attendees will no longer be able to join.",
+      confirmLabel: "End meeting",
+      destructive: true,
+    }).pipe(
+      filter(Boolean),
+      switchMap(() => this.meetingService.end(event_id))
+    ).subscribe({
       next: (res) => {
         this.refresh$.next(true);
-        this.commonService.openSnackBar(res.message);
+        this.commonService.success(res.message);
       },
       error: (err) => {
-        if (err instanceof HttpErrorResponse) {
-          this.commonService.openSnackBar(err.error.message);
+        if (err instanceof ApiError) {
+          this.commonService.error(err);
         }
       }
     });
   }
 
   reopenMeeting(event_id: string) {
-    const isConfirmed = confirm("Re-open this meeting so attendees can join again?");
-
-    if (!isConfirmed) return;
-
-    this.meetingService.reopen(event_id).subscribe({
+    this.confirmService.confirm({
+      title: "Re-open this meeting?",
+      body: "Attendees will be able to join again.",
+      confirmLabel: "Re-open",
+    }).pipe(
+      filter(Boolean),
+      switchMap(() => this.meetingService.reopen(event_id))
+    ).subscribe({
       next: (res) => {
         this.refresh$.next(true);
-        this.commonService.openSnackBar(res.message);
+        this.commonService.success(res.message);
       },
       error: (err) => {
-        if (err instanceof HttpErrorResponse) {
-          this.commonService.openSnackBar(err.error.message);
+        if (err instanceof ApiError) {
+          this.commonService.error(err);
         }
       }
     });
@@ -305,13 +327,8 @@ export class MeetingComponent {
     });
   }
 
-  applyFilter(event: Event, dataSource: MatTableDataSource<any>) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    dataSource.filter = filterValue.trim().toLowerCase();
-
-    if (dataSource.paginator) {
-      dataSource.paginator.firstPage();
-    }
+  retry() {
+    this.refresh$.next(true);
   }
 
   handlePageChange(event: PageEvent, query: Partial<PageQuery>, event_id: string) {

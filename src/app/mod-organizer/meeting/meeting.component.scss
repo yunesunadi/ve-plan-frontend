@@ -2,3 +2,43 @@
   display: flex;
   gap: .3rem;
 }
+
+.header-left {
+  --cluster-gap: var(--app-space-4);
+}
+
+.meeting-actions {
+  --cluster-gap: var(--app-space-2);
+  align-self: flex-end;
+
+  @media (min-width: 768px) {
+    align-self: auto;
+  }
+}
+
+.meeting-summary-grid {
+  width: 100%;
+  max-width: 730px;
+  gap: var(--app-space-2);
+  --card-min: 220px;
+}
+
+.stats-grid {
+  margin-bottom: 1.7rem;
+}
+
+.charts-grid {
+  gap: var(--app-space-5);
+}
+
+.doughnut-wrap {
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.line-wrap {
+  width: 100%;
+  max-width: 550px;
+  margin: 0 auto;
+}

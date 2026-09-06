@@ -1,0 +1,379 @@
+<app-outlet-inner>
+  <div class="stack styleguide">
+    <header class="stack" style="--stack-gap: var(--app-space-1)">
+      <h1>VE-Plan style guide</h1>
+      <p class="text-secondary">
+        Dev-only living reference (U-F-03) for every design token and every component in
+        <code>src/app/shared/ui/**</code>. Not part of the production bundle.
+      </p>
+    </header>
+
+    <!-- ============================== Colour roles ============================== -->
+    <section class="stack styleguide__section">
+      <h2>Colour roles</h2>
+      <p class="text-secondary">
+        Every M3 system role, its computed browser contrast ratio, and whether it clears WCAG AA
+        (4.5:1 body text, 3:1 large/UI text).
+      </p>
+      <div class="card-grid" style="--card-min: 220px">
+        @for (role of colorRoles(); track role.name) {
+          <div
+            class="swatch"
+            [style.background-color]="'var(' + role.containerVar + ')'"
+            [style.color]="'var(' + role.onVar + ')'"
+          >
+            <span class="swatch__name">{{ role.name }}</span>
+            <span class="swatch__vars">{{ role.containerVar }}<br />{{ role.onVar }}</span>
+            <span class="swatch__ratio" [class.swatch__ratio--fail]="!meetsAA(role.ratio, role.large)">
+              {{ formatRatio(role.ratio) }} {{ meetsAA(role.ratio, role.large) ? '· AA pass' : '· AA fail' }}
+            </span>
+          </div>
+        }
+      </div>
+
+      <h3>Status tones (<code>_status-tokens.scss</code>)</h3>
+      <div class="card-grid" style="--card-min: 220px">
+        @for (role of statusToneRoles(); track role.name) {
+          <div
+            class="swatch"
+            [style.background-color]="'var(' + role.containerVar + ')'"
+            [style.color]="'var(' + role.onVar + ')'"
+          >
+            <span class="swatch__name">{{ role.name }}</span>
+            <span class="swatch__vars">{{ role.containerVar }}<br />{{ role.onVar }}</span>
+            <span class="swatch__ratio" [class.swatch__ratio--fail]="!meetsAA(role.ratio)">
+              {{ formatRatio(role.ratio) }} {{ meetsAA(role.ratio) ? '· AA pass' : '· AA fail' }}
+            </span>
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- ============================== Type scale ============================== -->
+    <section class="stack styleguide__section">
+      <h2>Type scale</h2>
+      <div class="stack" style="--stack-gap: var(--app-space-2)">
+        @for (step of typeScale; track step) {
+          <div class="cluster cluster--between type-row">
+            <span [style.font]="'var(--mat-sys-' + step + ')'">The quick brown fox jumps</span>
+            <code class="text-secondary">--mat-sys-{{ step }}</code>
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- ========================= Spacing / radius / elevation / motion ========================= -->
+    <section class="stack styleguide__section">
+      <h2>Spacing scale</h2>
+      <div class="stack" style="--stack-gap: var(--app-space-2)">
+        @for (token of spacingScale; track token.name) {
+          <div class="cluster">
+            <div class="scale-bar" [style.width]="token.px" [style.height]="'16px'"></div>
+            <code>{{ token.varName }} = {{ token.px }}</code>
+          </div>
+        }
+      </div>
+
+      <h3>Radius scale</h3>
+      <div class="cluster">
+        @for (token of radiusScale; track token.name) {
+          <div class="stack" style="--stack-gap: var(--app-space-1); align-items: center">
+            <div class="scale-box" [style.border-radius]="'var(' + token.varName + ')'"></div>
+            <code>{{ token.varName }}</code>
+          </div>
+        }
+      </div>
+
+      <h3>Elevation scale</h3>
+      <div class="cluster">
+        @for (elev of elevationScale; track elev) {
+          <div class="stack" style="--stack-gap: var(--app-space-1); align-items: center">
+            <div class="scale-box scale-box--elev" [style.box-shadow]="'var(' + elev + ')'"></div>
+            <code>{{ elev }}</code>
+          </div>
+        }
+      </div>
+
+      <h3>Motion scale</h3>
+      <div class="stack" style="--stack-gap: var(--app-space-2)">
+        @for (token of motionScale; track token.name) {
+          <code>{{ token.varName }} = {{ token.px }}</code>
+        }
+      </div>
+    </section>
+
+    <!-- ============================== Layout primitives ============================== -->
+    <section class="stack styleguide__section">
+      <h2>Layout primitives</h2>
+
+      <h3><code>.stack</code></h3>
+      <div class="stack demo-frame">
+        <div class="demo-box">Item A</div>
+        <div class="demo-box">Item B</div>
+        <div class="demo-box">Item C</div>
+      </div>
+
+      <h3><code>.cluster</code></h3>
+      <div class="cluster demo-frame">
+        <div class="demo-box">Item A</div>
+        <div class="demo-box">Item B</div>
+        <div class="demo-box">Item C</div>
+      </div>
+
+      <h3><code>.card-grid</code></h3>
+      <div class="card-grid demo-frame" style="--card-min: 140px">
+        <div class="demo-box">1</div>
+        <div class="demo-box">2</div>
+        <div class="demo-box">3</div>
+        <div class="demo-box">4</div>
+      </div>
+
+      <h3><code>.form-grid</code></h3>
+      <div class="form-grid demo-frame">
+        <div class="demo-box">Field A</div>
+        <div class="demo-box">Field B</div>
+      </div>
+
+      <h3><code>.split</code></h3>
+      <div class="split demo-frame">
+        <div class="demo-box">Left</div>
+        <div class="demo-box">Right</div>
+      </div>
+    </section>
+
+    <!-- ============================== Status chip ============================== -->
+    <section class="stack styleguide__section">
+      <h2>Status chip</h2>
+      <div class="cluster">
+        @for (kind of statusKinds; track kind) {
+          <app-status-chip [status]="kind" />
+        }
+      </div>
+      <h3>Outlined + dense</h3>
+      <div class="cluster">
+        <app-status-chip status="register_approved" variant="outlined" />
+        <app-status-chip status="invited" variant="outlined" />
+        <app-status-chip status="past" dense />
+        <app-status-chip status="happening" dense />
+      </div>
+    </section>
+
+    <!-- ============================== Avatar ============================== -->
+    <section class="stack styleguide__section">
+      <h2>Avatar</h2>
+      <div class="cluster">
+        @for (size of avatarSizes; track size) {
+          <div class="stack" style="--stack-gap: var(--app-space-1); align-items: center">
+            <app-avatar [user]="sampleUserWithPhoto" [size]="size" />
+            <code>{{ size }}</code>
+          </div>
+        }
+      </div>
+      <h3>Sources</h3>
+      <div class="cluster">
+        <div class="stack" style="--stack-gap: var(--app-space-1); align-items: center">
+          <app-avatar [user]="sampleUserWithPhoto" />
+          <code>uploaded (404s → initials)</code>
+        </div>
+        <div class="stack" style="--stack-gap: var(--app-space-1); align-items: center">
+          <app-avatar [user]="sampleUserOneWord" />
+          <code>single-word name</code>
+        </div>
+        <div class="stack" style="--stack-gap: var(--app-space-1); align-items: center">
+          <app-avatar [user]="sampleUserNoPhoto" />
+          <code>no photo</code>
+        </div>
+        <div class="stack" style="--stack-gap: var(--app-space-1); align-items: center">
+          <app-avatar [user]="null" />
+          <code>null user</code>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================== Empty state ============================== -->
+    <section class="stack styleguide__section">
+      <h2>Empty state</h2>
+      <div class="card-grid" style="--card-min: 320px">
+        <app-empty-state
+          icon="event_available"
+          headline="You haven't joined any events"
+          supporting="Browse public events and register to see them here."
+          ctaLabel="Browse events"
+          ctaIcon="search"
+        />
+        <app-empty-state
+          icon="notifications_none"
+          headline="You're all caught up"
+          supporting="New activity on your events will show up here."
+          compact
+        />
+      </div>
+    </section>
+
+    <!-- ============================== Error state ============================== -->
+    <section class="stack styleguide__section">
+      <h2>Error state</h2>
+      <div class="card-grid" style="--card-min: 320px">
+        @for (sample of errorSamples; track sample.label) {
+          <div class="stack" style="--stack-gap: var(--app-space-1)">
+            <code class="text-secondary">{{ sample.label }}</code>
+            <app-error-state [error]="sample.error" (retry)="triggerToast('info')" />
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- ============================== Skeleton ============================== -->
+    <section class="stack styleguide__section">
+      <h2>Skeleton</h2>
+      <div class="card-grid" style="--card-min: 220px">
+        <div class="stack" style="--stack-gap: var(--app-space-2)">
+          <code class="text-secondary">text (3 lines)</code>
+          <app-skeleton variant="text" [lines]="3" />
+        </div>
+        <div class="stack" style="--stack-gap: var(--app-space-2)">
+          <code class="text-secondary">title</code>
+          <app-skeleton variant="title" />
+        </div>
+        <div class="stack" style="--stack-gap: var(--app-space-2)">
+          <code class="text-secondary">circle</code>
+          <app-skeleton variant="circle" height="40px" />
+        </div>
+        <div class="stack" style="--stack-gap: var(--app-space-2)">
+          <code class="text-secondary">rect</code>
+          <app-skeleton variant="rect" />
+        </div>
+        <div class="stack" style="--stack-gap: var(--app-space-2)">
+          <code class="text-secondary">card</code>
+          <app-skeleton variant="card" />
+        </div>
+        <div class="stack" style="--stack-gap: var(--app-space-2)">
+          <code class="text-secondary">table-row (×3)</code>
+          <app-skeleton variant="table-row" [rows]="3" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================== Page header + breadcrumbs ============================== -->
+    <section class="stack styleguide__section">
+      <h2>Page header</h2>
+      <div class="demo-frame">
+        <app-page-header
+          title="Registered users"
+          subtitle="42 attendees registered for this event"
+          [headingLevel]="2"
+          backTo="/_styleguide"
+          [crumbs]="sampleCrumbs"
+        >
+          <div header-actions class="cluster">
+            <button mat-stroked-button type="button">
+              <mat-icon>download</mat-icon>
+              Export
+            </button>
+            <button mat-flat-button type="button">
+              <mat-icon>mail</mat-icon>
+              Send approval
+            </button>
+          </div>
+        </app-page-header>
+      </div>
+
+      <h3>Breadcrumbs (standalone)</h3>
+      <app-breadcrumbs [crumbs]="sampleCrumbs" />
+    </section>
+
+    <!-- ============================== Confirm dialog ============================== -->
+    <section class="stack styleguide__section">
+      <h2>Confirm dialog</h2>
+      <div class="cluster">
+        <button mat-flat-button type="button" (click)="triggerConfirm()">Confirm</button>
+        <button mat-stroked-button type="button" (click)="triggerDestructiveConfirm()">
+          Destructive + type-to-confirm
+        </button>
+        <button mat-stroked-button type="button" (click)="triggerAcknowledge()">Acknowledge-only</button>
+      </div>
+    </section>
+
+    <!-- ============================== Toasts ============================== -->
+    <section class="stack styleguide__section">
+      <h2>Toasts</h2>
+      <div class="cluster">
+        <button mat-flat-button type="button" (click)="triggerToast('success')">Success</button>
+        <button mat-flat-button type="button" (click)="triggerToast('info')">Info</button>
+        <button mat-flat-button type="button" (click)="triggerToast('warning')">Warning</button>
+        <button mat-flat-button type="button" (click)="triggerErrorToast()">Error (ApiError)</button>
+      </div>
+    </section>
+
+    <!-- ============================== Event card ============================== -->
+    <section class="stack styleguide__section">
+      <h2>Event card</h2>
+      <div class="card-grid" style="--card-min: 280px">
+        <app-event-card [event]="eventWithCover" link="/_styleguide" />
+        <app-event-card [event]="eventNoCover" [link]="null" density="compact" />
+      </div>
+    </section>
+
+    <!-- ============================== Data table ============================== -->
+    <section class="stack styleguide__section">
+      <h2>Data table</h2>
+      <div class="cluster">
+        <button mat-stroked-button type="button" (click)="setTableState('table')">Loaded</button>
+        <button mat-stroked-button type="button" (click)="setTableState('loading')">Loading</button>
+        <button mat-stroked-button type="button" (click)="setTableState('error')">Error</button>
+        <button mat-stroked-button type="button" (click)="setTableState('empty')">Empty</button>
+      </div>
+
+      <app-data-table
+        [dataSource]="tableRows()"
+        [columns]="tableColumns"
+        [loading]="tableLoading()"
+        [error]="tableError()"
+        searchLabel="Search users"
+        [selectable]="true"
+        [selection]="tableSelection()"
+        (selectionChange)="tableSelection.set($event)"
+        [total]="tableRows().length"
+        [pageSize]="5"
+        emptyIcon="group"
+        emptyHeadline="No registered users yet"
+        emptySupporting="Once attendees register for this event, they'll show up here."
+        (retry)="onTableRetry()"
+      >
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+        </ng-container>
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let row"><app-status-chip [status]="row.status" /></td>
+        </ng-container>
+
+        <ng-template #cardRow let-row>
+          <div class="stack" style="--stack-gap: var(--app-space-1)">
+            <span class="fw-bold">{{ row.name }}</span>
+            <app-status-chip [status]="row.status" dense />
+          </div>
+        </ng-template>
+      </app-data-table>
+    </section>
+
+    <!-- ============================== Forms ============================== -->
+    <section class="stack styleguide__section">
+      <h2>Form conventions</h2>
+      <form class="form-grid demo-frame" [formGroup]="demoForm" (ngSubmit)="submitDemoForm()">
+        <mat-form-field appearance="outline">
+          <mat-label>Name</mat-label>
+          <input matInput formControlName="name" placeholder="Enter name" />
+          <mat-error appFormError [control]="nameControl" labelFor="Name" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" placeholder="Enter email" />
+          <mat-error appFormError [control]="emailControl" labelFor="Email" />
+        </mat-form-field>
+        <app-submit-button label="Submit" [busy]="formSubmitting()" />
+      </form>
+    </section>
+  </div>
+</app-outlet-inner>

@@ -1,21 +1,20 @@
 @let my_events = cache.my_events | async;
 @let my_query = (cache.my_query$ | async) || {};
 
-@if (cache.isMyEventsLoading()) {
-  <app-page-loading></app-page-loading>
-}
 <div
-  class="p-3 p-md-4 h-100 overflow-auto my-events-container"
+  class="p-3 p-md-4 my-events-container"
   infiniteScroll
   [infiniteScrollDistance]=".1"
   [infiniteScrollThrottle]="500"
   [scrollWindow]="false"
+  [infiniteScrollContainer]="'#main-content'"
+  [fromRoot]="true"
   (scrolled)="onScroll(my_query, my_events!.length)"
 >
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h3 class="text-primary-clr mb-0">My Events</h3>
-    <mat-button-toggle-group 
-      [(ngModel)]="my_query.type" 
+  <app-page-header title="My Events">
+    <mat-button-toggle-group
+      header-actions
+      [(ngModel)]="my_query.type"
       (change)="changeFilter($event.value, my_query)"
     >
       @for (type of types; track type) {
@@ -24,30 +23,35 @@
         </mat-button-toggle>
       }
     </mat-button-toggle-group>
-  </div>
+  </app-page-header>
 
   <div class="mt-4">
-  @if (my_events && my_events.length > 0) {
-    @for (item of my_events; track item._id) {
-      <mat-card appearance="outlined" class="event-card">
-        <div class="px-3 pt-3">
-          <mat-card-title class="text-primary-clr">{{ item.title }}</mat-card-title>
-          <mat-card-subtitle class="text-primary-clr">{{ item.description }}</mat-card-subtitle>
-        </div>
-        <mat-card-actions [align]="'end'" class="px-3 pb-3">
-          <button
-            mat-stroked-button
-            class="text-secondary-clr bg-primary-clr"
-            [routerLink]="'/' + role() + '/dashboard/events/' + item._id + '/view'"
-          >
-            <span>See Details</span>
-            <mat-icon>arrow_forward</mat-icon>
-          </button>
-        </mat-card-actions>
-      </mat-card>
-    }
+  @if (cache.myEventsError(); as error) {
+    <app-error-state [error]="error" (retry)="retry()" />
+  } @else if (cache.isMyEventsLoading()) {
+    <div class="card-grid" style="--card-min: 300px">
+      @for (i of skeletonPlaceholders; track $index) {
+        <app-skeleton variant="card" />
+      }
+    </div>
+  } @else if (my_events && my_events.length > 0) {
+    <div class="card-grid" style="--card-min: 300px">
+      @for (item of my_events; track item._id) {
+        <app-event-card
+          [event]="item"
+          [link]="'/' + role() + '/dashboard/events/' + item._id + '/view'"
+          [status]="eventStatus(item)"
+        />
+      }
+    </div>
   } @else {
-    <p class="text-center mt-3">There is no events.</p>
+    <app-empty-state
+      icon="event"
+      headline="No events yet"
+      supporting="Create your first event to start inviting attendees."
+    >
+      <button mat-flat-button routerLink="/organizer/dashboard/home">Create event</button>
+    </app-empty-state>
   }
   </div>
 </div>

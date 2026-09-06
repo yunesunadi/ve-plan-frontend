@@ -1,74 +1,75 @@
-import { SelectionModel } from '@angular/cdk/collections';
-import { Component, ElementRef, inject, signal, ViewChild, ChangeDetectionStrategy } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { MatTableDataSource, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatNoDataRow } from '@angular/material/table';
+import { Component, inject, input, signal, ViewChild, ChangeDetectionStrategy } from '@angular/core';
+import { MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell } from '@angular/material/table';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EventRegisterService } from '../../services/event-register.service';
 import { EventInviteService } from '../../services/event-invite.service';
-import { BehaviorSubject, combineLatest, map, of, shareReplay, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, map, of, shareReplay, switchMap, tap } from 'rxjs';
 import { MeetingStartedDialogComponent } from '../../components/meeting-started-dialog/meeting-started-dialog.component';
-import { Location, AsyncPipe } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { PageQuery } from '../../models/Utils';
 import { DashboardCacheService } from '../../caches/dashboard-cache.service';
 import { UtilService } from '../../services/util.service';
-import { EventService } from '../../services/event.service';
-import { PageEvent, MatPaginator } from '@angular/material/paginator';
-import { PageLoadingComponent } from '../../shared/page-loading/page-loading.component';
+import { PageEvent } from '@angular/material/paginator';
 import { OutletInnerComponent } from '../../shared/outlet-inner/outlet-inner.component';
 import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
-import { MatFormField, MatPrefix, MatLabel, MatInput } from '@angular/material/input';
-import { MatCheckbox } from '@angular/material/checkbox';
+import { MatDialog } from '@angular/material/dialog';
 import { EmailDeliveryStatusComponent } from '../../components/email-delivery-status/email-delivery-status.component';
+import { PageHeaderComponent } from '../../shared/ui/page-header/page-header.component';
+import { DataTableComponent } from '../../shared/ui/data-table/data-table.component';
+import { ApiError } from '../../models/ApiError';
+import { Event } from '../../models/Event';
+
+interface EventAttendeeRow {
+  id: number;
+  name: string;
+  email: string;
+  event_title: string;
+  user_id: string;
+  event_id: string;
+  meeting_started: boolean;
+  type: string;
+}
 
 @Component({
     selector: 'app-event-attendees',
     templateUrl: './event-attendees.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrl: './event-attendees.component.scss',
-    imports: [PageLoadingComponent, OutletInnerComponent, MatButton, MatIcon, MatFormField, MatPrefix, MatLabel, MatInput, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCheckbox, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatNoDataRow, MatPaginator, AsyncPipe, EmailDeliveryStatusComponent]
+    imports: [OutletInnerComponent, PageHeaderComponent, DataTableComponent, MatButton, MatIcon, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, AsyncPipe, EmailDeliveryStatusComponent]
 })
 export class EventAttendeesComponent {
-  @ViewChild("input") input!: ElementRef;
   @ViewChild(EmailDeliveryStatusComponent) emailStatus?: EmailDeliveryStatusComponent;
-  
-  displayedColumns: string[] = ['select', 'id', 'name', 'meeting_started'];
-  selection = new SelectionModel<any>(true, []);
+
+  event = input.required<Event>();
+
   role = signal("");
   data_length = signal(0);
-  isLoading = signal(true);
+  tableLoading = signal(true);
+  tableError = signal<ApiError | null>(null);
+  selection: EventAttendeeRow[] = [];
 
   readonly PAGE_LIMIT = 10;
 
   private eventRegisterService = inject(EventRegisterService);
   private eventInviteService = inject(EventInviteService);
-  private eventService = inject(EventService);
   private dashboardCache = inject(DashboardCacheService);
   private aroute = inject(ActivatedRoute);
   private router = inject(Router);
   private dialog = inject(MatDialog);
-  location = inject(Location);
   util = inject(UtilService);
 
   refresh$ = new BehaviorSubject(null);
 
-  event$ = this.aroute.params.pipe(
-    switchMap((params: any) => this.eventService.getOneById(params.id).pipe(
-      tap(() => this.isLoading.set(false)),
-      map(res => res.data)
-    )),
-    shareReplay(1)
-  );
-
   query$ =  this.aroute.queryParams.pipe(
     switchMap((query) => {
-      let qry = <Partial<PageQuery>>{};
+      let qry: Partial<PageQuery> & { search?: string };
 
       if (Object.keys(query).length > 0) {
         qry = Object.fromEntries(new URLSearchParams(query));
       } else {
         qry = {
-          limit: this.PAGE_LIMIT 
+          limit: this.PAGE_LIMIT
         };
       }
 
@@ -78,6 +79,10 @@ export class EventAttendeesComponent {
   );
 
   event_attendees$ = this.refresh$.pipe(
+    tap(() => {
+      this.tableLoading.set(true);
+      this.tableError.set(null);
+    }),
     switchMap(() => this.query$.pipe(
       switchMap((query) => combineLatest([
         this.aroute.params.pipe(
@@ -89,9 +94,9 @@ export class EventAttendeesComponent {
           map((res) => res.data.map((item => ({ ...item, type: "invitation_approved" }))))
         )
       ]).pipe(
-        map((res) => {
+        map((res): EventAttendeeRow[] => {
           const users = [...res[0], ...res[1]];
-          const unique_users = [...new Map(users.map(item => [item.user._id, item])).values()];   
+          const unique_users = [...new Map(users.map(item => [item.user._id, item])).values()];
           const result = unique_users.map((item, index) => ({
             id: index + 1,
             name: item.user.name,
@@ -105,12 +110,15 @@ export class EventAttendeesComponent {
 
           this.data_length.set(result.length);
 
-          const paginated_result = result.slice(query.offset || 0, (query.offset || 0) + (query.limit || 0));
-
-          return paginated_result;
-        }))
-      ),
-      map((event_attendees) => (new MatTableDataSource(event_attendees)))
+          return result.slice(query.offset || 0, (query.offset || 0) + (query.limit || 0));
+        }),
+      )),
+      tap(() => this.tableLoading.set(false)),
+      catchError((err: ApiError) => {
+        this.tableLoading.set(false);
+        this.tableError.set(err);
+        return of([] as EventAttendeeRow[]);
+      }),
     )),
     shareReplay(1)
   );
@@ -125,44 +133,9 @@ export class EventAttendeesComponent {
     });
   }
 
-  isDisabled(dataSource: MatTableDataSource<any>) {
-    return dataSource?.data?.every((item: any) => item.meeting_started);
-  }
-
-  applyFilter(event: Event, dataSource: MatTableDataSource<any>) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    dataSource.filter = filterValue.trim().toLowerCase();
-
-    if (dataSource.paginator) {
-      dataSource.paginator.firstPage();
-    }
-  }
-
-  isAllSelected(dataSource: MatTableDataSource<any>) {
-    const numSelected = this.selection.selected.length;
-    const numRows = dataSource?.data?.length;
-    return numSelected === numRows;
-  }
-
-  toggleAllRows(dataSource: MatTableDataSource<any>) {
-    if (this.isAllSelected(dataSource)) {
-      this.selection.clear();
-      return;
-    }
-
-    this.selection.select(...dataSource.data.filter((item: any) => !item.meeting_started));
-  }
-
-  checkboxLabel(dataSource: MatTableDataSource<any>, row?: any): string {
-    if (!row) {
-      return `${this.isAllSelected(dataSource) ? 'deselect' : 'select'} all`;
-    }
-    return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.position + 1}`;
-  }
-
-  send(dataSource: MatTableDataSource<any>) {
+  send(rows: EventAttendeeRow[]) {
     const dialogRef = this.dialog.open(MeetingStartedDialogComponent, {
-      data: this.selection.selected.filter(item => !item.meeting_started),
+      data: rows.filter(item => !item.meeting_started),
       width: "500px",
       disableClose: true,
     });
@@ -170,14 +143,23 @@ export class EventAttendeesComponent {
     dialogRef.afterClosed().subscribe({
       next: (fetched) => {
         if (fetched) {
+          this.selection = [];
           this.refresh$.next(null);
-          this.selection.deselect(...dataSource.data);
-          this.selection.clear();
-          this.input.nativeElement.value = "";
           this.emailStatus?.refresh();
           setTimeout(() => this.emailStatus?.refresh(), 6000);
         }
       }
+    });
+  }
+
+  retry() {
+    this.refresh$.next(null);
+  }
+
+  handleSearchChange(search: string, query: Partial<PageQuery> & { search?: string }, event_id: string) {
+    this.router.navigate([`/${this.role()}/dashboard/events/${event_id}/meeting/attendees`], {
+      queryParams: { ...query, search: search || undefined, offset: undefined },
+      replaceUrl: true
     });
   }
 
@@ -188,5 +170,7 @@ export class EventAttendeesComponent {
       replaceUrl: true
     });
   }
-  
+
+  isRowSelectable = (row: EventAttendeeRow) => !row.meeting_started;
+
 }

@@ -4,13 +4,14 @@ import { CommonService } from '../../services/common.service';
 import { EventRegisterService } from '../../services/event-register.service';
 import { CdkScrollable } from '@angular/cdk/scrolling';
 import { MatButton } from '@angular/material/button';
+import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.component';
 
 @Component({
     selector: 'app-register-approval-dialog',
     templateUrl: './register-approval-dialog.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrl: './register-approval-dialog.component.scss',
-    imports: [CdkScrollable, MatDialogContent, MatDialogActions, MatButton, MatDialogClose]
+    imports: [CdkScrollable, MatDialogContent, MatDialogActions, MatButton, MatDialogClose, EmptyStateComponent]
 })
 export class RegisterApprovalDialogComponent {
   dialog_data = inject(MAT_DIALOG_DATA);
@@ -42,11 +43,11 @@ export class RegisterApprovalDialogComponent {
           message += ` ${queued} email(s) queued.`;
         }
 
-        this.commonService.openSnackBar(message);
+        this.commonService.success(message);
       },
       error: () => {
         this.dialog.close();
-        this.commonService.openSnackBar("Failed to send approval.");
+        this.commonService.error("Failed to send approval.");
       }
     });
   }

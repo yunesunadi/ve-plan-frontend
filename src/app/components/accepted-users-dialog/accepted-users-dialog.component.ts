@@ -5,13 +5,14 @@ import { map, shareReplay } from 'rxjs';
 import { CdkScrollable } from '@angular/cdk/scrolling';
 import { MatButton } from '@angular/material/button';
 import { AsyncPipe } from '@angular/common';
+import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.component';
 
 @Component({
     selector: 'app-accepted-users-dialog',
     templateUrl: './accepted-users-dialog.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrl: './accepted-users-dialog.component.scss',
-    imports: [CdkScrollable, MatDialogContent, MatDialogActions, MatButton, MatDialogClose, AsyncPipe]
+    imports: [CdkScrollable, MatDialogContent, MatDialogActions, MatButton, MatDialogClose, AsyncPipe, EmptyStateComponent]
 })
 export class AcceptedUsersDialogComponent {
   private dialog_data = inject(MAT_DIALOG_DATA);

@@ -4,7 +4,7 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
   selector: 'app-terms-and-conditions',
   imports: [],
   templateUrl: './terms-and-conditions.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './terms-and-conditions.component.scss'
 })
 export class TermsAndConditionsComponent {

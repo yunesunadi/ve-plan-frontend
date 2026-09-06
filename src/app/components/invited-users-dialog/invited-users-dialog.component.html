@@ -8,7 +8,12 @@
         <p class="mb-1">{{ $index + 1 }}. {{ item.user.name }}</p>
       }
     } @else {
-      <p class="text-center mt-3">There is no invited user for this event.</p>
+      <app-empty-state
+        compact
+        icon="mail_outline"
+        headline="Nobody invited yet"
+        supporting="Invited users will be listed here."
+      />
     }
   </mat-dialog-content>
   <mat-dialog-actions [align]="'end'">

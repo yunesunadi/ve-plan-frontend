@@ -1,5 +1,16 @@
-.event-card {
-  width: 100%;
-  max-width: 700px;
-  margin: 0 auto 1rem;
+.page-header {
+  --cluster-gap: var(--app-space-4);
+}
+
+.page-header {
+  --cluster-gap: var(--app-space-4);
+}
+
+.invitations-list {
+  align-items: center;
+}
+
+.see-details {
+  display: flex;
+  gap: .3rem;
 }

@@ -1,11 +1,11 @@
-import { Component, ElementRef, inject, ViewChild, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ElementRef, inject, signal, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogTitle, MatDialogContent, MatDialogActions, MatDialogClose } from '@angular/material/dialog';
 import { format } from "date-fns";
 import { EventService } from '../../services/event.service';
 import { CommonService } from '../../services/common.service';
 import { concatMap, iif, of } from 'rxjs';
-import { HttpErrorResponse } from '@angular/common/http';
+import { ApiError } from '../../models/ApiError';
 import { environment } from '../../../environments/environment';
 import { EventCacheService } from '../../caches/event-cache.service';
 import { EventCategoryType, EventType } from '../../models/Event';
@@ -15,13 +15,15 @@ import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { MatTimepickerInput, MatTimepicker, MatTimepickerToggle } from '@angular/material/timepicker';
 import { MatSelect, MatOption } from '@angular/material/select';
 import { MatButton } from '@angular/material/button';
+import { FormErrorComponent } from '../../shared/ui/form-error/form-error.component';
+import { SubmitButtonComponent } from '../../shared/ui/submit-button/submit-button.component';
 
 @Component({
     selector: 'app-event-dialog',
     templateUrl: './event-dialog.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrl: './event-dialog.component.scss',
-    imports: [MatDialogTitle, CdkScrollable, MatDialogContent, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, CdkTextareaAutosize, MatTimepickerInput, MatTimepicker, MatTimepickerToggle, MatSuffix, MatSelect, MatOption, MatDialogActions, MatButton, MatDialogClose]
+    imports: [MatDialogTitle, CdkScrollable, MatDialogContent, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, CdkTextareaAutosize, MatTimepickerInput, MatTimepicker, MatTimepickerToggle, MatSuffix, MatSelect, MatOption, MatDialogActions, MatButton, MatDialogClose, FormErrorComponent, SubmitButtonComponent]
 })
 export class EventDialogComponent {
   @ViewChild("imgView") imgView!: ElementRef;
@@ -29,6 +31,7 @@ export class EventDialogComponent {
   create_form: FormGroup;
   categories: EventCategoryType[] = ["conference", "meetup", "webinar"];
   types: EventType[] = ["public", "private"];
+  submitting = signal(false);
 
   private form_builder = inject(FormBuilder);
   dialog_data = inject(MAT_DIALOG_DATA);
@@ -137,6 +140,8 @@ export class EventDialogComponent {
 
     if (this.create_form.invalid) return;
 
+    this.submitting.set(true);
+
     of(true).pipe(
       concatMap(() => iif(
         () => !!this.dialog_data._id,
@@ -145,18 +150,20 @@ export class EventDialogComponent {
       ))
     ).subscribe({
       next: (res) => {
-        this.commonService.openSnackBar(res.message);
+        this.submitting.set(false);
+        this.commonService.success(res.message);
         this.dialog.close();
         this.cache.reset();
         this.cache.resetQuery$.next(true);
         this.cache.resetMyEventsQuery$.next(true);
       },
       error: (err) => {
-        const isHttpError = err instanceof HttpErrorResponse;
-        const message = (isHttpError && err.error?.message) || "Error creating event.";
-        this.commonService.openSnackBar(message);
+        this.submitting.set(false);
+        const isApiError = err instanceof ApiError;
+        const message = (isApiError && err.message) || "Error creating event.";
+        this.commonService.error(message);
 
-        if (!isHttpError || err.status >= 500) {
+        if (!isApiError || err.status >= 500) {
           this.dialog.close();
         }
       }

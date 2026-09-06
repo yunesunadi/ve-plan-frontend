@@ -1,17 +1,20 @@
 import { Component, ElementRef, inject, signal, ViewChild, ChangeDetectionStrategy } from '@angular/core';
-import { HttpErrorResponse } from '@angular/common/http';
+import { filter } from 'rxjs';
+import { ApiError } from '../../models/ApiError';
 import { MeetingService } from '../../services/meeting.service';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent } from '@angular/material/dialog';
 import { MeetingParticipant } from '../../models/Participant';
 import { CommonService } from '../../services/common.service';
+import { ConfirmService } from '../../services/confirm.service';
 import { CdkScrollable } from '@angular/cdk/scrolling';
+import { MatButton } from '@angular/material/button';
 
 @Component({
     selector: 'app-organizer-meeting-dialog',
     templateUrl: './organizer-meeting-dialog.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrl: './organizer-meeting-dialog.component.scss',
-    imports: [CdkScrollable, MatDialogContent]
+    imports: [CdkScrollable, MatDialogContent, MatButton]
 })
 export class OrganizerMeetingDialogComponent {
   @ViewChild("jitsi_iframe") jitsi_iframe!: ElementRef;
@@ -20,6 +23,7 @@ export class OrganizerMeetingDialogComponent {
   private dialog_data = inject(MAT_DIALOG_DATA);
   private dialog = inject(MatDialogRef<this>);
   private commonService = inject(CommonService);
+  private confirmService = inject(ConfirmService);
 
   api: any;
   room_name = signal("");
@@ -53,13 +57,13 @@ export class OrganizerMeetingDialogComponent {
             videoConferenceLeft: this.handleVideoConferenceLeft,
           });
         } catch {
-          this.commonService.openSnackBar("The meeting failed to load. Please try again.");
+          this.commonService.error("The meeting failed to load. Please try again.");
           this.dialog.close();
         }
       },
       error: (err) => {
-        if (err instanceof HttpErrorResponse) {
-          this.commonService.openSnackBar(err.error.message);
+        if (err instanceof ApiError) {
+          this.commonService.error(err);
         }
         this.dialog.close();
       }
@@ -67,11 +71,14 @@ export class OrganizerMeetingDialogComponent {
   }
 
   leaveAndEnd() {
-    const isConfirmed = confirm("Leaving will end the meeting for everyone. Attendees will no longer be able to join. Continue?");
-
-    if (!isConfirmed) return;
-
-    this.endMeeting();
+    this.confirmService.confirm({
+      title: "End the meeting for everyone?",
+      body: "Leaving will end the meeting for everyone. Attendees will no longer be able to join.",
+      confirmLabel: "End meeting",
+      destructive: true,
+    }).pipe(
+      filter(Boolean)
+    ).subscribe(() => this.endMeeting());
   }
 
   handleClose = () => {
@@ -82,7 +89,7 @@ export class OrganizerMeetingDialogComponent {
   handleVideoConferenceJoined = async (_participant: MeetingParticipant) => {
     this.meetingService.updateStartTime(this.dialog_data.event_id).subscribe({
       next: () => {
-        this.commonService.openSnackBar("Start meeting successfully.");
+        this.commonService.success("Start meeting successfully.");
       }
     });
   }
@@ -102,16 +109,16 @@ export class OrganizerMeetingDialogComponent {
           this.api.dispose();
           this.api = null;
         }
-        this.commonService.openSnackBar("Meeting ended.");
+        this.commonService.success("Meeting ended.");
         this.dialog.close(true);
       },
       error: (err) => {
         this.is_ending.set(false);
-        const message = err instanceof HttpErrorResponse && err.error?.message
-          ? err.error.message
+        const message = err instanceof ApiError && err.message
+          ? err.message
           : "Couldn't end the meeting. Please try again.";
         this.end_error.set(message);
-        this.commonService.openSnackBar(message);
+        this.commonService.error(message);
       }
     });
   }

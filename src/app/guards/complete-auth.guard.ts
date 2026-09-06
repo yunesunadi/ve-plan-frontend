@@ -4,7 +4,7 @@ import { map } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { DashboardCacheService } from '../caches/dashboard-cache.service';
 
-export const completeAuthGuard: CanMatchFn = (route, segments) => {
+export const completeAuthGuard: CanMatchFn = (route, _segments) => {
   const authService = inject(AuthService);
   const cacheService = inject(DashboardCacheService);
   const router = inject(Router);

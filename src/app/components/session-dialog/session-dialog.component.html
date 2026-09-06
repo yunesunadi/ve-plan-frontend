@@ -1,117 +1,73 @@
 <h6 mat-dialog-title class="text-primary-clr">
   {{ dialog_data._id ? "Edit" : "Create" }} Session
 </h6>
+<form [formGroup]="create_form" (ngSubmit)="submit()">
 <mat-dialog-content>
-  <form id="createForm" [formGroup]="create_form" (ngSubmit)="submit()" class="d-flex flex-column create-form">
+  <div class="stack create-form">
     <mat-form-field appearance="outline">
       <mat-label>Title</mat-label>
       <input matInput type="text" formControlName="title" placeholder="Enter title">
-      @if (titleControl.touched && titleControl.errors && titleControl.hasError('required')) {
-        <mat-error>Title is required.</mat-error>
-      }
+      <mat-error appFormError [control]="titleControl" labelFor="Title" />
     </mat-form-field>
     <mat-form-field appearance="outline">
       <mat-label>Description</mat-label>
-      <textarea 
+      <textarea
         matInput
         cdkTextareaAutosize
         cdkAutosizeMinRows="3"
         formControlName="description"
         placeholder="Enter description"
       ></textarea>
-      @if (descriptionControl.touched && descriptionControl.errors && descriptionControl.hasError('required')) {
-        <mat-error>Description is required.</mat-error>
-      }
+      <mat-error appFormError [control]="descriptionControl" labelFor="Description" />
     </mat-form-field>
     <mat-form-field appearance="outline">
       <mat-label>Speaker information</mat-label>
-      <textarea 
+      <textarea
         matInput
         cdkTextareaAutosize
         cdkAutosizeMinRows="3"
         formControlName="speaker_info"
         placeholder="Enter speaker information"
       ></textarea>
-      @if (speakerInfoControl.touched && speakerInfoControl.errors && speakerInfoControl.hasError('required')) {
-        <mat-error>Speaker information is required.</mat-error>
-      }
+      <mat-error appFormError [control]="speakerInfoControl" labelFor="Speaker information" />
     </mat-form-field>
     <mat-form-field appearance="outline">
       <mat-label>Start time</mat-label>
-      <input 
-        matInput 
-        [matTimepicker]="timepicker1" 
+      <input
+        matInput
+        [matTimepicker]="timepicker1"
         formControlName="start_time"
-        [matTimepickerMin]="($safeNavigationMigration((event$ | async)?.start_time)) | date: 'hh:mm'"
-        [matTimepickerMax]="($safeNavigationMigration((event$ | async)?.end_time)) | date: 'hh:mm'"
+        [matTimepickerMin]="(event$ | async)?.start_time | date: 'hh:mm'"
+        [matTimepickerMax]="(event$ | async)?.end_time | date: 'hh:mm'"
       >
       <mat-timepicker #timepicker1/>
       <mat-timepicker-toggle [for]="timepicker1" matSuffix/>
-      @if (startTimeControl.touched && startTimeControl.errors) {
-        <mat-error>
-          @if (startTimeControl.hasError('required')) {
-            Start time is required.
-          }
-          @if (startTimeControl.hasError('matTimepickerParse')) {
-            Start time isn't a valid time.
-          }
-          @if (startTimeControl.hasError('matTimepickerMin')) {
-            Start time is too early.
-          }
-          @if (startTimeControl.hasError('matTimepickerMax')) {
-            Start time is too late.
-          }
-        </mat-error>
-      }
+      <mat-error appFormError [control]="startTimeControl" labelFor="Start time" />
     </mat-form-field>
     <mat-form-field appearance="outline">
       <mat-label>End time</mat-label>
-      <input 
-        matInput 
-        [matTimepicker]="timepicker2" 
+      <input
+        matInput
+        [matTimepicker]="timepicker2"
         formControlName="end_time"
-        [matTimepickerMin]="($safeNavigationMigration((event$ | async)?.start_time)) | date: 'hh:mm'"
-        [matTimepickerMax]="($safeNavigationMigration((event$ | async)?.end_time)) | date: 'hh:mm'"
+        [matTimepickerMin]="(event$ | async)?.start_time | date: 'hh:mm'"
+        [matTimepickerMax]="(event$ | async)?.end_time | date: 'hh:mm'"
       >
       <mat-timepicker #timepicker2/>
       <mat-timepicker-toggle [for]="timepicker2" matSuffix/>
-      @if (endTimeControl.touched && endTimeControl.errors) {
-        <mat-error>
-          @if (endTimeControl.hasError('required')) {
-            End time is required.
-          }
-           @if (endTimeControl.hasError('matTimepickerParse')) {
-            End time isn't a valid time.
-          }
-          @if (endTimeControl.hasError('matTimepickerMin')) {
-            End time is too early.
-          }
-          @if (endTimeControl.hasError('matTimepickerMax')) {
-            End time is too late.
-          }
-        </mat-error>
-      }
+      <mat-error appFormError [control]="endTimeControl" labelFor="End time" />
     </mat-form-field>
-    @if (startTimeControl.value && endTimeControl.value && create_form.errors && create_form.hasError('invalidTime')) {
-      <small class="text-danger mb-3" style="margin-top: -1.3rem;">End time mustn't be ahead of start time.</small>
-    }
-  </form>
+    <mat-error appFormError [control]="create_form" labelFor="Time" class="mb-3 time-error" />
+  </div>
 </mat-dialog-content>
 <mat-dialog-actions [align]="'end'">
-  <button 
+  <button
     mat-button
-    type="button"  
+    type="button"
     mat-dialog-close
   >
     Cancel
   </button>
-  <button 
-    form="createForm"
-    mat-stroked-button 
-    type="submit"
-    cdkFocusInitial
-    class="bg-primary-clr text-white"
-  >
-    Done
-  </button>
+  <app-submit-button label="Done" [busy]="submitting()" cdkFocusInitial />
 </mat-dialog-actions>
+</form>

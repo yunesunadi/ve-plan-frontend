@@ -2,36 +2,42 @@ import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/cor
 import { DashboardCacheService } from '../../caches/dashboard-cache.service';
 import { Router, NavigationStart, NavigationEnd, RouterLink } from '@angular/router';
 import { EventCacheService } from '../../caches/event-cache.service';
-import { MyEventQuery, MyEventType } from '../../models/Event';
-import { PageLoadingComponent } from '../../shared/page-loading/page-loading.component';
+import { Event, MyEventQuery, MyEventType } from '../../models/Event';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
 import { MatButtonToggleGroup, MatButtonToggle } from '@angular/material/button-toggle';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { MatCard, MatCardTitle, MatCardSubtitle, MatCardActions } from '@angular/material/card';
 import { MatButton } from '@angular/material/button';
-import { MatIcon } from '@angular/material/icon';
 import { AsyncPipe } from '@angular/common';
+import { PageHeaderComponent } from '../../shared/ui/page-header/page-header.component';
+import { EventCardComponent } from '../../shared/ui/event-card/event-card.component';
+import { SkeletonComponent } from '../../shared/ui/skeleton/skeleton.component';
+import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.component';
+import { ErrorStateComponent } from '../../shared/ui/error-state/error-state.component';
+import { StatusKind } from '../../shared/ui/status-chip/status-chip.component';
+import { UtilService } from '../../services/util.service';
 
 @Component({
     selector: 'app-my-events',
     templateUrl: './my-events.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrl: './my-events.component.scss',
-    imports: [PageLoadingComponent, InfiniteScrollDirective, MatButtonToggleGroup, ReactiveFormsModule, FormsModule, MatButtonToggle, MatCard, MatCardTitle, MatCardSubtitle, MatCardActions, MatButton, RouterLink, MatIcon, AsyncPipe]
+    imports: [PageHeaderComponent, InfiniteScrollDirective, MatButtonToggleGroup, ReactiveFormsModule, FormsModule, MatButtonToggle, MatButton, RouterLink, AsyncPipe, EventCardComponent, SkeletonComponent, EmptyStateComponent, ErrorStateComponent]
 })
 export class MyEventsComponent {
   private dashboardCache = inject(DashboardCacheService);
   private router = inject(Router);
+  private util = inject(UtilService);
   cache = inject(EventCacheService);
 
   readonly LIMIT = 5;
+  readonly skeletonPlaceholders = Array.from({ length: this.LIMIT });
 
   types: MyEventType[] = ["all", "public", "private"];
   role = signal("");
 
   constructor() {
     this.router.events.subscribe(event => {
-      const container = document.querySelector('.my-events-container') as HTMLElement;
+      const container = document.querySelector('#main-content') as HTMLElement;
 
       if (event instanceof NavigationStart) {
         if (container) {
@@ -77,5 +83,22 @@ export class MyEventsComponent {
     if (result_length >= this.cache.myEventsTotal()) return;
     const new_query = { ...query, offset: result_length };
     this.cache.loadMoreMyEvents(new_query);
+  }
+
+  retry() {
+    this.cache.retryMyEvents();
+  }
+
+  eventStatus(event: Event): StatusKind {
+    if (this.util.is_event_expired(event)) return 'past';
+
+    const start = event.starts_at ? new Date(event.starts_at) : this.legacyStart(event);
+    return start.getTime() > Date.now() ? 'upcoming' : 'happening';
+  }
+
+  private legacyStart(event: Event): Date {
+    const date = new Date(event.date);
+    const time = new Date(event.start_time);
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate(), time.getHours(), time.getMinutes());
   }
 }

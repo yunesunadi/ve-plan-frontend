@@ -1,25 +1,30 @@
-import { ApplicationConfig, provideZonelessChangeDetection } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { ApplicationConfig, inject, provideZonelessChangeDetection } from '@angular/core';
+import { provideRouter, withComponentInputBinding, withNavigationErrorHandler } from '@angular/router';
 
 import { routes } from './app.routes';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideHttpClient, withXhr, withInterceptors } from '@angular/common/http';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { authInterceptor } from './interceptors/auth.interceptor';
-import { notFoundInterceptor } from './interceptors/not-found.interceptor';
-import { unauthenticatedInterceptor } from './interceptors/unauthenticated.interceptor';
-import { unauthorizedInterceptor } from './interceptors/unauthorized.interceptor';
+import { errorInterceptor } from './interceptors/error.interceptor';
+import { CommonService } from './services/common.service';
+import { ApiError } from './models/ApiError';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZonelessChangeDetection(),
-    provideRouter(routes),
+    provideRouter(
+      routes,
+      withComponentInputBinding(),
+      withNavigationErrorHandler((navError) => {
+        const err = navError.error;
+        inject(CommonService).error(err instanceof ApiError ? err : 'Something went wrong.');
+      }),
+    ),
     provideAnimationsAsync(),
     provideHttpClient(withXhr(), withInterceptors([
       authInterceptor,
-      notFoundInterceptor,
-      unauthenticatedInterceptor,
-      unauthorizedInterceptor,
+      errorInterceptor,
     ])),
     provideNativeDateAdapter(),
   ]

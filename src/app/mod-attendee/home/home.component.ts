@@ -12,7 +12,7 @@ import { FullCalendarModule } from '@fullcalendar/angular';
 @Component({
     selector: 'app-home',
     templateUrl: './home.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrl: './home.component.scss',
     imports: [OutletInnerComponent, FullCalendarModule]
 })

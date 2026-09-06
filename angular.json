@@ -29,7 +29,6 @@
               }
             ],
             "styles": [
-              "@angular/material/prebuilt-themes/rose-red.css",
               "src/styles.scss"
             ],
             "scripts": []
@@ -48,8 +47,13 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "2.5MB",
-                  "maximumError": "5MB"
+                  "maximumWarning": "960kB",
+                  "maximumError": "1010kB"
+                },
+                {
+                  "type": "allScript",
+                  "maximumWarning": "1.9MB",
+                  "maximumError": "2MB"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -112,7 +116,6 @@
               }
             ],
             "styles": [
-              "@angular/material/prebuilt-themes/rose-red.css",
               "src/styles.scss"
             ],
             "scripts": []

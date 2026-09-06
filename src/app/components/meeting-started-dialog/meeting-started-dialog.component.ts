@@ -6,13 +6,14 @@ import { EventInviteService } from '../../services/event-invite.service';
 import { combineLatest } from 'rxjs';
 import { CdkScrollable } from '@angular/cdk/scrolling';
 import { MatButton } from '@angular/material/button';
+import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.component';
 
 @Component({
     selector: 'app-meeting-started-dialog',
     templateUrl: './meeting-started-dialog.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrl: './meeting-started-dialog.component.scss',
-    imports: [CdkScrollable, MatDialogContent, MatDialogActions, MatButton, MatDialogClose]
+    imports: [CdkScrollable, MatDialogContent, MatDialogActions, MatButton, MatDialogClose, EmptyStateComponent]
 })
 export class MeetingStartedDialogComponent {
   dialog_data = inject(MAT_DIALOG_DATA);
@@ -33,13 +34,13 @@ export class MeetingStartedDialogComponent {
     ]).subscribe({
       error: (err) => {
         console.log(err);
-        
+
         this.dialog.close();
-        this.commonService.openSnackBar("Failed to send meeting email.");
+        this.commonService.error("Failed to send meeting email.");
       },
       complete: () => {
         this.dialog.close(true);
-        this.commonService.openSnackBar("Send meeting email successfully.");
+        this.commonService.success("Send meeting email successfully.");
       }
     });
   }

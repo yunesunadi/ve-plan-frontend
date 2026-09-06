@@ -2,19 +2,20 @@ import { Component, ElementRef, inject, signal, ViewChild, ChangeDetectionStrate
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { Router, RouterLink } from '@angular/router';
-import { map } from 'rxjs';
 import { CommonService } from '../../services/common.service';
-import { HttpErrorResponse } from '@angular/common/http';
+import { ApiError } from '../../models/ApiError';
 import { RegisterWrapperComponent } from '../../shared/register-wrapper/register-wrapper.component';
-import { MatFormField, MatLabel, MatInput, MatError, MatSuffix, MatHint } from '@angular/material/input';
-import { MatIconButton, MatButton } from '@angular/material/button';
+import { MatFormField, MatLabel, MatInput, MatError, MatSuffix } from '@angular/material/input';
+import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
+import { FormErrorComponent } from '../../shared/ui/form-error/form-error.component';
+import { SubmitButtonComponent } from '../../shared/ui/submit-button/submit-button.component';
 
 const MIN_LENGTH = 8;
 @Component({
     selector: 'app-signup',
     templateUrl: './signup.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrl: './signup.component.scss',
     imports: [
         RegisterWrapperComponent,
@@ -26,15 +27,16 @@ const MIN_LENGTH = 8;
         MatIconButton,
         MatSuffix,
         MatIcon,
-        MatHint,
-        MatButton,
         RouterLink,
+        FormErrorComponent,
+        SubmitButtonComponent,
     ],
 })
 export class SignupComponent {
   @ViewChild("imgView") imgView!: ElementRef;
   isPassword = signal(true);
   isConfirmPassword = signal(true);
+  submitting = signal(false);
   signup_form: FormGroup;
 
   private form_builder = inject(FormBuilder);
@@ -60,7 +62,7 @@ export class SignupComponent {
   checkPasswordsValidator(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       const isNotMatched = control.value['password'] !== control.value['confirm_password'];
-      return  isNotMatched ? { passwordsNotMatched: true } : null;
+      return  isNotMatched ? { passwordMismatch: true } : null;
     };
   }
 
@@ -109,16 +111,19 @@ export class SignupComponent {
 
     if (this.signup_form.invalid) return;
     delete this.signup_form.value['confirm_password'];
-    
+
     const email = this.signup_form.value['email'];
 
+    this.submitting.set(true);
     this.authService.register(this.signup_form.value).subscribe({
       next: () => {
+        this.submitting.set(false);
         this.router.navigate(["verify_email"], { queryParams: { email } });
       },
       error: (err) => {
-        if (err instanceof HttpErrorResponse) {
-          this.commonService.openSnackBar(err.error.message);
+        this.submitting.set(false);
+        if (err instanceof ApiError) {
+          this.commonService.error(err);
         }
       }
     });

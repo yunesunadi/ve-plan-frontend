@@ -2,14 +2,11 @@
 @let query = (cache.query$ | async) || {};
 @let offset = +(query.offset || 0);
 
-@if (cache.isEventsLoading()) {
-  <app-page-loading></app-page-loading>
-}
 <app-outlet-inner>
   <section>
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h3 class="text-primary-clr mb-0">Events</h3>
-      <button 
+    <app-page-header title="Events">
+      <button
+        header-actions
         mat-stroked-button
         type="button"
         class="bg-secondary-clr text-primary-clr"
@@ -19,12 +16,12 @@
       >
         <mat-icon>filter_list</mat-icon> Filter
       </button>
-    </div>
+    </app-page-header>
 
     <mat-accordion multi>
       <mat-expansion-panel class="custom-mat-expansion">
-        <div class="row">
-          <div class="col-md-6">
+        <div class="form-grid">
+          <div>
             <mat-form-field appearance="outline" class="w-100">
               <mat-label>Search by Event Name</mat-label>
               <input
@@ -46,7 +43,7 @@
               }
             </mat-form-field>
           </div>
-          <div class="col-md-6">
+          <div>
             <mat-form-field appearance="outline" class="w-100">
               <mat-label>Search by Time</mat-label>
               <mat-select [(ngModel)]="query.time" (selectionChange)="changeFilter('time', $event.value, query)">
@@ -63,7 +60,7 @@
               }
             </mat-form-field>
           </div>
-          <div class="col-md-6">
+          <div>
             <mat-form-field appearance="outline" class="w-100">
               <mat-label>Search by Category</mat-label>
               <mat-select [(ngModel)]="query.category" (selectionChange)="changeFilter('category', $event.value, query)">
@@ -80,7 +77,7 @@
               }
             </mat-form-field>
           </div>
-          <div class="col-md-6">
+          <div>
             <mat-form-field appearance="outline" class="w-100">
               <mat-label>Search by Date</mat-label>
               <input matInput [matDatepicker]="picker" [(ngModel)]="query.date" (dateChange)="changeFilter('date', $event.target.value, query)">
@@ -99,30 +96,31 @@
     </mat-accordion>
 
     <div class="mt-3">
-    @if (events && events.length > 0) {
-      @for (item of events; track item._id) {
-        <mat-card appearance="outlined" class="event-card">
-          <div class="px-3 pt-3">
-            <mat-card-title class="text-primary-clr">{{ item.title }}</mat-card-title>
-            <mat-card-subtitle class="text-primary-clr">{{ item.description }}</mat-card-subtitle>
-          </div>
-          <mat-card-actions [align]="'end'" class="px-3 pb-3">
-            <button
-              mat-stroked-button
-              class="text-secondary-clr bg-primary-clr"
-              [routerLink]="'/' + role() + '/dashboard/events/' + item._id + '/view'"
-            >
-              <span>See Details</span>
-              <mat-icon>arrow_forward</mat-icon>
-            </button>
-          </mat-card-actions>
-        </mat-card>
-      }
+    @if (cache.eventsError(); as error) {
+      <app-error-state [error]="error" (retry)="retry()" />
+    } @else if (cache.isEventsLoading()) {
+      <div class="card-grid" style="--card-min: 300px">
+        @for (i of skeletonPlaceholders; track $index) {
+          <app-skeleton variant="card" />
+        }
+      </div>
+    } @else if (events && events.length > 0) {
+      <div class="card-grid" style="--card-min: 300px">
+        @for (item of events; track item._id) {
+          <app-event-card [event]="item" [link]="'/' + role() + '/dashboard/events/' + item._id + '/view'" />
+        }
+      </div>
     } @else {
-      <p class="text-center mt-3">There is no events.</p>
+      <app-empty-state
+        icon="search_off"
+        headline="No events match your filters"
+        supporting="Try clearing a filter or searching a different name."
+        ctaLabel="Clear filters"
+        (ctaClick)="clearAllFilters()"
+      />
     }
     </div>
-    
+
     @if (events && cache.eventsTotal() > LIMIT) {
       <mat-paginator
         class="mt-3"

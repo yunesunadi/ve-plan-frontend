@@ -1,8 +1,8 @@
 <app-register-wrapper>
   <ng-container form>
-    <h1 class="text-primary-clr mb-3 d-md-none text-center">VE-Plan</h1>
+    <h1 class="text-primary-clr mb-3 show-md-down text-center">VE-Plan</h1>
     <h3 class="text-primary-clr mb-4 text-center">Choose Role</h3>
-    <form #role_form="ngForm" (ngSubmit)="submit()">
+    <form #role_form="ngForm" (ngSubmit)="submit(role_form)">
       <mat-form-field appearance="outline">
         <mat-label for="role">Role</mat-label>
         <mat-select [(ngModel)]="chosen_role" #role_control="ngModel" name="role" required>
@@ -12,18 +12,14 @@
             </mat-option>
           }
         </mat-select>
-        @if (role_control.hasError("required")) {
-          <mat-error>Role is required.</mat-error>
-        }
+        <mat-error appFormError [control]="role_control.control" labelFor="Role" />
       </mat-form-field>
-      <button
-        mat-raised-button
-        type="submit"
-        class="bg-primary-clr text-white d-block mx-auto mt-1"
+      <app-submit-button
+        label="Submit"
+        [busy]="submitting()"
         [disabled]="role_form.invalid"
-      >
-        Submit
-      </button>
+        class="role-submit mx-auto mt-1"
+      />
     </form>
   </ng-container>
 </app-register-wrapper>

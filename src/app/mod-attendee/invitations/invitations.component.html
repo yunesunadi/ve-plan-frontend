@@ -1,59 +1,54 @@
 @let invitations = invitations$ | async;
 
-@if (isLoading()) {
-  <app-page-loading></app-page-loading>
-} @else {
 <app-outlet-inner>
-  <div class="d-flex align-items-center mb-3" style="gap: 1rem;">
-    <button
-      mat-stroked-button
-      type="button"
-      (click)="location.back()"
-    >
-      <mat-icon class="text-primary-clr m-0">keyboard_backspace</mat-icon>
-    </button>
-    <h3 class="text-primary-clr mb-0">Invitations</h3>
-  </div>
-  <section class="d-flex flex-column align-items-center" style="gap: 1rem;">
-  @if (invitations && invitations.length > 0) {
-    @for (item of invitations; track item._id) {
-      <mat-card appearance="outlined" class="event-card">
-        <div class="d-flex justify-content-between px-3 pt-3">
-          <div>
-            <mat-card-title class="text-primary-clr">{{ item.event.title }}</mat-card-title>
-            <mat-card-subtitle class="text-primary-clr">{{ item.event.description }}</mat-card-subtitle>
-          </div>
-          <a class="text-decoration-underline cursor-pointer d-flex text-nowrap" style="gap: .3rem;" 
-          [routerLink]="'/attendee/dashboard/events/' + item.event._id + '/view'">
-            <span>See Details</span>
-            <mat-icon>arrow_forward</mat-icon>
-          </a>
-        </div>
-        <mat-card-actions [align]="'end'" class="px-3 pb-3">
+  <app-page-header title="Invitations"></app-page-header>
+  <section class="stack">
+  @if (error(); as err) {
+    <app-error-state [error]="err" (retry)="retry()" />
+  } @else if (isLoading()) {
+    <div class="card-grid" style="--card-min: 300px">
+      @for (i of skeletonPlaceholders; track $index) {
+        <app-skeleton variant="card" />
+      }
+    </div>
+  } @else if (invitations && invitations.length > 0) {
+    <div class="card-grid" style="--card-min: 300px">
+      @for (item of invitations; track item._id) {
+        <app-event-card
+          [event]="item.event"
+          [link]="'/attendee/dashboard/events/' + item.event._id + '/view'"
+          status="invited"
+        >
           <button
+            card-actions
             mat-stroked-button
+            type="button"
             class="text-secondary-clr bg-primary-clr"
             (click)="accept(item.event._id)"
           >
             Accept
           </button>
-        </mat-card-actions>
-      </mat-card>
-    }
+        </app-event-card>
+      }
+    </div>
   } @else {
-    <p class="text-center mt-3">There is no invitations.</p>
+    <app-empty-state
+      headline="No invitations"
+      supporting="When an organizer invites you to an event, it will appear here."
+    />
   }
 
   @if (invitations && invitations.length < total()) {
-    <button
-      mat-stroked-button
-      type="button"
-      class="bg-secondary-clr text-primary-clr mt-2"
-      (click)="loadMore(invitations.length)"
-    >
-      Load more
-    </button>
+    <div class="cluster cluster--center mt-3">
+      <button
+        mat-stroked-button
+        type="button"
+        class="bg-secondary-clr text-primary-clr"
+        (click)="loadMore(invitations.length)"
+      >
+        Load more
+      </button>
+    </div>
   }
   </section>
 </app-outlet-inner>
-}

@@ -6,23 +6,26 @@ import { map } from 'rxjs';
 import { jwtDecode } from "jwt-decode";
 import { UserPayload } from '../../models/User';
 import { CommonService } from '../../services/common.service';
-import { HttpErrorResponse } from '@angular/common/http';
+import { ApiError } from '../../models/ApiError';
 import { environment } from '../../../environments/environment';
 import { RegisterWrapperComponent } from '../../shared/register-wrapper/register-wrapper.component';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatFormField, MatLabel, MatInput, MatError, MatSuffix } from '@angular/material/input';
 import { MatIcon } from '@angular/material/icon';
 import { DashboardCacheService } from '../../caches/dashboard-cache.service';
+import { FormErrorComponent } from '../../shared/ui/form-error/form-error.component';
+import { SubmitButtonComponent } from '../../shared/ui/submit-button/submit-button.component';
 
 @Component({
     selector: 'app-login',
     templateUrl: './login.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrl: './login.component.scss',
-    imports: [RegisterWrapperComponent, MatButton, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, MatIconButton, MatSuffix, MatIcon, RouterLink]
+    imports: [RegisterWrapperComponent, MatButton, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, MatIconButton, MatSuffix, MatIcon, RouterLink, FormErrorComponent, SubmitButtonComponent]
 })
 export class LoginComponent {
   isPassword = signal(true);
+  submitting = signal(false);
   login_form: FormGroup;
 
   private form_builder = inject(FormBuilder);
@@ -54,12 +57,14 @@ export class LoginComponent {
     this.login_form.markAllAsTouched();
     
     if (this.login_form.invalid) return;
-    
+
+    this.submitting.set(true);
     this.authService.login(this.login_form.value).pipe(
       map(res => res.token)
     ).subscribe({
       next: (token) => {
-        this.commonService.openSnackBar("Login successfully.");
+        this.submitting.set(false);
+        this.commonService.success("Login successfully.");
         localStorage.setItem("token", token);
         this.dashboardCache.resetCurrentUser();
         this.dashboardCache.resetHasRole();
@@ -68,8 +73,9 @@ export class LoginComponent {
         this.router.navigateByUrl(`${decoded.role}/dashboard/home`);
       },
       error: (err) => {
-        if (err instanceof HttpErrorResponse) {
-            this.commonService.openSnackBar(err.error.message);
+        this.submitting.set(false);
+        if (err instanceof ApiError) {
+          this.commonService.error(err);
         }
       }
     });

@@ -1,0 +1,109 @@
+@use '@angular/material' as mat;
+
+:host {
+  display: block;
+  @include mat.table-density(-2);
+}
+
+.data-table__toolbar {
+  margin-bottom: var(--app-space-4);
+}
+
+.data-table__search {
+  width: 100%;
+  max-width: 320px;
+}
+
+.data-table__bulk-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--app-space-3);
+  padding: var(--app-space-3) var(--app-space-4);
+  margin-bottom: var(--app-space-3);
+  border-radius: var(--app-radius-md);
+  background: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+}
+
+.data-table__bulk-count {
+  font: var(--mat-sys-label-large);
+}
+
+.data-table__bulk-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--app-space-2);
+}
+
+.data-table__surface {
+  border-radius: var(--app-radius-md);
+  overflow: hidden;
+  box-shadow: var(--app-elev-1);
+
+  table {
+    width: 100%;
+  }
+}
+
+.data-table__row {
+  cursor: pointer;
+  transition: background-color var(--app-motion-fast);
+
+  &:hover {
+    background: var(--mat-sys-surface-container-high);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--mat-sys-primary);
+    outline-offset: -2px;
+  }
+
+  &--selected {
+    background: var(--mat-sys-primary-container);
+  }
+}
+
+.data-table__cards {
+  --stack-gap: var(--app-space-3);
+}
+
+.data-table__card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--app-space-3);
+  padding: var(--app-space-4);
+  border-radius: var(--app-radius-md);
+  background: var(--mat-sys-surface-container-low);
+  box-shadow: var(--app-elev-1);
+  cursor: pointer;
+  transition: box-shadow var(--app-motion-fast);
+
+  &:hover {
+    box-shadow: var(--app-elev-2);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--mat-sys-primary);
+    outline-offset: -2px;
+  }
+
+  &--selected {
+    background: var(--mat-sys-primary-container);
+  }
+}
+
+.data-table__card-check {
+  flex-shrink: 0;
+  margin-top: var(--app-space-1);
+}
+
+.data-table__card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+mat-paginator {
+  background: transparent;
+}

@@ -8,7 +8,20 @@
   }
 
   &:focus-visible {
-    outline: 2px solid var(--mat-sys-primary, #3f51b5);
+    outline: 2px solid var(--mat-sys-primary);
     outline-offset: 2px;
   }
+}
+
+.actions-row {
+  --cluster-gap: var(--app-space-2);
+}
+
+.notifications-list {
+  max-width: 600px;
+}
+
+.notification-row {
+  display: flex;
+  gap: var(--app-space-2);
 }

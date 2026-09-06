@@ -1,39 +1,58 @@
-import { Component, inject, DestroyRef, ChangeDetectionStrategy } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { environment } from '../../../environments/environment';
+import { Component, inject, DestroyRef, ChangeDetectionStrategy, computed } from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { catchError, of, map, startWith, switchMap, scan, filter, shareReplay } from 'rxjs';
 import { NotificationService } from '../../services/notification.service';
 import { SocketService } from '../../services/socket.service';
 import { DashboardCacheService } from '../../caches/dashboard-cache.service';
-import { User } from '../../models/User';
+import { ConfirmService } from '../../services/confirm.service';
+import { LayoutService } from '../../services/layout.service';
 import { MatToolbar } from '@angular/material/toolbar';
-import { MatIconButton } from '@angular/material/button';
+import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatBadge } from '@angular/material/badge';
-import { MatTooltip } from '@angular/material/tooltip';
 import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
-import { MatDivider } from '@angular/material/divider';
-import { MatDrawerContainer, MatDrawer } from '@angular/material/sidenav';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatDrawerContainer, MatDrawer, MatDrawerContent } from '@angular/material/sidenav';
 import { AsyncPipe } from '@angular/common';
+import { AvatarComponent } from '../../shared/ui/avatar/avatar.component';
+import { AppNavComponent } from './app-nav/app-nav.component';
+import { BottomNavComponent } from './bottom-nav/bottom-nav.component';
+import { NAV_DESTINATIONS, NavDestination } from './nav-destinations';
+import { RoleType } from '../../models/User';
 
 @Component({
     selector: 'app-private',
     templateUrl: './private.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrl: './private.component.scss',
-    imports: [MatToolbar, MatIconButton, MatIcon, RouterLink, MatBadge, MatTooltip, MatMenuTrigger, MatMenu, MatMenuItem, MatDivider, MatDrawerContainer, MatDrawer, RouterLinkActive, RouterOutlet, AsyncPipe]
+    imports: [
+      MatToolbar, MatIconButton, MatButton, MatIcon, RouterLink, MatBadge, MatTooltip, MatMenuTrigger,
+      MatMenu, MatMenuItem, MatDrawerContainer, MatDrawer, MatDrawerContent, RouterOutlet, AsyncPipe,
+      AvatarComponent, AppNavComponent, BottomNavComponent,
+    ]
 })
 export class PrivateComponent {
   private route = inject(Router);
   private notificationService = inject(NotificationService);
   private socketService = inject(SocketService);
   private dashboardCache = inject(DashboardCacheService);
+  private confirmService = inject(ConfirmService);
   private destroyRef = inject(DestroyRef);
+  protected readonly layout = inject(LayoutService);
 
   current_user$ = this.dashboardCache.current_user.pipe(
     catchError(() => of(null))
   );
+
+  private readonly currentUser = toSignal(this.current_user$, { initialValue: null });
+
+  protected readonly destinations = computed<NavDestination[]>(() => {
+    const role = this.currentUser()?.role as RoleType | undefined;
+    return role ? NAV_DESTINATIONS[role] : [];
+  });
+
+  protected readonly isRail = computed(() => this.layout.mode() === 'medium' && !this.layout.navExpanded());
 
   socketConnected$ = this.socketService.connected$();
 
@@ -67,23 +86,16 @@ export class PrivateComponent {
   }
 
   logout() {
-    const isConfirmed = confirm("Are you sure to logout?");
-
-    if (isConfirmed) {
+    this.confirmService.confirm({
+      title: "Log out?",
+      body: "You'll need to sign in again to access your dashboard.",
+      confirmLabel: "Log out",
+    }).pipe(
+      filter(Boolean)
+    ).subscribe(() => {
       this.socketService.disconnect();
       localStorage.removeItem("token");
       this.route.navigateByUrl("login");
-    }
-  }
-
-  profileUrl(user: User | null) {
-    if (user?.profile) {
-      if (user.googleId || user.facebookId) {
-        return user.profile;
-      }
-      return environment.profileUrl + "/" + user.profile;
-    }
-
-    return "assets/images/placeholder_person.png";
+    });
   }
 }

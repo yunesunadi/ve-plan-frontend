@@ -3,7 +3,7 @@ import { CanActivateFn, Router } from '@angular/router';
 import { map } from 'rxjs';
 import { DashboardCacheService } from '../caches/dashboard-cache.service';
 
-export const hasRoleGuard: CanActivateFn = (route, state) => {
+export const hasRoleGuard: CanActivateFn = (_route, _state) => {
   const cacheService = inject(DashboardCacheService);
   const router = inject(Router);
 

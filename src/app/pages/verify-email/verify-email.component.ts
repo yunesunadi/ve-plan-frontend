@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, OnDestroy, signal, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { HttpErrorResponse } from '@angular/common/http';
+import { ApiError } from '../../models/ApiError';
 import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { catchError, EMPTY, map, switchMap } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
@@ -9,6 +9,8 @@ import { RegisterWrapperComponent } from '../../shared/register-wrapper/register
 import { MatFormField, MatLabel, MatInput, MatError } from '@angular/material/input';
 import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
+import { FormErrorComponent } from '../../shared/ui/form-error/form-error.component';
+import { SubmitButtonComponent } from '../../shared/ui/submit-button/submit-button.component';
 
 const GENERIC_FAILURE = 'Verification failed. The link may be invalid or expired.';
 const RESEND_COOLDOWN_MS = 30_000;
@@ -18,7 +20,7 @@ type VerifyStatus = 'pending' | 'verifying' | 'failed' | 'expired';
 @Component({
     selector: 'app-verify-email',
     templateUrl: './verify-email.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrls: ['./verify-email.component.scss'],
     imports: [
         RegisterWrapperComponent,
@@ -30,6 +32,8 @@ type VerifyStatus = 'pending' | 'verifying' | 'failed' | 'expired';
         MatButton,
         MatIcon,
         RouterLink,
+        FormErrorComponent,
+        SubmitButtonComponent,
     ]
 })
 export class VerifyEmailComponent implements OnInit, OnDestroy {
@@ -65,9 +69,9 @@ export class VerifyEmailComponent implements OnInit, OnDestroy {
         this.status.set('verifying');
         return this.authService.verifyEmail(token).pipe(
           map((res) => res.token),
-          catchError((err: HttpErrorResponse) => {
+          catchError((err: ApiError) => {
             this.status.set(err.status === 410 ? 'expired' : 'failed');
-            this.errorMessage.set(err.error?.message || GENERIC_FAILURE);
+            this.errorMessage.set(err.message || GENERIC_FAILURE);
             return EMPTY;
           })
         );
@@ -75,7 +79,7 @@ export class VerifyEmailComponent implements OnInit, OnDestroy {
     ).subscribe({
       next: (token) => {
         localStorage.setItem('token', token);
-        this.commonService.openSnackBar('Your email has been verified!');
+        this.commonService.success('Your email has been verified!');
         this.router.navigateByUrl('/role');
       }
     });
@@ -102,15 +106,15 @@ export class VerifyEmailComponent implements OnInit, OnDestroy {
     this.authService.resendVerification(email).subscribe({
       next: (res) => {
         this.resending.set(false);
-        this.commonService.openSnackBar(res.message);
+        this.commonService.success(res.message);
         onSuccess();
       },
       error: (err) => {
         this.resending.set(false);
-        const message = err instanceof HttpErrorResponse && err.error?.message
-          ? err.error.message
+        const message = err instanceof ApiError && err.message
+          ? err.message
           : 'Failed to resend verification link.';
-        this.commonService.openSnackBar(message);
+        this.commonService.error(message);
       }
     });
   }

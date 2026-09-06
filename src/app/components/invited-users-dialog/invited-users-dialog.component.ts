@@ -5,13 +5,14 @@ import { MAT_DIALOG_DATA, MatDialogContent, MatDialogActions, MatDialogClose } f
 import { CdkScrollable } from '@angular/cdk/scrolling';
 import { MatButton } from '@angular/material/button';
 import { AsyncPipe } from '@angular/common';
+import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.component';
 
 @Component({
     selector: 'app-invited-users-dialog',
     templateUrl: './invited-users-dialog.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrl: './invited-users-dialog.component.scss',
-    imports: [CdkScrollable, MatDialogContent, MatDialogActions, MatButton, MatDialogClose, AsyncPipe]
+    imports: [CdkScrollable, MatDialogContent, MatDialogActions, MatButton, MatDialogClose, AsyncPipe, EmptyStateComponent]
 })
 export class InvitedUsersDialogComponent {
   private dialog_data = inject(MAT_DIALOG_DATA);

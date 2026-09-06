@@ -1,6 +1,6 @@
 import { Event } from "./Event";
 import { User } from "./User";
-import { GeneralResponse, Response, Timestamp } from "./Utils";
+import { GeneralResponse, PageMeta, Response, Timestamp } from "./Utils";
 
 export interface MeetingParticipant {
   roomName: string;
@@ -24,6 +24,8 @@ export interface Participant {
 }
 
 export type GetParticipantsResponse = GeneralResponse & Response<"data", Array<Timestamp & Participant>>;
+
+export type GetPagedParticipantsResponse = GetParticipantsResponse & { meta: PageMeta };
 
 export type GetStayTimesResponse = GeneralResponse
   & Response<"data", Array<{ label: string; value: number; }>>

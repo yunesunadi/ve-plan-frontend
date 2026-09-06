@@ -2,10 +2,9 @@ import { Component, inject, signal, ViewChild, ChangeDetectionStrategy } from '@
 import { EventCategoryType, EventQuery, EventTimeType } from '../../models/Event';
 import { DashboardCacheService } from '../../caches/dashboard-cache.service';
 import { MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { EventCacheService } from '../../caches/event-cache.service';
 import { MatAccordion, MatExpansionPanel } from '@angular/material/expansion';
-import { PageLoadingComponent } from '../../shared/page-loading/page-loading.component';
 import { OutletInnerComponent } from '../../shared/outlet-inner/outlet-inner.component';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatBadge } from '@angular/material/badge';
@@ -14,15 +13,19 @@ import { MatFormField, MatLabel, MatInput, MatPrefix, MatSuffix, MatHint } from 
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatSelect, MatOption } from '@angular/material/select';
 import { MatDatepickerInput, MatDatepickerToggle, MatDatepicker } from '@angular/material/datepicker';
-import { MatCard, MatCardTitle, MatCardSubtitle, MatCardActions } from '@angular/material/card';
 import { PageEvent, MatPaginator } from '@angular/material/paginator';
 import { AsyncPipe } from '@angular/common';
+import { PageHeaderComponent } from '../../shared/ui/page-header/page-header.component';
+import { EventCardComponent } from '../../shared/ui/event-card/event-card.component';
+import { SkeletonComponent } from '../../shared/ui/skeleton/skeleton.component';
+import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.component';
+import { ErrorStateComponent } from '../../shared/ui/error-state/error-state.component';
 
 @Component({
     selector: 'app-events',
     templateUrl: './events.component.html',
     styleUrl: './events.component.scss',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [
         provideNativeDateAdapter(),
         {
@@ -30,7 +33,7 @@ import { AsyncPipe } from '@angular/common';
             useValue: "en-GB"
         },
     ],
-    imports: [PageLoadingComponent, OutletInnerComponent, MatButton, MatBadge, MatIcon, MatAccordion, MatExpansionPanel, MatFormField, MatLabel, MatInput, ReactiveFormsModule, FormsModule, MatPrefix, MatIconButton, MatSuffix, MatSelect, MatOption, MatDatepickerInput, MatHint, MatDatepickerToggle, MatDatepicker, MatCard, MatCardTitle, MatCardSubtitle, MatCardActions, MatPaginator, RouterLink, AsyncPipe]
+    imports: [OutletInnerComponent, PageHeaderComponent, MatButton, MatBadge, MatIcon, MatAccordion, MatExpansionPanel, MatFormField, MatLabel, MatInput, ReactiveFormsModule, FormsModule, MatPrefix, MatIconButton, MatSuffix, MatSelect, MatOption, MatDatepickerInput, MatHint, MatDatepickerToggle, MatDatepicker, MatPaginator, AsyncPipe, EventCardComponent, SkeletonComponent, EmptyStateComponent, ErrorStateComponent]
 })
 export class EventsComponent {
   @ViewChild(MatAccordion) accordion!: MatAccordion;
@@ -41,6 +44,7 @@ export class EventsComponent {
   cache = inject(EventCacheService);
 
   readonly LIMIT = 5;
+  readonly skeletonPlaceholders = Array.from({ length: this.LIMIT });
 
   times: EventTimeType[] = ["upcoming", "happening", "past"];
   categories: EventCategoryType[] = ["conference", "meetup", "webinar"];
@@ -94,12 +98,21 @@ export class EventsComponent {
 
   clearFilter(type: string, query: Partial<EventQuery>) {
     this.cache.resetQuery$.next(true);
-    
+
     delete query[type as keyof EventQuery];
     this.router.navigate([`/${this.role()}/dashboard/events`], {
       queryParams: { ...query, offset: 0 },
       replaceUrl: true
     });
+  }
+
+  clearAllFilters() {
+    this.cache.resetQuery$.next(true);
+    this.router.navigate([`/${this.role()}/dashboard/events`], { replaceUrl: true });
+  }
+
+  retry() {
+    this.cache.retryEvents();
   }
 
   handlePageChange(event: PageEvent, query: Partial<EventQuery>) {
@@ -110,7 +123,11 @@ export class EventsComponent {
   }
 
   toggleAccordion() {
-    this.isAccordionOpened ? this.accordion.closeAll() : this.accordion.openAll();
+    if (this.isAccordionOpened) {
+      this.accordion.closeAll();
+    } else {
+      this.accordion.openAll();
+    }
     this.isAccordionOpened = !this.isAccordionOpened;
   }
 

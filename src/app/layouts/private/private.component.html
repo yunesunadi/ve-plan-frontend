@@ -1,82 +1,90 @@
 @let current_user = current_user$ | async;
 @let notifications_count = notifications_count$ | async;
 
-<mat-toolbar class="bg-primary-clr">
-  <button mat-icon-button class="text-secondary-clr" (click)="drawer.toggle()">
-    <mat-icon>menu</mat-icon>
-  </button>
-  <p class="text-secondary-clr mb-0 ms-3">VE-Plan</p>
-  <span class="spacer"></span>
-  @if ((socketConnected$ | async) === false) {
-    <mat-icon class="text-secondary-clr me-3" matTooltip="Reconnecting…">cloud_off</mat-icon>
-  }
-  <button
-    mat-icon-button
-    class="text-secondary-clr me-3"
-    routerLink="notifications"
-    [matBadge]="notifications_count"
-    matBadgeColor="primary"
-    [matBadgeHidden]="notifications_count === 0"
-  >
-    <mat-icon>notifications_active</mat-icon>
-  </button>
-  <div mat-button [matMenuTriggerFor]="menu" class="d-flex align-items-center cursor-pointer">
-    <img [src]="profileUrl(current_user)" width="45" height="45" class="rounded-circle" alt="User profile">
-    <mat-icon class="text-secondary-clr">keyboard_arrow_down</mat-icon>
-  </div>
-  <mat-menu #menu="matMenu">
-    <button mat-menu-item routerLink="setting">
-      <mat-icon>settings</mat-icon>
-      Setting
-    </button>
-    <button mat-menu-item (click)="logout()">
-      <mat-icon>logout</mat-icon>
-      Logout
-    </button>
-    <mat-divider></mat-divider>
-    <a mat-menu-item href="/terms_and_conditions" target="_blank">Terms and Conditions</a>
-    <a mat-menu-item href="/privacy_policy" target="_blank">Privacy Policy</a>
-  </mat-menu>
-</mat-toolbar>
+<div class="app-shell">
+  <a class="skip-link visually-hidden" href="#main-content">Skip to main content</a>
 
-<mat-drawer-container class="sidenav-container" autosize>
-  <mat-drawer #drawer class="sidenav" mode="side" opened>
-    <div class="sidenav-list">
-      <a class="sidenav-item" routerLink="home" routerLinkActive="active">
-        <mat-icon class="text-primary-clr">event_note</mat-icon>
-        <span>Calendar</span>
-      </a>
-    </div>
-    <div class="sidenav-list">
-      <a class="sidenav-item" routerLink="events" routerLinkActive="active">
-        <mat-icon class="text-primary-clr">event</mat-icon>
-        <span>Events</span>
-      </a>
-    </div>
-    @if (current_user?.role === "organizer") {
-      <div class="sidenav-list">
-        <a class="sidenav-item" routerLink="my_events" routerLinkActive="active">
-          <mat-icon>date_range</mat-icon>
-          <span>My Events</span>
-        </a>
-      </div>
+  <mat-toolbar class="bg-primary-clr app-toolbar">
+    <button
+      mat-icon-button
+      class="text-secondary-clr"
+      aria-label="Toggle navigation"
+      (click)="drawer.toggle()"
+    >
+      <mat-icon>menu</mat-icon>
+    </button>
+
+    <a routerLink="home" class="brand text-secondary-clr cluster" aria-label="VE-Plan home">
+      <mat-icon class="brand__mark" aria-hidden="true">celebration</mat-icon>
+      <span class="brand__wordmark">VE-Plan</span>
+    </a>
+
+    <span class="spacer"></span>
+
+    @if ((socketConnected$ | async) === false) {
+      <mat-icon
+        class="text-secondary-clr me-3"
+        matTooltip="Reconnecting…"
+        role="status"
+        aria-label="Reconnecting"
+      >cloud_off</mat-icon>
     }
-    @if (current_user?.role === "attendee") {
-      <div class="sidenav-list">
-        <a class="sidenav-item" routerLink="invitations" routerLinkActive="active">
-          <mat-icon>drafts</mat-icon>
-          <span>Invitations</span>
-        </a>
-      </div>
-      <div class="sidenav-list">
-        <a class="sidenav-item" routerLink="joined_events" routerLinkActive="active">
-          <mat-icon>how_to_reg</mat-icon>
-          <span>Joined Events</span>
-        </a>
-      </div>
-    }
-  </mat-drawer>
-  <div class="sidenav-content">
-    <router-outlet />
+
+    <button
+      mat-icon-button
+      class="text-secondary-clr me-3 app-toolbar__bell"
+      routerLink="notifications"
+      [matBadge]="notifications_count"
+      [matBadgeHidden]="notifications_count === 0"
+      aria-live="polite"
+      [attr.aria-label]="notifications_count ? notifications_count + ' unread notifications' : 'Notifications'"
+    >
+      <mat-icon aria-hidden="true">notifications_active</mat-icon>
+    </button>
+
+    <button
+      mat-button
+      class="profile-trigger cluster"
+      [matMenuTriggerFor]="menu"
+      #menuTrigger="matMenuTrigger"
+      aria-haspopup="menu"
+      [attr.aria-expanded]="menuTrigger.menuOpen"
+    >
+      <app-avatar [user]="current_user" size="sm" />
+      <span class="profile-trigger__name text-secondary-clr">{{ current_user?.name }}</span>
+      <mat-icon class="text-secondary-clr" aria-hidden="true">keyboard_arrow_down</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        Logout
+      </button>
+    </mat-menu>
+  </mat-toolbar>
+
+  <div class="app-shell__body">
+    <mat-drawer-container class="h-100 app-drawer-container" autosize>
+      <mat-drawer
+        #drawer
+        class="app-drawer"
+        [class.app-drawer--rail]="isRail()"
+        [mode]="layout.isCompact() ? 'over' : 'side'"
+        [opened]="!layout.isCompact()"
+      >
+        <app-nav
+          [destinations]="destinations()"
+          [expanded]="!isRail()"
+          (linkActivated)="layout.isCompact() && drawer.close()"
+        />
+      </mat-drawer>
+
+      <mat-drawer-content class="app-shell__content" id="main-content" tabindex="-1">
+        <router-outlet />
+      </mat-drawer-content>
+    </mat-drawer-container>
   </div>
-</mat-drawer-container>
+
+  @if (layout.isCompact()) {
+    <app-bottom-nav [destinations]="destinations()" />
+  }
+</div>

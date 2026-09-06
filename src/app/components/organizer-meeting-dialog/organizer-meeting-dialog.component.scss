@@ -1,0 +1,24 @@
+.jitsi-dialog-content {
+  min-height: 100%;
+  padding: 0;
+}
+
+.error-strip {
+  --cluster-gap: var(--app-space-2);
+  background: var(--mat-sys-primary);
+}
+
+.leave-btn {
+  --mat-button-outlined-label-text-color: var(--mat-sys-on-primary);
+  --mat-button-outlined-outline-color: var(--mat-sys-on-primary);
+}
+
+.retry-btn {
+  --mat-button-filled-container-color: var(--mat-sys-error);
+  --mat-button-filled-label-text-color: var(--mat-sys-on-error);
+}
+
+.jitsi-frame {
+  width: 100%;
+  height: calc(100% - 52px);
+}

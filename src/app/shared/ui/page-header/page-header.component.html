@@ -1,0 +1,38 @@
+<header class="page-header">
+  @if (effectiveCrumbs().length) {
+    <app-breadcrumbs [crumbs]="effectiveCrumbs()" class="page-header__crumbs" />
+  }
+
+  <div class="stack stack--row-md cluster--between-md page-header__row">
+    <div class="cluster page-header__heading-group">
+      @if (backTo()) {
+        <a
+          mat-stroked-button
+          class="page-header__back"
+          [routerLink]="backTo()"
+          [attr.aria-label]="backLabel()"
+        >
+          <mat-icon aria-hidden="true">keyboard_backspace</mat-icon>
+        </a>
+      }
+
+      <div class="page-header__titles">
+        @if (headingLevel() === 2) {
+          <h2 class="page-header__title">{{ title() }}</h2>
+        } @else {
+          <h1 class="page-header__title">{{ title() }}</h1>
+        }
+
+        @if (subtitle()) {
+          <p class="page-header__subtitle">{{ subtitle() }}</p>
+        }
+
+        <ng-content select="[header-meta]"></ng-content>
+      </div>
+    </div>
+
+    <div class="cluster page-header__actions">
+      <ng-content select="[header-actions]"></ng-content>
+    </div>
+  </div>
+</header>

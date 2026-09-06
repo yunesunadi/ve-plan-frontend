@@ -1,0 +1,25 @@
+.event-header {
+  --stack-gap: var(--app-space-2);
+
+  @media (min-width: 992px) {
+    align-items: center;
+  }
+}
+
+.header-left {
+  --cluster-gap: var(--app-space-4);
+}
+
+.header-actions {
+  --cluster-gap: var(--app-space-4);
+  align-self: flex-end;
+
+  @media (min-width: 992px) {
+    align-self: center;
+  }
+}
+
+.status-pill {
+  display: flex;
+  gap: var(--app-space-2);
+}

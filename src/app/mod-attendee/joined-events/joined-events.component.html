@@ -1,88 +1,81 @@
 @let joined_events = joined_events$ | async;
 @let query = query$ | async;
 
-@if (isLoading()) {
-  <app-page-loading></app-page-loading>
-} @else {
 <app-outlet-inner>
   <section>
-    <div class="d-flex justify-content-between align-items-center mb-3" style="gap: 1rem;">
-      <div class="d-flex align-items-center" style="gap: 1rem;">
+    <app-page-header [title]="label() + ' Events'">
+      <div header-actions>
         <button
           mat-stroked-button
-          type="button"
-          (click)="location.back()"
+          [matMenuTriggerFor]="menu"
+          class="bg-secondary-clr text-primary-clr"
+          [matBadge]="activeFilterCount(query)"
+          [matBadgeHidden]="!activeFilterCount(query)"
         >
-          <mat-icon class="text-primary-clr m-0">keyboard_backspace</mat-icon>
+          <mat-icon>filter_list</mat-icon> Filter
         </button>
-        <h3 class="text-primary-clr mb-0">{{ label() }} Events</h3>
+        <mat-menu #menu="matMenu">
+          <button
+            mat-menu-item
+            (click)="changeFilter('all')"
+            [ngClass]="query?.category === 'all' ? 'bg-secondary-clr' : ''"
+          >
+            All
+          </button>
+          <button
+            mat-menu-item
+            (click)="changeFilter('registered')"
+            [ngClass]="query?.category === 'registered' ? 'bg-secondary-clr' : ''"
+          >
+            Registered
+          </button>
+          <button
+            mat-menu-item
+            (click)="changeFilter('register_approved')"
+            [ngClass]="query?.category === 'register_approved' ? 'bg-secondary-clr' : ''"
+          >
+            Register Approved
+          </button>
+          <button
+            mat-menu-item
+            (click)="changeFilter('invitation_accepted')"
+            [ngClass]="query?.category === 'invitation_accepted' ? 'bg-secondary-clr' : ''"
+          >
+            Invitation Accepted
+          </button>
+        </mat-menu>
       </div>
-      <button 
-        mat-stroked-button 
-        [matMenuTriggerFor]="menu"
-        class="bg-secondary-clr text-primary-clr"
-        matBadge="1"
-      >
-        <mat-icon>filter_list</mat-icon> Filter
-      </button>
-      <mat-menu #menu="matMenu">
-        <button 
-          mat-menu-item 
-          (click)="changeFilter('all')"
-          [ngClass]="query?.category === 'all' ? 'bg-secondary-clr' : ''"
-        >
-          All
-        </button>
-        <button
-          mat-menu-item
-          (click)="changeFilter('registered')"
-          [ngClass]="query?.category === 'registered' ? 'bg-secondary-clr' : ''"
-        >
-          Registered
-        </button>
-        <button
-          mat-menu-item
-          (click)="changeFilter('register_approved')"
-          [ngClass]="query?.category === 'register_approved' ? 'bg-secondary-clr' : ''"
-        >
-          Register Approved
-        </button>
-        <button
-          mat-menu-item
-          (click)="changeFilter('invitation_accepted')"
-          [ngClass]="query?.category === 'invitation_accepted' ? 'bg-secondary-clr' : ''"
-        >
-          Invitation Accepted
-        </button>
-      </mat-menu>
-    </div>
-    @if (joined_events && joined_events.length > 0) {
-      <div class="d-flex flex-column align-items-center" style="gap: 1rem;">
+    </app-page-header>
+    @if (error(); as err) {
+      <app-error-state [error]="err" (retry)="retry(query)" />
+    } @else if (isLoading()) {
+      <div class="card-grid" style="--card-min: 300px">
+        @for (i of skeletonPlaceholders; track $index) {
+          <app-skeleton variant="card" />
+        }
+      </div>
+    } @else if (joined_events && joined_events.length > 0) {
+      <div class="card-grid" style="--card-min: 300px">
         @for (joined of joined_events; track joined._id) {
-          <mat-card appearance="outlined" class="event-card">
-            <div class="px-3 pt-3">
-              <mat-card-title class="text-primary-clr">{{ joined.event.title }}</mat-card-title>
-              <mat-card-subtitle class="text-primary-clr">{{ joined.event.description }}</mat-card-subtitle>
-            </div>
-            <mat-card-actions [align]="'end'" class="px-3 pb-3">
-              <button
-                mat-stroked-button
-                class="text-secondary-clr bg-primary-clr"
-                [routerLink]="'/attendee/dashboard/events/' + joined.event._id + '/view'"
-              >
-                <span>See Details</span>
-                <mat-icon>arrow_forward</mat-icon>
-              </button>
-            </mat-card-actions>
-          </mat-card>
+          <app-event-card
+            [event]="joined.event"
+            [link]="'/attendee/dashboard/events/' + joined.event._id + '/view'"
+            [status]="rowStatus(joined)"
+          />
         }
       </div>
     } @else {
-      <p class="text-center mt-3">There is no event.</p>
+      <app-empty-state
+        icon="event_available"
+        headline="You haven't joined any events"
+        supporting="Browse public events and register to see them here."
+      >
+        <button mat-flat-button routerLink="/attendee/dashboard/events">Browse events</button>
+      </app-empty-state>
     }
 
     @if (joined_events && joined_events.length > 0 && hasMore(query?.category)) {
-      <div class="d-flex justify-content-center mt-3">
+      <div class="cluster cluster--center mt-3">
         <button
           mat-stroked-button
           type="button"
@@ -95,4 +88,3 @@
     }
   </section>
 </app-outlet-inner>
-}

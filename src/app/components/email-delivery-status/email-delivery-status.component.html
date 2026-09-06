@@ -1,12 +1,10 @@
 @if (visibleStatus(); as s) {
   <mat-card appearance="outlined" class="email-delivery-status mb-4">
     <mat-card-content
-      class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between"
-      style="gap: .75rem;"
+      class="status-row"
     >
       <div
-        class="d-flex align-items-center flex-wrap text-primary-clr"
-        style="gap: 1rem;"
+        class="cluster text-primary-clr stats-cluster"
         role="status"
         aria-live="polite"
       >
@@ -28,7 +26,7 @@
         <button
           mat-stroked-button
           type="button"
-          class="text-primary-clr flex-shrink-0"
+          class="text-primary-clr retry-btn"
           [disabled]="retrying()"
           (click)="retryFailed()"
         >

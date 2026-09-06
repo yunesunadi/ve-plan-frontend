@@ -1,5 +1,19 @@
-.event-card {
-  width: 100%;
-  max-width: 700px;
-  margin: 0 auto 1rem;
+.page-header {
+  --cluster-gap: var(--app-space-4);
+}
+
+.header-left {
+  --cluster-gap: var(--app-space-4);
+}
+
+.page-header {
+  --cluster-gap: var(--app-space-4);
+}
+
+.header-left {
+  --cluster-gap: var(--app-space-4);
+}
+
+.joined-events-list {
+  align-items: center;
 }

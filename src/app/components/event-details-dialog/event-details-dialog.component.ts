@@ -12,7 +12,7 @@ import { AsyncPipe, DatePipe } from '@angular/common';
 @Component({
     selector: 'app-event-details-dialog',
     templateUrl: './event-details-dialog.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrl: './event-details-dialog.component.scss',
     imports: [MatDialogActions, MatIcon, CdkScrollable, MatDialogContent, AsyncPipe, DatePipe]
 })

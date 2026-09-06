@@ -1,0 +1,29 @@
+@mixin toast-variant($container, $on-container) {
+  --mat-snack-bar-container-color: #{$container};
+  --mat-snack-bar-supporting-text-color: #{$on-container};
+  --mat-snack-bar-button-color: #{$on-container};
+
+  .mat-mdc-snackbar-surface {
+    box-shadow:
+      inset 4px 0 0 0 #{$on-container},
+      0px 3px 5px -1px rgba(0, 0, 0, 0.2),
+      0px 6px 10px 0px rgba(0, 0, 0, 0.14),
+      0px 1px 18px 0px rgba(0, 0, 0, 0.12);
+  }
+}
+
+.app-toast--success {
+  @include toast-variant(var(--app-status-success-container), var(--app-status-success-on-container));
+}
+
+.app-toast--info {
+  @include toast-variant(var(--app-status-info-container), var(--app-status-info-on-container));
+}
+
+.app-toast--warning {
+  @include toast-variant(var(--app-status-warning-container), var(--app-status-warning-on-container));
+}
+
+.app-toast--error {
+  @include toast-variant(var(--mat-sys-error-container), var(--mat-sys-on-error-container));
+}

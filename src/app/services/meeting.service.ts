@@ -4,7 +4,7 @@ import { environment } from '../../environments/environment';
 import { AttendeeMeetingResponse, CreateMeetingResponse, CreateTokenResponse, GetMeetingResponse } from '../models/Meeting';
 import { GeneralResponse } from '../models/Utils';
 
-declare var JitsiMeetExternalAPI: any;
+declare let JitsiMeetExternalAPI: any;
 
 @Injectable({
   providedIn: 'root'

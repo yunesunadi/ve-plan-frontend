@@ -7,13 +7,14 @@ import { EventDialogComponent } from '../../components/event-dialog/event-dialog
 import { EventService } from '../../services/event.service';
 import { BehaviorSubject, concatMap, map, shareReplay, switchMap, take } from 'rxjs';
 import { EventDetailsDialogComponent } from '../../components/event-details-dialog/event-details-dialog.component';
+import { CommonService } from '../../services/common.service';
 import { OutletInnerComponent } from '../../shared/outlet-inner/outlet-inner.component';
 import { FullCalendarModule } from '@fullcalendar/angular';
 
 @Component({
     selector: 'app-home',
     templateUrl: './home.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrl: './home.component.scss',
     imports: [OutletInnerComponent, FullCalendarModule]
 })
@@ -61,6 +62,7 @@ export class HomeComponent {
   
   private dialog = inject(MatDialog);
   private changeDetector = inject(ChangeDetectorRef);
+  private commonService = inject(CommonService);
 
   constructor() {}
 
@@ -71,7 +73,7 @@ export class HomeComponent {
     today.setHours(0, 0, 0, 0);
 
     if (clickedDay.getTime() < today.getTime()) {
-      alert("Can't create an event on a past day.");
+      this.commonService.warning("Can't create an event on a past day.");
       return;
     }
 

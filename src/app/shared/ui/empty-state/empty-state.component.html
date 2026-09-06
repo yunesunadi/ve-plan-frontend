@@ -1,0 +1,22 @@
+<div class="empty-state" [class.empty-state--compact]="compact()">
+  <span class="empty-state__medallion" aria-hidden="true">
+    <mat-icon>{{ icon() }}</mat-icon>
+  </span>
+
+  <p class="empty-state__headline">{{ headline() }}</p>
+
+  @if (supporting()) {
+    <p class="empty-state__supporting">{{ supporting() }}</p>
+  }
+
+  @if (ctaLabel()) {
+    <button type="button" mat-flat-button (click)="ctaClick.emit()">
+      @if (ctaIcon()) {
+        <mat-icon>{{ ctaIcon() }}</mat-icon>
+      }
+      {{ ctaLabel() }}
+    </button>
+  }
+
+  <ng-content></ng-content>
+</div>

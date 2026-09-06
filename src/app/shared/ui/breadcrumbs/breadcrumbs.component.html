@@ -1,0 +1,30 @@
+<nav aria-label="Breadcrumb" class="breadcrumbs">
+  <ol class="breadcrumbs__list hide-md-down">
+    @for (crumb of crumbs(); track crumb.label + $index; let last = $last) {
+      <li class="breadcrumbs__item">
+        @if (!last && crumb.link) {
+          <a [routerLink]="crumb.link" class="breadcrumbs__link">{{ crumb.label }}</a>
+        } @else {
+          <span class="breadcrumbs__current" [attr.aria-current]="last ? 'page' : null">{{ crumb.label }}</span>
+        }
+        @if (!last) {
+          <mat-icon aria-hidden="true" class="breadcrumbs__separator">chevron_right</mat-icon>
+        }
+      </li>
+    }
+  </ol>
+
+  @if (lastCrumb(); as current) {
+    <ol class="breadcrumbs__list breadcrumbs__list--collapsed show-md-down">
+      @if (crumbs().length > 1) {
+        <li class="breadcrumbs__item" aria-hidden="true">
+          <span class="breadcrumbs__ellipsis">&hellip;</span>
+          <mat-icon aria-hidden="true" class="breadcrumbs__separator">chevron_right</mat-icon>
+        </li>
+      }
+      <li class="breadcrumbs__item">
+        <span class="breadcrumbs__current" aria-current="page">{{ current.label }}</span>
+      </li>
+    </ol>
+  }
+</nav>

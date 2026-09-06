@@ -1,44 +1,15 @@
-@let event = (event$ | async)!;
-@let dataSource = (dataSource$ | async)!;
+@let event = this.event();
+@let query = (query$ | async)!;
+@let rows = (dataSource$ | async)!;
 
-@if (isLoading()) {
-  <app-page-loading></app-page-loading>
-} @else {
 <app-outlet-inner>
-  <div class="d-flex align-items-center mb-4" style="gap: 1rem;">
-    <button
-      mat-stroked-button
-      type="button"
-      (click)="location.back()"
-    >
-      <mat-icon class="text-primary-clr m-0">keyboard_backspace</mat-icon>
-    </button>
-    <h3 class="text-primary-clr mb-0">Invite Users</h3>
-  </div>
-
-  <app-email-delivery-status [eventId]="event._id"></app-email-delivery-status>
-
-  <div class="d-flex flex-column flex-md-row justify-content-md-between">
-    <div [formGroup]="form">
-      <mat-form-field appearance="outline" class="w-100" style="max-width: 300px;">
-        <mat-icon matPrefix>search</mat-icon>
-        <mat-label>Search Users</mat-label>
-        <input matInput formControlName="search_input" placeholder="Enter name or email">
-      </mat-form-field>
-    </div>
-    <div class="d-flex mt-2 align-self-end align-self-md-auto" style="gap: .5rem;">
-      <button
-        mat-raised-button
-        type="button"
-        class="bg-secondary-clr text-primary-clr"
-        (click)="sendInvitation(dataSource)"
-        [disabled]="util.is_event_expired(event)"
-      >
-        <mat-icon>mail</mat-icon>
-        Send Invitation
-      </button>
+  <app-page-header
+    title="Invite Users"
+    [backTo]="['/organizer/dashboard/events', event._id, 'view']"
+  >
+    <div header-actions class="cluster">
       @if (event) {
-        <button mat-icon-button class="bg-secondary-clr text-primary-clr" [matMenuTriggerFor]="menu">
+        <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="More invite actions">
           <mat-icon>more_vert</mat-icon>
         </button>
         <mat-menu #menu="matMenu">
@@ -53,47 +24,56 @@
         </mat-menu>
       }
     </div>
-  </div>
+  </app-page-header>
 
-  <div class="mat-elevation-z8">
-    <table mat-table [dataSource]="dataSource">
-      <ng-container matColumnDef="select">
-        <th mat-header-cell *matHeaderCellDef>
-            <mat-checkbox
-              (change)="$event ? toggleAllRows(dataSource) : null"
-              [checked]="selection.hasValue() && isAllSelected(dataSource)"
-              [indeterminate]="selection.hasValue() && !isAllSelected(dataSource)"
-              [aria-label]="checkboxLabel(dataSource)"
-            >
-            </mat-checkbox>
-        </th>
-        <td mat-cell *matCellDef="let row">
-            <mat-checkbox
-              (click)="$event.stopPropagation()"
-              (change)="$event ? selection.toggle(row) : null"
-              [checked]="selection.isSelected(row)"
-              [aria-label]="checkboxLabel(dataSource, row)"
-            >
-            </mat-checkbox>
-        </td>
-      </ng-container>
+  <app-email-delivery-status [eventId]="event._id"></app-email-delivery-status>
 
-      <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef>ID</th>
-        <td mat-cell *matCellDef="let row">{{row.id}}</td>
-      </ng-container>
-      <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef>Name</th>
-        <td mat-cell *matCellDef="let row">{{row.name}}</td>
-      </ng-container>
+  <app-data-table
+    [dataSource]="rows"
+    [columns]="['id', 'name']"
+    [loading]="tableLoading()"
+    [error]="tableError()"
+    searchLabel="Search Users"
+    searchPlaceholder="Enter name or email"
+    [searchValue]="query.search"
+    (searchValueChange)="handleSearchChange($event, query, event._id)"
+    [selectable]="true"
+    [selection]="selection"
+    (selectionChange)="selection = $event"
+    [total]="total()"
+    [pageSize]="PAGE_SIZE"
+    [pageIndex]="query.offset / PAGE_SIZE"
+    emptyIcon="person_search"
+    emptyHeadline="Search for attendees to invite"
+    emptySupporting="Type at least 2 characters of a name or email above to find people to invite."
+    (pageChange)="handlePageChange($event, query, event._id)"
+    (retry)="retry()"
+  >
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef>ID</th>
+      <td mat-cell *matCellDef="let row">{{ row.id }}</td>
+    </ng-container>
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef>Name</th>
+      <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+    </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selection.toggle(row)"></tr>
+    <ng-template #cardRow let-row>
+      <div class="stack" style="--stack-gap: var(--app-space-1)">
+        <span class="fw-bold">{{ row.name }}</span>
+        <span class="text-secondary-clr">{{ row.email }}</span>
+      </div>
+    </ng-template>
 
-      <tr class="mat-row" *matNoDataRow>
-        <td class="mat-cell text-center py-3" colspan="3">No data matching searched value "{{ form.get("search_input")?.value }}"</td>
-      </tr>
-    </table>
-  </div>
+    <button
+      table-actions
+      mat-flat-button
+      type="button"
+      (click)="sendInvitation(selection, event._id)"
+      [disabled]="util.is_event_expired(event)"
+    >
+      <mat-icon>mail</mat-icon>
+      Send Invitation
+    </button>
+  </app-data-table>
 </app-outlet-inner>
-}

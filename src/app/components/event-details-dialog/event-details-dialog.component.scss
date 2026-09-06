@@ -9,3 +9,18 @@
   object-fit: cover;
   margin-bottom: 1rem;
 }
+
+.dialog-header {
+  --stack-gap: var(--app-space-2);
+  align-items: flex-start;
+}
+
+.header-action {
+  display: flex;
+  gap: .3rem;
+  align-self: flex-end;
+}
+
+.details-grid {
+  grid-template-columns: repeat(2, 1fr);
+}

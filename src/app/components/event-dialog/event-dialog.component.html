@@ -1,59 +1,47 @@
 <h6 mat-dialog-title class="text-primary-clr">
   {{ dialog_data._id ? "Edit" : "Create" }} Event ({{ eventDate }})
 </h6>
+<form [formGroup]="create_form" (ngSubmit)="submit()">
 <mat-dialog-content>
-  <form id="createForm" [formGroup]="create_form" (ngSubmit)="submit()" class="d-flex flex-column create-form">
-    <div class="align-self-center mb-3">
+  <div class="stack create-form">
+    <div class="cover-wrap mb-3">
       <p class="mb-1">Cover</p>
       <label for="cover" class="cover-img-container">
-        <input id="cover" type="file" accept="image/*" (change)="changeCover($event)" class="d-none">
+        <input id="cover" type="file" accept="image/*" (change)="changeCover($event)" class="cover-file-input">
         <img src="assets/images/placeholder.jpg" #imgView alt="Cover image" class="cover-img rounded">
       </label>
     </div>
     <mat-form-field appearance="outline">
       <mat-label>Title</mat-label>
       <input matInput type="text" formControlName="title" placeholder="Enter title">
-      @if (titleControl.touched && titleControl.errors && titleControl.hasError('required')) {
-        <mat-error>Title is required.</mat-error>
-      }
+      <mat-error appFormError [control]="titleControl" labelFor="Title" />
     </mat-form-field>
     <mat-form-field appearance="outline">
       <mat-label>Description</mat-label>
-      <textarea 
+      <textarea
         matInput
         cdkTextareaAutosize
         cdkAutosizeMinRows="3"
         formControlName="description"
         placeholder="Enter description"
       ></textarea>
-      @if (descriptionControl.touched && descriptionControl.errors && descriptionControl.hasError('required')) {
-        <mat-error>Description is required.</mat-error>
-      }
+      <mat-error appFormError [control]="descriptionControl" labelFor="Description" />
     </mat-form-field>
     <mat-form-field appearance="outline">
       <mat-label>Start time</mat-label>
       <input matInput [matTimepicker]="timepicker1" formControlName="start_time">
       <mat-timepicker #timepicker1/>
       <mat-timepicker-toggle [for]="timepicker1" matSuffix/>
-      @if (startTimeControl.touched && startTimeControl.errors && startTimeControl.hasError('required')) {
-        <mat-error>Start time is required.</mat-error>
-      }
+      <mat-error appFormError [control]="startTimeControl" labelFor="Start time" />
     </mat-form-field>
     <mat-form-field appearance="outline">
       <mat-label>End time</mat-label>
       <input matInput [matTimepicker]="timepicker2" formControlName="end_time">
       <mat-timepicker #timepicker2/>
       <mat-timepicker-toggle [for]="timepicker2" matSuffix/>
-      @if (endTimeControl.touched && endTimeControl.errors && endTimeControl.hasError('required')) {
-        <mat-error>End time is required.</mat-error>
-      }
+      <mat-error appFormError [control]="endTimeControl" labelFor="End time" />
     </mat-form-field>
-    @if (startTimeControl.value && endTimeControl.value && create_form.errors && create_form.hasError('invalidTime')) {
-      <small class="text-danger mb-3" style="margin-top: -1.3rem;">End time mustn't be ahead of start time.</small>
-    }
-    @if (endTimeControl.value && create_form.errors && create_form.hasError('eventEnded')) {
-      <small class="text-danger mb-3" style="margin-top: -1.3rem;">This event has already ended.</small>
-    }
+    <mat-error appFormError [control]="create_form" labelFor="Time" class="mb-3 time-error" />
     <mat-form-field appearance="outline">
       <mat-label>Category</mat-label>
       <mat-select formControlName="category">
@@ -63,9 +51,7 @@
           </mat-option>
         }
       </mat-select>
-      @if (categoryControl.touched && categoryControl.errors && categoryControl.hasError("required")) {
-        <mat-error>Category is required.</mat-error>
-      }
+      <mat-error appFormError [control]="categoryControl" labelFor="Category" />
     </mat-form-field>
     <mat-form-field appearance="outline">
       <mat-label>Type</mat-label>
@@ -76,27 +62,18 @@
           </mat-option>
         }
       </mat-select>
-      @if (typeControl.touched && typeControl.errors && typeControl.hasError("required")) {
-        <mat-error>Type is required.</mat-error>
-      }
+      <mat-error appFormError [control]="typeControl" labelFor="Type" />
     </mat-form-field>
-  </form>
+  </div>
 </mat-dialog-content>
 <mat-dialog-actions [align]="'end'">
-  <button 
+  <button
     mat-button
-    type="button"  
+    type="button"
     mat-dialog-close
   >
     Cancel
   </button>
-  <button 
-    form="createForm"
-    mat-stroked-button 
-    type="submit"
-    cdkFocusInitial
-    class="bg-primary-clr text-white"
-  >
-    Done
-  </button>
+  <app-submit-button label="Done" [busy]="submitting()" cdkFocusInitial />
 </mat-dialog-actions>
+</form>

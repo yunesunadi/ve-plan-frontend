@@ -1,0 +1,59 @@
+<nav class="app-nav__group" role="navigation" aria-label="Primary">
+  @for (destination of destinations(); track destination.link) {
+    <a
+      class="app-nav__item"
+      [routerLink]="destination.link"
+      routerLinkActive="app-nav__item--active"
+      [matTooltip]="destination.label"
+      [matTooltipDisabled]="expanded()"
+      matTooltipPosition="right"
+      [attr.aria-label]="expanded() ? null : destination.label"
+      (click)="linkActivated.emit()"
+    >
+      <mat-icon class="app-nav__icon" aria-hidden="true">{{ destination.icon }}</mat-icon>
+      @if (expanded()) {
+        <span class="app-nav__label">{{ destination.label }}</span>
+      }
+    </a>
+  }
+</nav>
+
+<mat-divider class="app-nav__divider" />
+
+<nav class="app-nav__group" role="navigation" aria-label="Secondary">
+  @for (link of secondaryLinks; track link.label) {
+    @if (link.href) {
+      <a
+        class="app-nav__item"
+        [href]="link.href"
+        target="_blank"
+        rel="noopener noreferrer"
+        [matTooltip]="link.label"
+        [matTooltipDisabled]="expanded()"
+        matTooltipPosition="right"
+        [attr.aria-label]="expanded() ? null : link.label"
+      >
+        <mat-icon class="app-nav__icon" aria-hidden="true">{{ link.icon }}</mat-icon>
+        @if (expanded()) {
+          <span class="app-nav__label">{{ link.label }}</span>
+        }
+      </a>
+    } @else {
+      <a
+        class="app-nav__item"
+        [routerLink]="link.link"
+        routerLinkActive="app-nav__item--active"
+        [matTooltip]="link.label"
+        [matTooltipDisabled]="expanded()"
+        matTooltipPosition="right"
+        [attr.aria-label]="expanded() ? null : link.label"
+        (click)="linkActivated.emit()"
+      >
+        <mat-icon class="app-nav__icon" aria-hidden="true">{{ link.icon }}</mat-icon>
+        @if (expanded()) {
+          <span class="app-nav__label">{{ link.label }}</span>
+        }
+      </a>
+    }
+  }
+</nav>

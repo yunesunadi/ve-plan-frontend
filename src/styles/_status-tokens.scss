@@ -1,0 +1,16 @@
+@use 'sass:map';
+@use 'theme-colors' as brand;
+
+:root {
+  --app-status-success-container: #{map.get(brand.$success-palette, 90)};
+  --app-status-success-on-container: #{map.get(brand.$success-palette, 10)};
+
+  --app-status-warning-container: #{map.get(brand.$warning-palette, 90)};
+  --app-status-warning-on-container: #{map.get(brand.$warning-palette, 10)};
+
+  --app-status-info-container: var(--mat-sys-secondary-container);
+  --app-status-info-on-container: var(--mat-sys-on-secondary-container);
+
+  --app-status-neutral-container: var(--mat-sys-surface-container-highest);
+  --app-status-neutral-on-container: var(--mat-sys-on-surface-variant);
+}

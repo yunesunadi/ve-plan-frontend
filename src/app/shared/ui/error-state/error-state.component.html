@@ -1,0 +1,27 @@
+<div class="error-state" [class.error-state--compact]="compact()" role="alert">
+  <span class="error-state__medallion" aria-hidden="true">
+    <mat-icon>{{ icon() }}</mat-icon>
+  </span>
+
+  <p class="error-state__headline">{{ headline() }}</p>
+  <p class="error-state__supporting">{{ supporting() }}</p>
+
+  @if (showRequestId()) {
+    <div class="error-state__request-id">
+      <code>{{ requestId() }}</code>
+      <button
+        type="button"
+        mat-icon-button
+        [cdkCopyToClipboard]="requestId()"
+        aria-label="Copy request ID"
+        matTooltip="Copy request ID"
+      >
+        <mat-icon>content_copy</mat-icon>
+      </button>
+    </div>
+  }
+
+  @if (showRetry()) {
+    <button type="button" mat-flat-button (click)="retry.emit()">{{ retryLabel() }}</button>
+  }
+</div>

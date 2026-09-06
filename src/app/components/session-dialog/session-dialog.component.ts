@@ -1,4 +1,4 @@
-import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonService } from '../../services/common.service';
 import { MatDialogRef, MatDialogTitle, MatDialogContent, MatDialogActions, MatDialogClose } from '@angular/material/dialog';
@@ -12,16 +12,19 @@ import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { MatTimepickerInput, MatTimepicker, MatTimepickerToggle } from '@angular/material/timepicker';
 import { MatButton } from '@angular/material/button';
 import { AsyncPipe, DatePipe } from '@angular/common';
+import { FormErrorComponent } from '../../shared/ui/form-error/form-error.component';
+import { SubmitButtonComponent } from '../../shared/ui/submit-button/submit-button.component';
 
 @Component({
     selector: 'app-session-dialog',
     templateUrl: './session-dialog.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrl: './session-dialog.component.scss',
-    imports: [MatDialogTitle, CdkScrollable, MatDialogContent, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, CdkTextareaAutosize, MatTimepickerInput, MatTimepicker, MatTimepickerToggle, MatSuffix, MatDialogActions, MatButton, MatDialogClose, AsyncPipe, DatePipe]
+    imports: [MatDialogTitle, CdkScrollable, MatDialogContent, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, CdkTextareaAutosize, MatTimepickerInput, MatTimepicker, MatTimepickerToggle, MatSuffix, MatDialogActions, MatButton, MatDialogClose, AsyncPipe, DatePipe, FormErrorComponent, SubmitButtonComponent]
 })
 export class SessionDialogComponent {
   create_form: FormGroup;
+  submitting = signal(false);
 
   private form_builder = inject(FormBuilder);
   private sessionService = inject(SessionService);
@@ -85,6 +88,8 @@ export class SessionDialogComponent {
 
     if (this.create_form.invalid) return;
 
+    this.submitting.set(true);
+
     of(true).pipe(
       concatMap(() => iif(
         () => !!this.dialog_data._id,
@@ -93,11 +98,13 @@ export class SessionDialogComponent {
       ))
     ).subscribe({
       next: (res) => {
-        this.commonService.openSnackBar(res.message);
+        this.submitting.set(false);
+        this.commonService.success(res.message);
         this.dialog.close();
       },
-      error: (err) => {
-        this.commonService.openSnackBar("Error creating event.");
+      error: (_err) => {
+        this.submitting.set(false);
+        this.commonService.error("Error creating event.");
         this.dialog.close();
       }
     });

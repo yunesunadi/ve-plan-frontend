@@ -6,7 +6,7 @@ import { RegisterWrapperComponent } from '../../shared/register-wrapper/register
 @Component({
     selector: 'app-social-login-redirect',
     templateUrl: './social-login-redirect.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrl: './social-login-redirect.component.scss',
     imports: [RegisterWrapperComponent]
 })

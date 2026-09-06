@@ -1,27 +1,31 @@
 import { ChangeDetectorRef, Component, ElementRef, inject, signal, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators, ReactiveFormsModule } from '@angular/forms';
+import { filter, switchMap } from 'rxjs';
 import { CommonService } from '../../services/common.service';
-import { HttpErrorResponse } from '@angular/common/http';
+import { ConfirmService } from '../../services/confirm.service';
+import { ApiError } from '../../models/ApiError';
 import { UserService } from '../../services/user.service';
 import { environment } from '../../../environments/environment';
-import { Location } from '@angular/common';
 import { Router } from '@angular/router';
 import { DashboardCacheService } from '../../caches/dashboard-cache.service';
 import { SocketService } from '../../services/socket.service';
 import { OutletInnerComponent } from '../../shared/outlet-inner/outlet-inner.component';
-import { MatButton, MatIconButton } from '@angular/material/button';
+import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatFormField, MatLabel, MatInput, MatError, MatSuffix, MatHint } from '@angular/material/input';
 import { MatDivider } from '@angular/material/divider';
+import { PageHeaderComponent } from '../../shared/ui/page-header/page-header.component';
+import { FormErrorComponent } from '../../shared/ui/form-error/form-error.component';
+import { SubmitButtonComponent } from '../../shared/ui/submit-button/submit-button.component';
 
 const MIN_LENGTH = 8;
 
 @Component({
     selector: 'app-setting',
     templateUrl: './setting.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrl: './setting.component.scss',
-    imports: [OutletInnerComponent, MatButton, MatIcon, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, MatIconButton, MatSuffix, MatHint, MatDivider]
+    imports: [OutletInnerComponent, PageHeaderComponent, MatIcon, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, MatIconButton, MatSuffix, MatHint, MatDivider, FormErrorComponent, SubmitButtonComponent]
 })
 export class SettingComponent {
   @ViewChild("imgView") imgView!: ElementRef;
@@ -30,20 +34,23 @@ export class SettingComponent {
   isConfirmPassword = signal(true);
   showChangePassword = signal(true);
   isDeletePassword = signal(true);
+  isSavingProfile = signal(false);
+  isChangingPassword = signal(false);
   isDeleting = signal(false);
   edit_profile_form: FormGroup;
   change_password_form: FormGroup;
   delete_account_form: FormGroup;
   profile = signal("");
+  current_user_email = signal("");
 
   private form_builder = inject(FormBuilder);
   private userService = inject(UserService);
   private cacheService = inject(DashboardCacheService);
   private commonService = inject(CommonService);
+  private confirmService = inject(ConfirmService);
   private socketService = inject(SocketService);
   private changeDetectorRef = inject(ChangeDetectorRef);
   private router = inject(Router);
-  location = inject(Location);
 
   constructor() {
     this.edit_profile_form = this.form_builder.group(
@@ -75,15 +82,7 @@ export class SettingComponent {
   checkPasswordsValidator(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       const isNotMatched = control.value['new_password'] !== control.value['confirm_password'];
-      return  isNotMatched ? { passwordsNotMatched: true } : null;
-    };
-  }
-
-  emailMatchValidator(email: string): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-      const value = (control.value?.['confirm_email'] ?? '').trim().toLowerCase();
-      if (!value) return null;
-      return value === email.trim().toLowerCase() ? null : { emailMismatch: true };
+      return  isNotMatched ? { passwordMismatch: true } : null;
     };
   }
 
@@ -102,12 +101,10 @@ export class SettingComponent {
 
         const isSocialOnly = !!(user.googleId || user.facebookId) && !user.hasPassword;
         this.showChangePassword.set(!isSocialOnly);
+        this.current_user_email.set(user.email || '');
 
         this.delete_account_form = isSocialOnly
-          ? this.form_builder.group(
-              { confirm_email: ['', Validators.required] },
-              { validators: this.emailMatchValidator(user.email || '') }
-            )
+          ? this.form_builder.group({})
           : this.form_builder.group({ password: ['', Validators.required] });
 
         this.edit_profile_form = this.form_builder.group(
@@ -141,10 +138,6 @@ export class SettingComponent {
 
   get deletePasswordControl() {
     return this.delete_account_form.controls["password"];
-  }
-
-  get confirmEmailControl() {
-    return this.delete_account_form.controls["confirm_email"];
   }
 
   toggleDeletePasswordVisibility() {
@@ -183,15 +176,18 @@ export class SettingComponent {
     this.edit_profile_form.markAllAsTouched();
 
     if (this.edit_profile_form.invalid) return;
-    
+
+    this.isSavingProfile.set(true);
     this.userService.editProfile(this.edit_profile_form.value).subscribe({
       next: (res) => {
-        this.commonService.openSnackBar(res.message);
+        this.isSavingProfile.set(false);
+        this.commonService.success(res.message);
         this.cacheService.resetCurrentUser();
       },
       error: (err) => {
-        if (err instanceof HttpErrorResponse) {
-          this.commonService.openSnackBar(err.error.message);
+        this.isSavingProfile.set(false);
+        if (err instanceof ApiError) {
+          this.commonService.error(err);
         }
       }
     });
@@ -204,12 +200,14 @@ export class SettingComponent {
 
     const current_password = this.change_password_form.value.current_password;
     const new_password = this.change_password_form.value.new_password;
-    
+
+    this.isChangingPassword.set(true);
     this.userService.updatePassword(current_password, new_password).subscribe({
       next: (res) => {
+        this.isChangingPassword.set(false);
         localStorage.setItem("token", res.token);
         this.socketService.connect(res.token);
-        this.commonService.openSnackBar(res.message);
+        this.commonService.success(res.message);
         this.change_password_form.reset();
         this.currentPasswordControl.setErrors(null);
         this.newPasswordControl.setErrors(null);
@@ -217,8 +215,9 @@ export class SettingComponent {
         this.cacheService.resetCurrentUser();
       },
       error: (err) => {
-        if (err instanceof HttpErrorResponse) {
-          this.commonService.openSnackBar(err.error.message);
+        this.isChangingPassword.set(false);
+        if (err instanceof ApiError) {
+          this.commonService.error(err);
         }
       }
     });
@@ -229,26 +228,35 @@ export class SettingComponent {
 
     if (this.delete_account_form.invalid) return;
 
-    const ok = confirm("Delete your account? This permanently removes your events, registrations, invitations and meeting history and cannot be undone.");
+    const isSocialOnly = !this.showChangePassword();
+    const email = this.current_user_email();
 
-    if (!ok) return;
-
-    const body = this.showChangePassword()
-      ? { password: this.delete_account_form.value.password }
-      : { confirm_email: this.delete_account_form.value.confirm_email };
-
-    this.isDeleting.set(true);
-
-    this.userService.deleteAccount(body).subscribe({
+    this.confirmService.confirm({
+      title: "Delete your account?",
+      body: "This permanently removes your events, registrations, invitations and meeting history and cannot be undone.",
+      confirmLabel: "Delete account",
+      destructive: true,
+      confirmationPhrase: email,
+      confirmationHint: "Type your account email to confirm",
+    }).pipe(
+      filter(Boolean),
+      switchMap(() => {
+        this.isDeleting.set(true);
+        const body = isSocialOnly
+          ? { confirm_email: email }
+          : { password: this.delete_account_form.value.password };
+        return this.userService.deleteAccount(body);
+      })
+    ).subscribe({
       next: (res) => {
-        this.commonService.openSnackBar(res.message);
+        this.commonService.success(res.message);
         localStorage.removeItem("token");
         this.router.navigateByUrl("login");
       },
       error: (err) => {
         this.isDeleting.set(false);
-        if (err instanceof HttpErrorResponse) {
-          this.commonService.openSnackBar(err.error.message);
+        if (err instanceof ApiError) {
+          this.commonService.error(err);
         }
       }
     });

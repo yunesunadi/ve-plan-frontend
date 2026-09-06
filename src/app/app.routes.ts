@@ -12,6 +12,7 @@ import { VerifyEmailComponent } from './pages/verify-email/verify-email.componen
 import { ForgotPasswordComponent } from './pages/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
 import { SocialLoginRedirectComponent } from './pages/social-login-redirect/social-login-redirect.component';
+import { environment } from '../environments/environment';
 
 const publicRoutes: Routes = [
   {
@@ -55,7 +56,11 @@ const publicRoutes: Routes = [
   {
     path: "social_login_redirect",
     component: SocialLoginRedirectComponent,
-  }
+  },
+  ...(!environment.production ? [{
+    path: "_styleguide",
+    loadComponent: () => import('./pages/styleguide/styleguide.component').then(m => m.StyleguideComponent),
+  }] : []),
 ];
 
 export const routes: Routes = [

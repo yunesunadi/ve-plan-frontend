@@ -1,17 +1,18 @@
 import { Component, ElementRef, inject, signal, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { MeetingService } from '../../services/meeting.service';
 import { concatMap, map, of } from 'rxjs';
-import { HttpErrorResponse } from '@angular/common/http';
+import { ApiError } from '../../models/ApiError';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent } from '@angular/material/dialog';
 import { MeetingParticipant } from '../../models/Participant';
 import { ParticipantService } from '../../services/participant.service';
 import { CommonService } from '../../services/common.service';
+import { ConfirmService } from '../../services/confirm.service';
 import { CdkScrollable } from '@angular/cdk/scrolling';
 
 @Component({
     selector: 'app-attendee-meeting-dialog',
     templateUrl: './attendee-meeting-dialog.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrl: './attendee-meeting-dialog.component.scss',
     imports: [CdkScrollable, MatDialogContent]
 })
@@ -23,6 +24,7 @@ export class AttendeeMeetingDialogComponent {
   private dialog_data = inject(MAT_DIALOG_DATA);
   private dialog = inject(MatDialogRef<this>);
   private commonService = inject(CommonService);
+  private confirmService = inject(ConfirmService);
 
   api: any;
   room_name = signal("");
@@ -52,8 +54,11 @@ export class AttendeeMeetingDialogComponent {
     ).subscribe({
       next: async (data) => {
         if (data.ended) {
-          confirm("This meeting has ended.");
-          this.dialog.close();
+          this.confirmService.acknowledge(
+            "This meeting has ended",
+            "The organizer has closed this meeting. You can rejoin if it's re-opened.",
+            "Close"
+          ).subscribe(() => this.dialog.close());
           return;
         }
 
@@ -70,13 +75,13 @@ export class AttendeeMeetingDialogComponent {
             videoConferenceLeft: this.handleVideoConferenceLeft,
           });
         } catch {
-          this.commonService.openSnackBar("The meeting failed to load. Please try again.");
+          this.commonService.error("The meeting failed to load. Please try again.");
           this.dialog.close();
         }
       },
       error: (err) => {
-        if (err instanceof HttpErrorResponse) {
-          this.commonService.openSnackBar(err.error.message);
+        if (err instanceof ApiError) {
+          this.commonService.error(err);
         }
         this.dialog.close();
       }
@@ -94,7 +99,7 @@ export class AttendeeMeetingDialogComponent {
       room_name: this.room_name(),
     }).subscribe({
       next: () => {
-        this.commonService.openSnackBar("Join meeting successfully.");
+        this.commonService.success("Join meeting successfully.");
       }
     });
   }
@@ -103,7 +108,7 @@ export class AttendeeMeetingDialogComponent {
     this.participantService.update(this.dialog_data.event_id, {})
       .subscribe({
         next: () => {
-          this.commonService.openSnackBar("Leave meeting successfully.");
+          this.commonService.success("Leave meeting successfully.");
         }
       });
   }
