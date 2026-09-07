@@ -2,7 +2,7 @@
 
 @if (invited_users) {
   <mat-dialog-content class="pt-3">
-    <h5 class="text-primary-clr">Invited users list</h5>
+    <h2 class="dialog-heading">Invited users</h2>
     @if (invited_users.length > 0) {
       @for (item of invited_users; track item.user.email) {
         <p class="mb-1">{{ $index + 1 }}. {{ item.user.name }}</p>

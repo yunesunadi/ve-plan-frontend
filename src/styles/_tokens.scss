@@ -25,9 +25,6 @@
   --app-motion-fast: 120ms;
   --app-motion-base: 200ms;
   --app-motion-slow: 320ms;
-
-  --primary-clr: var(--mat-sys-primary);
-  --secondary-clr: var(--mat-sys-primary-container);
 }
 
 @media (prefers-reduced-motion: reduce) {

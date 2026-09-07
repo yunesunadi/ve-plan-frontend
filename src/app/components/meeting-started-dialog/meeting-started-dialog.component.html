@@ -1,33 +1,31 @@
-<mat-dialog-content class="pt-3">
-  <h5 class="text-primary-clr">User List for meeting</h5>
+<h2 mat-dialog-title>Notify meeting attendees</h2>
+
+<mat-dialog-content>
   @if (dialog_data.length > 0) {
-    @for (item of dialog_data; track item.email) {
-      <p class="mb-1">{{ $index + 1 }}. {{ item.name }}</p>
-    }
+    <p class="dialog-lead">These attendees will get a “meeting has started” email:</p>
+    <ol class="pending-list">
+      @for (item of dialog_data; track item.user_id) {
+        <li>{{ item.name }}</li>
+      }
+    </ol>
   } @else {
     <app-empty-state
       compact
       icon="group_off"
-      headline="No users selected"
+      headline="No attendees selected"
       supporting="Select at least one attendee to notify."
     />
   }
 </mat-dialog-content>
-<mat-dialog-actions [align]="'end'">
-  <button 
-    mat-button
-    type="button"  
-    mat-dialog-close
-  >
-    Cancel
-  </button>
-  <button 
-    mat-raised-button 
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" mat-dialog-close>Cancel</button>
+  <button
+    mat-flat-button
     type="button"
-    class="bg-primary-clr text-white"
     (click)="send()"
-    [disabled]="dialog_data.length === 0"
+    [disabled]="dialog_data.length === 0 || sending()"
   >
-    Send
+    {{ sending() ? 'Sending…' : 'Send email' }}
   </button>
 </mat-dialog-actions>

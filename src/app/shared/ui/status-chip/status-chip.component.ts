@@ -3,7 +3,7 @@ import { MatIcon } from '@angular/material/icon';
 
 export type StatusKind =
   | 'registered' | 'register_approved' | 'invited' | 'invitation_accepted'
-  | 'meeting_live' | 'meeting_ended'
+  | 'meeting_live' | 'meeting_ended' | 'meeting_scheduled' | 'meeting_not_started'
   | 'public' | 'private'
   | 'upcoming' | 'happening' | 'past';
 
@@ -17,6 +17,8 @@ export const STATUS_META: Record<StatusKind, { label: string; icon: string; tone
   invitation_accepted: { label: 'Accepted', icon: 'done_all', tone: 'success' },
   meeting_live: { label: 'Live now', icon: 'sensors', tone: 'success' },
   meeting_ended: { label: 'Ended', icon: 'stop_circle', tone: 'neutral' },
+  meeting_scheduled: { label: 'Scheduled', icon: 'schedule', tone: 'info' },
+  meeting_not_started: { label: 'Not started', icon: 'videocam_off', tone: 'neutral' },
   public: { label: 'Public', icon: 'public', tone: 'info' },
   private: { label: 'Private', icon: 'lock', tone: 'neutral' },
   upcoming: { label: 'Upcoming', icon: 'schedule', tone: 'info' },

@@ -60,7 +60,7 @@
     <ng-template #cardRow let-row>
       <div class="stack" style="--stack-gap: var(--app-space-1)">
         <span class="fw-bold">{{ row.name }}</span>
-        <span class="text-secondary-clr">{{ row.email }}</span>
+        <span class="text-muted">{{ row.email }}</span>
         @if (row.meeting_started) {
           <span class="status-pending status-pending--success status-pending--dense">
             <mat-icon aria-hidden="true">mark_email_read</mat-icon>

@@ -1,40 +1,67 @@
 .fc {
-  &-button {
-    background-color: var(--primary-clr) !important;
+  --fc-page-bg-color: var(--mat-sys-surface);
+  --fc-border-color: var(--mat-sys-outline-variant);
+  --fc-neutral-bg-color: var(--mat-sys-surface-container);
+  --fc-neutral-text-color: var(--mat-sys-on-surface-variant);
+  --fc-today-bg-color: color-mix(in srgb, var(--mat-sys-primary) 10%, transparent);
 
-    &-active {
-      background-color: var(--secondary-clr) !important;
-      color: var(--primary-clr) !important;
-    }
+  --fc-button-bg-color: var(--mat-sys-primary);
+  --fc-button-border-color: var(--mat-sys-primary);
+  --fc-button-text-color: var(--mat-sys-on-primary);
+  --fc-button-hover-bg-color: color-mix(in srgb, var(--mat-sys-primary) 88%, black);
+  --fc-button-hover-border-color: var(--fc-button-hover-bg-color);
+  --fc-button-active-bg-color: var(--mat-sys-primary-container);
+  --fc-button-active-border-color: var(--mat-sys-primary-container);
+
+  --fc-event-bg-color: var(--mat-sys-primary);
+  --fc-event-border-color: var(--mat-sys-primary);
+  --fc-event-text-color: var(--mat-sys-on-primary);
+  --fc-list-event-hover-bg-color: var(--mat-sys-surface-container-high);
+
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
+
+  .fc-button:focus-visible {
+    outline: 2px solid var(--mat-sys-primary);
+    outline-offset: 2px;
   }
 
-  &-toolbar-title {
-    color: var(--primary-clr);
+  .fc-button-active {
+    color: var(--mat-sys-on-primary-container);
   }
 
-  &-day-today {
-    background-color: var(--secondary-clr) !important;
+  .fc-toolbar-title {
+    font: var(--mat-sys-title-large);
+    color: var(--mat-sys-on-surface);
   }
 
-  &-h-event {
-    background-color: var(--primary-clr);
+  .fc-col-header-cell-cushion,
+  .fc-daygrid-day-number {
+    color: var(--mat-sys-on-surface-variant);
   }
 
-  &-header-toolbar {
-    flex-direction: column;
-    gap: .5rem;
-
-    @media (min-width: 992px) {
-      flex-direction: row;
-    }
+  .fc-event--public {
+    --fc-event-bg-color: var(--mat-sys-primary);
+    --fc-event-border-color: var(--mat-sys-primary);
+    --fc-event-text-color: var(--mat-sys-on-primary);
   }
 
-  &-toolbar-chunk:nth-of-type(1) {
-    align-self: flex-start;
+  .fc-event--private {
+    --fc-event-bg-color: var(--mat-sys-tertiary);
+    --fc-event-border-color: var(--mat-sys-tertiary);
+    --fc-event-text-color: var(--mat-sys-on-tertiary);
   }
 
-  &-toolbar-chunk:nth-of-type(3) {
-    align-self: flex-end;
+  .fc-list-event.fc-event--private .fc-list-event-dot {
+    border-color: var(--mat-sys-tertiary);
   }
+}
 
+.fc-header-toolbar {
+  flex-direction: column;
+  gap: var(--app-space-2);
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+  }
 }

@@ -1,33 +1,51 @@
-<mat-dialog-content class="pt-3">
-  <h5 class="text-primary-clr">User List for approval</h5>
-  @if (dialog_data.length > 0) {
-    @for (item of dialog_data; track item.email) {
-      <p class="mb-1">{{ $index + 1 }}. {{ item.name }}</p>
-    }
-  } @else {
+<h2 mat-dialog-title>{{ results() ? 'Approval results' : 'Approve registrations' }}</h2>
+
+<mat-dialog-content>
+  @if (dialog_data.length === 0) {
     <app-empty-state
       compact
       icon="group_off"
       headline="No users selected"
       supporting="Select at least one registered user to approve."
     />
+  } @else if (results(); as rows) {
+    <ul class="result-list">
+      @for (row of rows; track row.name) {
+        <li class="result-row" [class.result-row--skipped]="row.outcome === 'skipped'">
+          <mat-icon aria-hidden="true">
+            {{ row.outcome === 'approved' ? 'check_circle' : 'remove_circle_outline' }}
+          </mat-icon>
+          <span class="result-row__name">{{ row.name }}</span>
+          <span class="result-row__note">
+            {{ row.outcome === 'approved' ? 'Approved' : 'Already approved' }}
+          </span>
+        </li>
+      }
+    </ul>
+    @if (queued() > 0) {
+      <p class="result-note">{{ queued() }} approval email{{ queued() === 1 ? '' : 's' }} queued for delivery.</p>
+    }
+  } @else {
+    <ol class="pending-list">
+      @for (item of dialog_data; track item.user_id) {
+        <li>{{ item.name }}</li>
+      }
+    </ol>
   }
 </mat-dialog-content>
-<mat-dialog-actions [align]="'end'">
-  <button 
-    mat-button
-    type="button"  
-    mat-dialog-close
-  >
-    Cancel
-  </button>
-  <button 
-    mat-raised-button 
-    type="button"
-    class="bg-primary-clr text-white"
-    (click)="send()"
-    [disabled]="dialog_data.length === 0"
-  >
-    Send
-  </button>
+
+<mat-dialog-actions align="end">
+  @if (results()) {
+    <button mat-flat-button type="button" (click)="done()">Done</button>
+  } @else {
+    <button mat-button type="button" mat-dialog-close>Cancel</button>
+    <button
+      mat-flat-button
+      type="button"
+      (click)="send()"
+      [disabled]="dialog_data.length === 0 || sending()"
+    >
+      {{ sending() ? 'Approving…' : 'Approve ' + dialog_data.length }}
+    </button>
+  }
 </mat-dialog-actions>

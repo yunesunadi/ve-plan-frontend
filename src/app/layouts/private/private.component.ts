@@ -7,6 +7,7 @@ import { SocketService } from '../../services/socket.service';
 import { DashboardCacheService } from '../../caches/dashboard-cache.service';
 import { ConfirmService } from '../../services/confirm.service';
 import { LayoutService } from '../../services/layout.service';
+import { ThemeService, ThemePreference } from '../../services/theme.service';
 import { MatToolbar } from '@angular/material/toolbar';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
@@ -40,6 +41,13 @@ export class PrivateComponent {
   private confirmService = inject(ConfirmService);
   private destroyRef = inject(DestroyRef);
   protected readonly layout = inject(LayoutService);
+  protected readonly theme = inject(ThemeService);
+
+  protected readonly themeOptions: { value: ThemePreference; label: string; icon: string }[] = [
+    { value: 'light', label: 'Light', icon: 'light_mode' },
+    { value: 'dark', label: 'Dark', icon: 'dark_mode' },
+    { value: 'system', label: 'System', icon: 'contrast' },
+  ];
 
   current_user$ = this.dashboardCache.current_user.pipe(
     catchError(() => of(null))

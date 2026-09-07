@@ -1,8 +1,8 @@
 import { Component, ElementRef, inject, signal, ViewChild, ChangeDetectionStrategy } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { Router, RouterLink } from '@angular/router';
-import { CommonService } from '../../services/common.service';
 import { ApiError } from '../../models/ApiError';
 import { RegisterWrapperComponent } from '../../shared/register-wrapper/register-wrapper.component';
 import { MatFormField, MatLabel, MatInput, MatError, MatSuffix } from '@angular/material/input';
@@ -12,6 +12,28 @@ import { FormErrorComponent } from '../../shared/ui/form-error/form-error.compon
 import { SubmitButtonComponent } from '../../shared/ui/submit-button/submit-button.component';
 
 const MIN_LENGTH = 8;
+
+interface PasswordStrength {
+  score: 0 | 1 | 2 | 3 | 4;
+  label: string;
+}
+
+const STRENGTH_LABELS = ['', 'Weak', 'Fair', 'Good', 'Strong'];
+
+function scorePassword(pw: string): PasswordStrength {
+  if (!pw) return { score: 0, label: '' };
+
+  let score = 0;
+  if (pw.length >= 8) score++;
+  if (pw.length >= 12) score++;
+  if (/[a-z]/.test(pw) && /[A-Z]/.test(pw)) score++;
+  if (/\d/.test(pw)) score++;
+  if (/[^A-Za-z0-9]/.test(pw)) score++;
+
+  const clamped = Math.min(4, score) as PasswordStrength['score'];
+  return { score: clamped, label: STRENGTH_LABELS[clamped] };
+}
+
 @Component({
     selector: 'app-signup',
     templateUrl: './signup.component.html',
@@ -37,12 +59,13 @@ export class SignupComponent {
   isPassword = signal(true);
   isConfirmPassword = signal(true);
   submitting = signal(false);
+  formError = signal<string | null>(null);
+  passwordStrength = signal<PasswordStrength>({ score: 0, label: '' });
   signup_form: FormGroup;
 
   private form_builder = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
-  private commonService = inject(CommonService);
 
   constructor() {
      this.signup_form = this.form_builder.group(
@@ -57,6 +80,10 @@ export class SignupComponent {
         validators: this.checkPasswordsValidator()
       }
     );
+
+    this.passwordControl.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe((value: string) => this.passwordStrength.set(scorePassword(value ?? '')));
   }
 
   checkPasswordsValidator(): ValidatorFn {
@@ -108,6 +135,7 @@ export class SignupComponent {
 
   submit() {
     this.signup_form.markAllAsTouched();
+    this.formError.set(null);
 
     if (this.signup_form.invalid) return;
     delete this.signup_form.value['confirm_password'];
@@ -122,9 +150,7 @@ export class SignupComponent {
       },
       error: (err) => {
         this.submitting.set(false);
-        if (err instanceof ApiError) {
-          this.commonService.error(err);
-        }
+        this.formError.set(err instanceof ApiError && err.message ? err.message : "We couldn't create your account. Please try again.");
       }
     });
   }

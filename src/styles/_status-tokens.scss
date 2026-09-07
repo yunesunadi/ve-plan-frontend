@@ -2,11 +2,23 @@
 @use 'theme-colors' as brand;
 
 :root {
-  --app-status-success-container: #{map.get(brand.$success-palette, 90)};
-  --app-status-success-on-container: #{map.get(brand.$success-palette, 10)};
+  --app-status-success-container: light-dark(
+    #{map.get(brand.$success-palette, 90)},
+    #{map.get(brand.$success-palette, 30)}
+  );
+  --app-status-success-on-container: light-dark(
+    #{map.get(brand.$success-palette, 10)},
+    #{map.get(brand.$success-palette, 90)}
+  );
 
-  --app-status-warning-container: #{map.get(brand.$warning-palette, 90)};
-  --app-status-warning-on-container: #{map.get(brand.$warning-palette, 10)};
+  --app-status-warning-container: light-dark(
+    #{map.get(brand.$warning-palette, 90)},
+    #{map.get(brand.$warning-palette, 30)}
+  );
+  --app-status-warning-on-container: light-dark(
+    #{map.get(brand.$warning-palette, 10)},
+    #{map.get(brand.$warning-palette, 90)}
+  );
 
   --app-status-info-container: var(--mat-sys-secondary-container);
   --app-status-info-on-container: var(--mat-sys-on-secondary-container);

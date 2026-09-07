@@ -1,0 +1,83 @@
+@let events = events$ | async;
+@let tab = currentTab();
+
+<app-outlet-inner>
+  <section>
+    <app-page-header title="My Events" subtitle="Everything you're invited to or registered for." />
+
+    <mat-button-toggle-group
+      class="my-events__filters"
+      aria-label="Filter events"
+      [value]="currentFilter()"
+      (change)="changeFilter($event.value)"
+    >
+      @for (option of tabs; track option.value) {
+        <mat-button-toggle [value]="option.value">{{ option.label }}</mat-button-toggle>
+      }
+    </mat-button-toggle-group>
+
+    <div class="my-events__body stack">
+    @if (error(); as err) {
+      <app-error-state [error]="err" (retry)="retry()" />
+    } @else if (isLoading()) {
+      <div class="card-grid" style="--card-min: 300px">
+        @for (i of skeletonPlaceholders; track $index) {
+          <app-skeleton variant="card" />
+        }
+      </div>
+    } @else if (events && events.length > 0) {
+      <div class="card-grid" style="--card-min: 300px">
+        @for (event of events; track event._id) {
+          <app-event-card
+            [event]="event"
+            [link]="'/attendee/dashboard/events/' + event._id + '/view'"
+            [status]="statusFor(event)"
+          >
+            @if (isInvited(event)) {
+              <button
+                card-actions
+                mat-flat-button
+                type="button"
+                [disabled]="accepting() === event._id"
+                (click)="accept(event._id)"
+              >
+                {{ accepting() === event._id ? 'Accepting…' : 'Accept invitation' }}
+              </button>
+            }
+          </app-event-card>
+        }
+      </div>
+
+      @if (isLoadingMore()) {
+        <div class="card-grid" style="--card-min: 300px" aria-hidden="true">
+          <app-skeleton variant="card" />
+          <app-skeleton variant="card" />
+        </div>
+      } @else if (loadMoreError(); as loadErr) {
+        <app-error-state
+          compact
+          [error]="loadErr"
+          retryLabel="Load more"
+          (retry)="loadMore(events.length)"
+        />
+      } @else if (events.length < total()) {
+        <div class="cluster cluster--center">
+          <button mat-stroked-button type="button" (click)="loadMore(events.length)">Load more</button>
+        </div>
+      } @else if (total() > LOAD_LIMIT) {
+        <p class="my-events__end">You've reached the end</p>
+      }
+    } @else {
+      <app-empty-state
+        icon="confirmation_number"
+        [headline]="tab.empty.headline"
+        [supporting]="tab.empty.supporting"
+      >
+        <button mat-flat-button routerLink="/attendee/dashboard/events">
+          <mat-icon>search</mat-icon> Browse events
+        </button>
+      </app-empty-state>
+    }
+    </div>
+  </section>
+</app-outlet-inner>

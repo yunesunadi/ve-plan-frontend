@@ -12,9 +12,9 @@ export class ParticipantService {
 
   constructor() { }
 
-  create(participant: Partial<Participant>) {
+  create(event_id: string, room_name: string) {
     const url = `${environment.apiUrl}/participants`;
-    return this.http.post<GeneralResponse>(url, participant);
+    return this.http.post<GeneralResponse>(url, { event: event_id, room_name });
   }
 
   update(event_id: string, participant: Partial<Participant>) {

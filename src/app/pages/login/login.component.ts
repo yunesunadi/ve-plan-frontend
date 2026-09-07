@@ -26,6 +26,7 @@ import { SubmitButtonComponent } from '../../shared/ui/submit-button/submit-butt
 export class LoginComponent {
   isPassword = signal(true);
   submitting = signal(false);
+  formError = signal<string | null>(null);
   login_form: FormGroup;
 
   private form_builder = inject(FormBuilder);
@@ -55,7 +56,8 @@ export class LoginComponent {
 
   submit() {
     this.login_form.markAllAsTouched();
-    
+    this.formError.set(null);
+
     if (this.login_form.invalid) return;
 
     this.submitting.set(true);
@@ -74,9 +76,7 @@ export class LoginComponent {
       },
       error: (err) => {
         this.submitting.set(false);
-        if (err instanceof ApiError) {
-          this.commonService.error(err);
-        }
+        this.formError.set(err instanceof ApiError && err.message ? err.message : "We couldn't sign you in. Please try again.");
       }
     });
   }

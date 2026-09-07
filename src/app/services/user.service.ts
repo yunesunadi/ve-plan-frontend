@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { GeneralResponse } from '../models/Utils';
+import { GeneralResponse, PageMeta } from '../models/Utils';
 import { User } from '../models/User';
 
 @Injectable({
@@ -15,12 +15,13 @@ export class UserService {
     return this.http.get<GeneralResponse & { has_role: boolean; role: "organizer" | "attendee"; }>(url);
   }
 
-  getAttendees(keyword: string, page = 1) {
+  getAttendees(keyword: string, offset = 0, limit = 20) {
     const url = `${environment.apiUrl}/user/attendees`;
     const params = new HttpParams()
       .append("search", keyword)
-      .append("page", String(page));
-    return this.http.get<GeneralResponse & { data: User[] }>(url, { params });
+      .append("offset", String(offset))
+      .append("limit", String(limit));
+    return this.http.get<GeneralResponse & { data: User[]; meta: PageMeta }>(url, { params });
   }
 
   getCurrentUser() {
@@ -28,13 +29,16 @@ export class UserService {
     return this.http.get<GeneralResponse & { data: User }>(url);
   }
 
-  editProfile(data: { profile: string; name: string; }) {
+  editProfile(data: { profile: File | string | null; name: string; }) {
     const url = `${environment.apiUrl}/user`;
     const formData = new FormData();
-    formData.append("profile", data.profile || "");
+    formData.append("profile", data.profile ?? "");
     formData.append("name", data.name);
 
-    return this.http.put<GeneralResponse>(url, formData);
+    return this.http.put<GeneralResponse>(url, formData, {
+      reportProgress: true,
+      observe: 'events',
+    });
   }
 
   deleteAccount(body: { password?: string; confirm_email?: string }) {

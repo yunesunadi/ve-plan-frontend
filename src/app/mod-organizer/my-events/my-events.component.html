@@ -44,6 +44,23 @@
         />
       }
     </div>
+
+    @if (cache.isMyEventsLoadingMore()) {
+      <div class="card-grid mt-4" style="--card-min: 300px" aria-hidden="true">
+        <app-skeleton variant="card" />
+        <app-skeleton variant="card" />
+      </div>
+    } @else if (cache.myEventsLoadMoreError(); as loadMoreError) {
+      <app-error-state
+        class="mt-4"
+        compact
+        [error]="loadMoreError"
+        retryLabel="Load more"
+        (retry)="retryLoadMore(my_query, my_events.length)"
+      />
+    } @else if (my_events.length >= cache.myEventsTotal()) {
+      <p class="end-of-list">You've reached the end</p>
+    }
   } @else {
     <app-empty-state
       icon="event"

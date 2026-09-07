@@ -1,0 +1,43 @@
+.calendar-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--app-space-4);
+  margin-block-end: var(--app-space-3);
+
+  &__item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--app-space-1);
+    font: var(--mat-sys-label-large);
+    color: var(--mat-sys-on-surface-variant);
+
+    mat-icon {
+      font-size: 1.125rem;
+      inline-size: 1.125rem;
+      block-size: 1.125rem;
+    }
+
+    &::before {
+      content: "";
+      inline-size: 12px;
+      block-size: 12px;
+      border-radius: var(--app-radius-xs);
+    }
+
+    &--public::before {
+      background: var(--mat-sys-primary);
+    }
+
+    &--private::before {
+      background: var(--mat-sys-tertiary);
+    }
+  }
+}
+
+.calendar-shell {
+  max-inline-size: 1100px;
+  padding: var(--app-space-3);
+  border-radius: var(--app-radius-md);
+  background: var(--mat-sys-surface);
+  box-shadow: var(--app-elev-1);
+}

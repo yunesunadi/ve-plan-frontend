@@ -78,26 +78,30 @@
             <tr mat-header-row *matHeaderRowDef="effectiveColumns()"></tr>
             <tr
               mat-row
-              *matRowDef="let row; columns: effectiveColumns()"
-              tabindex="0"
+              *matRowDef="let row; columns: effectiveColumns(); let i = index"
+              [attr.tabindex]="focusedIndex() === i ? 0 : -1"
+              [attr.data-row-index]="i"
               class="data-table__row"
               [class.data-table__row--selected]="selectable() && isSelected(row)"
               [attr.aria-selected]="selectable() ? isSelected(row) : null"
+              (focus)="focusedIndex.set(i)"
               (click)="onRowActivate(row)"
-              (keydown)="onRowKeydown($event, row)"
+              (keydown)="onRowKeydown($event, row, i)"
             ></tr>
           </table>
         </div>
       } @else {
         <div class="stack data-table__cards">
-          @for (row of rows(); track trackRow($index, row)) {
+          @for (row of rows(); track trackRow($index, row); let i = $index) {
             <div
               class="data-table__card"
-              tabindex="0"
+              [attr.tabindex]="focusedIndex() === i ? 0 : -1"
+              [attr.data-row-index]="i"
               [class.data-table__card--selected]="selectable() && isSelected(row)"
               [attr.aria-selected]="selectable() ? isSelected(row) : null"
+              (focus)="focusedIndex.set(i)"
               (click)="onRowActivate(row)"
-              (keydown)="onRowKeydown($event, row)"
+              (keydown)="onRowKeydown($event, row, i)"
             >
               @if (selectable()) {
                 <mat-checkbox

@@ -1,106 +1,38 @@
 @let event = displayEvent();
-@let sessions = sessions$ | async;
 
 <app-outlet-inner>
-  <section>
-    <app-page-header
-      [title]="event.title"
-      [backTo]="['/organizer/dashboard/my_events']"
-    >
-      @if (isOwner(event.user._id)) {
-      <div header-actions class="cluster header-actions">
-        <button
-          mat-raised-button
-          type="button"
-          class="bg-secondary-clr text-primary-clr"
-          (click)="editEvent(event)"
-        >
-          <mat-icon>edit</mat-icon>
-          Edit
+  <app-page-header [title]="event.title" [backTo]="['/organizer/dashboard/my_events']">
+    @if (store.canManage()) {
+      <div header-actions class="cluster">
+        <button mat-stroked-button type="button" (click)="editEvent(event)">
+          <mat-icon>edit</mat-icon> Edit
         </button>
-        <button
-          mat-raised-button
-          type="button"
-          class="bg-secondary-clr text-primary-clr"
-          (click)="deleteEvent(event._id, event.title)"
-        >
-          <mat-icon>delete</mat-icon>
-          Delete
+        <button mat-stroked-button type="button" (click)="deleteEvent(event._id, event.title)">
+          <mat-icon>delete</mat-icon> Delete
         </button>
-        <button mat-icon-button class="bg-secondary-clr text-primary-clr" [matMenuTriggerFor]="menu">
-          <mat-icon>more_vert</mat-icon>
-        </button>
-        <mat-menu #menu="matMenu">
-          <button mat-menu-item [routerLink]="'/organizer/dashboard/events/' + event._id + '/registered_users'">
-            <mat-icon>people_outline</mat-icon>
-            Registered Users
-          </button>
-          <button mat-menu-item [routerLink]="'/organizer/dashboard/events/' + event._id + '/invite'">
-            <mat-icon>person_add</mat-icon>
-            Invite Users
-          </button>
-          <button mat-menu-item [routerLink]="'/organizer/dashboard/events/' + event._id + '/meeting'">
-            <mat-icon>meeting_room</mat-icon>
-            Meeting
-          </button>
-        </mat-menu>
       </div>
-      }
-    </app-page-header>
-    <app-event-details-card [event]="event" />
-  </section>
-  <section class="mt-3">
-    <div class="cluster cluster--between mb-3">
-      <h5 class="text-primary-clr mb-0">Sessions</h5>
-      @if (isOwner(event.user._id)) {
-        <button
-          mat-raised-button
-          type="button"
-          class="bg-secondary-clr text-primary-clr"
-          (click)="openSessionModal(event._id)"
-        >
-          <mat-icon>add</mat-icon>
-          Add
-        </button>
-      }
-    </div>
-    <ng-container>
-      @if (sessionsError(); as sessions_error) {
-        <app-error-state [error]="sessions_error" (retry)="retrySessions()"></app-error-state>
-      } @else if (sessions && sessions.length > 0) {
-      <div class="form-grid">
-        @for (session of sessions; track session._id) {
-        <div>
-          <app-session-details-card [session]="session">
-            @if (isOwner(event.user._id)) {
-              <button mat-icon-button class="bg-secondary-clr text-primary-clr" [matMenuTriggerFor]="menu">
-                <mat-icon>more_vert</mat-icon>
-              </button>
-              <mat-menu #menu="matMenu">
-                <button mat-menu-item (click)="editSession(session._id, event._id)">
-                  <mat-icon>edit</mat-icon>
-                  Edit
-                </button>
-                <button mat-menu-item (click)="deleteSession(session._id)">
-                  <mat-icon>delete</mat-icon>
-                  Delete
-                </button>
-              </mat-menu>
-            }
-          </app-session-details-card>
-        </div>
-        }
-      </div>
-      } @else {
-        <app-empty-state
-          icon="event_note"
-          headline="No sessions yet"
-          supporting="Add a session to build out this event's agenda."
-          [ctaLabel]="isOwner(event.user._id) ? 'Add session' : ''"
-          ctaIcon="add"
-          (ctaClick)="openSessionModal(event._id)"
-        />
-      }
-    </ng-container>
-  </section>
+    }
+  </app-page-header>
+
+  <nav class="tab-nav event-tabs" aria-label="Event sections">
+    <a class="tab-nav__link" routerLink="overview" routerLinkActive="tab-nav__link--active"
+       #overview="routerLinkActive" [attr.aria-current]="overview.isActive ? 'page' : null">
+      Overview
+    </a>
+    <a class="tab-nav__link" routerLink="agenda" routerLinkActive="tab-nav__link--active"
+       #agenda="routerLinkActive" [attr.aria-current]="agenda.isActive ? 'page' : null">
+      Agenda
+    </a>
+    <a class="tab-nav__link" routerLink="people" routerLinkActive="tab-nav__link--active"
+       #people="routerLinkActive" [attr.aria-current]="people.isActive ? 'page' : null">
+      People
+    </a>
+    <a class="tab-nav__link" [routerLink]="['/organizer/dashboard/events', event._id, 'meeting']">
+      Meeting
+    </a>
+  </nav>
+
+  <div class="event-tabs__body">
+    <router-outlet />
+  </div>
 </app-outlet-inner>

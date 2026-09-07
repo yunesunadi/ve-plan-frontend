@@ -1,7 +1,9 @@
 import { Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component';
+import { CalendarComponent } from '../pages/calendar/calendar.component';
 import { EventsComponent } from '../pages/events/events.component';
 import { EventViewComponent } from './event-view/event-view.component';
+import { EventTabComponent } from './event-view/event-tab.component';
 import { RegisteredUsersComponent } from './registered-users/registered-users.component';
 import { InviteComponent } from './invite/invite.component';
 import { MeetingComponent } from './meeting/meeting.component';
@@ -32,6 +34,12 @@ export const MOD_ORGANIZER_ROUTES: Routes = [
   {
     path: "home",
     component: HomeComponent,
+    data: { breadcrumb: ['Home'] },
+  },
+  {
+    path: "calendar",
+    component: CalendarComponent,
+    data: { breadcrumb: ['Calendar'] },
   },
   {
     path: "events",
@@ -47,6 +55,24 @@ export const MOD_ORGANIZER_ROUTES: Routes = [
     component: EventViewComponent,
     resolve: { event: eventResolver },
     data: { breadcrumb: [MY_EVENTS_CRUMB, EVENT_TITLE_CRUMB] },
+    children: [
+      { path: "", pathMatch: "full", redirectTo: "overview" },
+      {
+        path: "overview",
+        component: EventTabComponent,
+        data: { tab: "overview", breadcrumb: [MY_EVENTS_CRUMB, EVENT_TITLE_CRUMB, 'Overview'] },
+      },
+      {
+        path: "agenda",
+        component: EventTabComponent,
+        data: { tab: "agenda", breadcrumb: [MY_EVENTS_CRUMB, EVENT_TITLE_CRUMB, 'Agenda'] },
+      },
+      {
+        path: "people",
+        component: EventTabComponent,
+        data: { tab: "people", breadcrumb: [MY_EVENTS_CRUMB, EVENT_TITLE_CRUMB, 'People'] },
+      },
+    ],
   },
   {
     path: "events/:id/registered_users",

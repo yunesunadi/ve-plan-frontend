@@ -1,31 +1,111 @@
-.edit-profile-form {
-  width: 100%;
-  max-width: 370px;
-  --stack-gap: 5px;
-  margin-left: auto;
-  margin-right: auto;
+.settings {
+  display: flex;
+  flex-direction: column;
+  gap: var(--app-space-4);
+  max-width: 640px;
 }
 
-.danger-zone-divider {
-  width: 100%;
-  max-width: 370px;
-  margin: 24px auto 0;
+.settings-card__title {
+  margin: 0 0 var(--app-space-1);
+  font: var(--mat-sys-title-medium);
+  color: var(--mat-sys-on-surface);
 }
 
-.profile-wrap {
-  align-self: center;
+.settings-card__lead {
+  margin: 0 0 var(--app-space-3);
+  color: var(--mat-sys-on-surface-variant);
 }
 
-.profile-file-input {
-  display: none;
+.settings-card--danger {
+  border-color: var(--mat-sys-error);
 }
 
-.profile-img {
-  width: inherit;
-  height: inherit;
+.settings-card--danger .settings-card__title {
+  color: var(--mat-sys-error);
+}
 
-  &-container {
-    width: 110px;
-    height: 110px;
+.settings-form {
+  --stack-gap: var(--app-space-3);
+  margin-top: var(--app-space-3);
+}
+
+.photo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--app-space-4);
+}
+
+.photo__preview {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--app-radius-full);
+  object-fit: cover;
+}
+
+.photo__controls {
+  --stack-gap: var(--app-space-1);
+  flex: 1;
+  min-width: 200px;
+}
+
+.photo__hint {
+  margin: 0;
+  font: var(--mat-sys-body-small);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.photo__error {
+  margin: 0;
+  font: var(--mat-sys-body-small);
+  color: var(--mat-sys-error);
+}
+
+.upload-progress {
+  height: 6px;
+  border-radius: var(--app-radius-full);
+  background: var(--mat-sys-surface-container-highest);
+  overflow: hidden;
+}
+
+.upload-progress__fill {
+  height: 100%;
+  background: var(--mat-sys-primary);
+  transition: width var(--app-motion-fast) linear;
+}
+
+.settings-note,
+.settings-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--app-space-2);
+  margin: var(--app-space-2) 0 0;
+  font: var(--mat-sys-body-medium);
+
+  mat-icon {
+    flex-shrink: 0;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.settings-note {
+  color: var(--mat-sys-on-surface-variant);
+
+  mat-icon { color: var(--mat-sys-on-surface-variant); }
+}
+
+.settings-warning {
+  padding: var(--app-space-3);
+  border-radius: var(--app-radius-sm);
+  background: var(--app-status-warning-container);
+  color: var(--app-status-warning-on-container);
+
+  mat-icon { color: inherit; }
+
+  a {
+    color: inherit;
+    text-decoration: underline;
   }
 }

@@ -8,6 +8,14 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/ubuntu-400.woff2" crossorigin>
   <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/material-icons-regular.woff2" crossorigin>
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('theme');
+        if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+      } catch (e) { /* storage blocked */ }
+    })();
+  </script>
 </head>
 <body>
   <app-root></app-root>

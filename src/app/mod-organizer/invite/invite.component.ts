@@ -81,17 +81,12 @@ export class InviteComponent {
       switchMap((query) => this.event$.pipe(
         switchMap((event) => {
           if (query.search.trim().length < MIN_SEARCH_LENGTH) {
-            this.total.set(query.offset);
+            this.total.set(0);
             return of({ event, data: [] as InviteCandidateRow[] });
           }
 
-          const page = Math.floor(query.offset / PAGE_SIZE) + 1;
-
-          return this.userService.getAttendees(query.search, page).pipe(
-            tap((res) => {
-              const full = res.data.length === PAGE_SIZE;
-              this.total.set(query.offset + res.data.length + (full ? PAGE_SIZE : 0));
-            }),
+          return this.userService.getAttendees(query.search, query.offset, PAGE_SIZE).pipe(
+            tap((res) => this.total.set(res.meta.total)),
             map((res): { event: typeof event; data: InviteCandidateRow[] } => ({
               event,
               data: res.data.map((item, index) => ({

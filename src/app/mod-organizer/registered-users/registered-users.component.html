@@ -57,7 +57,7 @@
     <ng-template #cardRow let-row>
       <div class="stack" style="--stack-gap: var(--app-space-1)">
         <span class="fw-bold">{{ row.name }}</span>
-        <span class="text-secondary-clr">{{ row.email }}</span>
+        <span class="text-muted">{{ row.email }}</span>
         @if (row.register_approved) {
           <app-status-chip status="register_approved" dense />
         } @else {

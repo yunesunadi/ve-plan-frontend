@@ -1,31 +1,20 @@
 <mat-card appearance="outlined">
-  <mat-card-content>
-    <div class="cluster cluster--between">
-      <p>
-        <b class="text-primary-clr">Title:</b>
-        {{ session.title }}
-      </p>
+  <mat-card-content class="session">
+    <div class="session__head">
+      <h3 class="session__title">{{ session.title }}</h3>
       <ng-content></ng-content>
     </div>
-    <p>
-      <b class="text-primary-clr">Description:</b> 
-      {{ session.description }}
+
+    <p class="session__time">
+      <mat-icon aria-hidden="true">schedule</mat-icon>
+      <span>{{ session.start_time | date: "hh:mm a" }} &ndash; {{ session.end_time | date: "hh:mm a" }}</span>
     </p>
-    <p>
-      <b class="text-primary-clr">Speaker information:</b> 
-      {{ session.speaker_info }}
-    </p>
-    <div class="card-grid">
-      <div class="session-info">
-        <b class="mb-0 text-primary-clr">From:</b>
-        <mat-icon class="text-primary-clr">access_time</mat-icon>
-        <span>{{ session.start_time | date: "hh:mm a" }}</span>
-      </div>
-      <div class="session-info">
-        <b class="mb-0 text-primary-clr">To:</b>
-        <mat-icon class="text-primary-clr">access_time</mat-icon>
-        <span>{{ session.end_time | date: "hh:mm a" }}</span>
-      </div>
-    </div>
+
+    @if (session.description) {
+      <p class="session__field"><span class="session__label">Description</span>{{ session.description }}</p>
+    }
+    @if (session.speaker_info) {
+      <p class="session__field"><span class="session__label">Speaker</span>{{ session.speaker_info }}</p>
+    }
   </mat-card-content>
 </mat-card>

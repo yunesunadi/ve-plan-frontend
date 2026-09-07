@@ -17,6 +17,14 @@ export interface Participation {
   meeting_started: boolean;
 }
 
+export type MyEventsFilter = "all" | "invited" | "registered" | "approved" | "attending";
+
+export interface MyEventsQuery {
+  filter?: MyEventsFilter;
+  limit?: number;
+  offset?: number;
+}
+
 export interface Event {
   _id: string;
   cover: string;
@@ -32,6 +40,7 @@ export interface Event {
   type: EventType;
   user: User;
   participation?: Participation | null;
+  participation_state?: ParticipationState;
 }
 
 export interface EventQuery {

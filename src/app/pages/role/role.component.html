@@ -1,24 +1,34 @@
 <app-register-wrapper>
   <ng-container form>
-    <h1 class="text-primary-clr mb-3 show-md-down text-center">VE-Plan</h1>
-    <h3 class="text-primary-clr mb-4 text-center">Choose Role</h3>
-    <form #role_form="ngForm" (ngSubmit)="submit(role_form)">
-      <mat-form-field appearance="outline">
-        <mat-label for="role">Role</mat-label>
-        <mat-select [(ngModel)]="chosen_role" #role_control="ngModel" name="role" required>
-          @for (role of roles; track role) {
-            <mat-option [value]="role" class="text-capitalize" >
-              {{ role }}
-            </mat-option>
-          }
-        </mat-select>
-        <mat-error appFormError [control]="role_control.control" labelFor="Role" />
-      </mat-form-field>
+    <h1 class="auth-title">Choose your role</h1>
+    <p class="auth-subtitle">
+      Pick how you'll use VE-Plan. This choice is <strong>permanent</strong> — it can't be
+      changed later.
+    </p>
+
+    <form class="role-form stack" (ngSubmit)="confirmAndSubmit()">
+      <div class="role-cards" role="radiogroup" aria-label="Choose your role">
+        @for (option of roleOptions; track option.value) {
+          <button
+            type="button"
+            role="radio"
+            class="role-card"
+            [class.is-selected]="chosen_role() === option.value"
+            [attr.aria-checked]="chosen_role() === option.value"
+            (click)="chosen_role.set(option.value)"
+          >
+            <mat-icon aria-hidden="true">{{ option.icon }}</mat-icon>
+            <span class="role-card__title">{{ option.title }}</span>
+            <span class="role-card__desc">{{ option.description }}</span>
+          </button>
+        }
+      </div>
+
       <app-submit-button
-        label="Submit"
+        label="Continue"
         [busy]="submitting()"
-        [disabled]="role_form.invalid"
-        class="role-submit mx-auto mt-1"
+        [disabled]="!chosen_role()"
+        class="role-submit mt-1"
       />
     </form>
   </ng-container>

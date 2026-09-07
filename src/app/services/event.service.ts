@@ -1,8 +1,9 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Event, CreateEventResponse, GetEventsResponse, GetEventResponse, EventQuery, MyEventQuery } from '../models/Event';
+import { Event, CreateEventResponse, GetEventsResponse, GetEventResponse, EventQuery, MyEventQuery, MyEventsQuery } from '../models/Event';
 import { environment } from '../../environments/environment';
 import { GeneralResponse } from '../models/Utils';
+import { OrganizerSummaryResponse, AttendeeSummaryResponse } from '../models/DashboardSummary';
 
 @Injectable({
   providedIn: 'root'
@@ -77,6 +78,33 @@ export class EventService {
       if (query.offset) {
         params = params.set("offset", query.offset);
       }
+    }
+
+    return this.http.get<GetEventsResponse>(url, { params });
+  }
+
+  getOrganizerSummary() {
+    const url = `${environment.apiUrl}/events/organizer_summary`;
+    return this.http.get<OrganizerSummaryResponse>(url);
+  }
+
+  getAttendeeSummary() {
+    const url = `${environment.apiUrl}/events/attendee_summary`;
+    return this.http.get<AttendeeSummaryResponse>(url);
+  }
+
+  getAttendeeEvents(query: MyEventsQuery = {}) {
+    const url = `${environment.apiUrl}/events/my`;
+    let params = new HttpParams();
+
+    if (query.filter) {
+      params = params.set("filter", query.filter);
+    }
+    if (query.limit) {
+      params = params.set("limit", query.limit);
+    }
+    if (query.offset) {
+      params = params.set("offset", query.offset);
     }
 
     return this.http.get<GetEventsResponse>(url, { params });

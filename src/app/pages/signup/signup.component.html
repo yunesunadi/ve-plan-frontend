@@ -1,45 +1,101 @@
 <app-register-wrapper>
   <ng-container form>
-    <h1 class="text-primary-clr mb-3 show-md-down text-center">VE-Plan</h1>
-    <h3 class="text-primary-clr mb-4 text-center">Sign Up</h3>
-    <form [formGroup]="signup_form" (ngSubmit)="submit()" class="stack signup-form">
-      <div class="profile-picker mb-3">
-        <p class="mb-1">Profile</p>
+    <h1 class="auth-title">Create your account</h1>
+    <p class="auth-subtitle">Start planning and attending virtual events on VE-Plan.</p>
+
+    <form [formGroup]="signup_form" (ngSubmit)="submit()" class="stack signup-form" novalidate>
+      @if (formError(); as message) {
+        <p class="auth-form-error" role="alert">
+          <mat-icon aria-hidden="true">error_outline</mat-icon>
+          <span>{{ message }}</span>
+        </p>
+      }
+
+      <div class="profile-picker">
+        <span class="profile-picker__label" id="profile-label">Profile photo (optional)</span>
         <label for="profile" class="profile-img-container">
-          <input id="profile" type="file" accept="image/*" (change)="changeProfile($event)" class="profile-file-input">
-          <img src="assets/images/placeholder.jpg" #imgView alt="Profile image" class="profile-img rounded">
+          <input
+            id="profile"
+            type="file"
+            accept="image/png,image/jpeg,image/webp"
+            (change)="changeProfile($event)"
+            class="profile-file-input"
+            aria-labelledby="profile-label"
+          >
+          <img src="assets/images/placeholder.jpg" #imgView alt="Profile preview" class="profile-img rounded">
+          <span class="profile-picker__hint">JPG, PNG or WebP</span>
         </label>
       </div>
+
       <mat-form-field appearance="outline">
         <mat-label>Name</mat-label>
-        <input matInput type="text" formControlName="name" placeholder="Enter name">
+        <input matInput type="text" formControlName="name" placeholder="Your name" autocomplete="name">
         <mat-error appFormError [control]="nameControl" labelFor="Name" />
       </mat-form-field>
+
       <mat-form-field appearance="outline">
         <mat-label>Email</mat-label>
-        <input type="email" matInput formControlName="email" placeholder="Enter email">
+        <input
+          type="email"
+          matInput
+          formControlName="email"
+          placeholder="you@example.com"
+          autocomplete="email"
+          autocapitalize="off"
+          spellcheck="false"
+        >
         <mat-error appFormError [control]="emailControl" labelFor="Email" />
       </mat-form-field>
+
       <mat-form-field appearance="outline">
         <mat-label>Password</mat-label>
-        <input matInput [type]="isPassword() ? 'password' : 'text'" formControlName="password" placeholder="Enter password" />
+        <input
+          matInput
+          [type]="isPassword() ? 'password' : 'text'"
+          formControlName="password"
+          placeholder="At least 8 characters"
+          autocomplete="new-password"
+        />
         <button
           type="button"
           mat-icon-button
           matSuffix
+          [attr.aria-label]="isPassword() ? 'Show password' : 'Hide password'"
+          [attr.aria-pressed]="!isPassword()"
           (click)="togglePasswordVisibility()"
         >
           <mat-icon>{{ isPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
         </button>
         <mat-error appFormError [control]="passwordControl" labelFor="Password" />
       </mat-form-field>
+
+      @if (passwordControl.value) {
+        <div class="pw-strength">
+          <div class="pw-strength__bars" [attr.data-score]="passwordStrength().score" aria-hidden="true">
+            @for (i of [1, 2, 3, 4]; track i) {
+              <span class="pw-strength__bar" [class.is-on]="i <= passwordStrength().score"></span>
+            }
+          </div>
+          <span class="pw-strength__label">{{ passwordStrength().label }}</span>
+        </div>
+        <span class="visually-hidden" aria-live="polite">Password strength: {{ passwordStrength().label }}</span>
+      }
+
       <mat-form-field appearance="outline">
-        <mat-label>Confirm Password</mat-label>
-        <input matInput [type]="isConfirmPassword() ? 'password' : 'text'" formControlName="confirm_password" placeholder="Enter confirm password" />
+        <mat-label>Confirm password</mat-label>
+        <input
+          matInput
+          [type]="isConfirmPassword() ? 'password' : 'text'"
+          formControlName="confirm_password"
+          placeholder="Re-enter password"
+          autocomplete="new-password"
+        />
         <button
           type="button"
           mat-icon-button
           matSuffix
+          [attr.aria-label]="isConfirmPassword() ? 'Show password' : 'Hide password'"
+          [attr.aria-pressed]="!isConfirmPassword()"
           (click)="toggleConfirmPasswordVisibility()"
         >
           <mat-icon>{{ isConfirmPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
@@ -47,11 +103,13 @@
         <mat-error appFormError [control]="confirmPasswordControl" labelFor="Confirm password" />
         <mat-error appFormError [control]="signup_form" />
       </mat-form-field>
-      <app-submit-button label="Sign Up" [busy]="submitting()" />
+
+      <app-submit-button label="Sign up" [busy]="submitting()" />
     </form>
-    <p class="mt-3 mb-0">
+
+    <p class="auth-alt mt-3 mb-0">
       Already have an account?
-      <a class="text-decoration-underline" routerLink="/login">Login</a>
+      <a class="text-decoration-underline" routerLink="/login">Log in</a>
     </p>
   </ng-container>
 </app-register-wrapper>

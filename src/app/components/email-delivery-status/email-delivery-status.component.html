@@ -4,7 +4,7 @@
       class="status-row"
     >
       <div
-        class="cluster text-primary-clr stats-cluster"
+        class="cluster stats-cluster"
         role="status"
         aria-live="polite"
       >
@@ -26,7 +26,7 @@
         <button
           mat-stroked-button
           type="button"
-          class="text-primary-clr retry-btn"
+          class="retry-btn"
           [disabled]="retrying()"
           (click)="retryFailed()"
         >

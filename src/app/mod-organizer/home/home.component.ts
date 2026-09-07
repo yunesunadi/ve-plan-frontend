@@ -1,111 +1,107 @@
-import { Component, signal, ChangeDetectorRef, inject, ChangeDetectionStrategy } from '@angular/core';
-import { CalendarOptions, EventClickArg } from '@fullcalendar/core';
-import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction';
-import dayGridPlugin from '@fullcalendar/daygrid';
+import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { RouterLink } from '@angular/router';
+import { BehaviorSubject, catchError, of, switchMap } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
+import { MatIcon } from '@angular/material/icon';
+import { MatButton } from '@angular/material/button';
+import { OutletInnerComponent } from '../../shared/outlet-inner/outlet-inner.component';
+import { PageHeaderComponent } from '../../shared/ui/page-header/page-header.component';
+import { EventCardComponent } from '../../shared/ui/event-card/event-card.component';
+import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.component';
+import { ErrorStateComponent } from '../../shared/ui/error-state/error-state.component';
+import { SkeletonComponent } from '../../shared/ui/skeleton/skeleton.component';
 import { EventDialogComponent } from '../../components/event-dialog/event-dialog.component';
 import { EventService } from '../../services/event.service';
-import { BehaviorSubject, concatMap, map, shareReplay, switchMap, take } from 'rxjs';
-import { EventDetailsDialogComponent } from '../../components/event-details-dialog/event-details-dialog.component';
-import { CommonService } from '../../services/common.service';
-import { OutletInnerComponent } from '../../shared/outlet-inner/outlet-inner.component';
-import { FullCalendarModule } from '@fullcalendar/angular';
+import { EventCacheService } from '../../caches/event-cache.service';
+import { UtilService } from '../../services/util.service';
+import { ApiError } from '../../models/ApiError';
+import { OrganizerSummary, RecentActivityItem } from '../../models/DashboardSummary';
+
+const ORG = '/organizer/dashboard';
+
+interface StatCard {
+  label: string;
+  icon: string;
+  value: (s: OrganizerSummary) => number;
+  link: string;
+}
+
+const STAT_CARDS: StatCard[] = [
+  { label: 'Upcoming events', icon: 'event_upcoming', value: (s) => s.upcoming_events_count, link: `${ORG}/my_events` },
+  { label: 'Awaiting approval', icon: 'how_to_reg', value: (s) => s.registrations_awaiting_approval_count, link: `${ORG}/my_events` },
+  { label: 'Pending invitations', icon: 'mail_outline', value: (s) => s.pending_invitations_count, link: `${ORG}/my_events` },
+];
+
+const ACTIVITY_META: Record<RecentActivityItem['type'], { icon: string; verb: string }> = {
+  registration: { icon: 'person_add', verb: 'registered for' },
+  invitation_accepted: { icon: 'mark_email_read', verb: 'accepted an invitation to' },
+  meeting_started: { icon: 'sensors', verb: 'started a meeting for' },
+};
 
 @Component({
-    selector: 'app-home',
-    templateUrl: './home.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    styleUrl: './home.component.scss',
-    imports: [OutletInnerComponent, FullCalendarModule]
+  selector: 'app-home',
+  templateUrl: './home.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  styleUrl: './home.component.scss',
+  imports: [
+    RouterLink, MatIcon, MatButton, OutletInnerComponent, PageHeaderComponent, EventCardComponent,
+    EmptyStateComponent, ErrorStateComponent, SkeletonComponent,
+  ],
 })
 export class HomeComponent {
   private eventService = inject(EventService);
-  private refresh$ = new BehaviorSubject(null);
-
-  private events$ = this.refresh$.pipe(
-    switchMap(() => 
-      this.eventService.getAll().pipe(
-      map(res => res.data),
-      map(events => events.map((event) => ({
-        id: event._id,
-        title: event.title,
-        start: event.date,
-      }))),
-      shareReplay(1)
-    )),
-    take(1),
-  );
-
-  calendarOptions = signal<CalendarOptions>({
-    plugins: [
-      interactionPlugin,
-      dayGridPlugin,
-    ],
-    headerToolbar: {
-      left: 'prev,next',
-      center: 'title',
-      right: 'today'
-    },
-    initialView: 'dayGridMonth',
-    initialEvents: (fetchInfo, successCallback, failureCallback) => {
-      this.events$.subscribe({
-        next: (events) => successCallback(events),
-        error: (err) => failureCallback(err),
-      });
-    },
-    weekends: true,
-    dayMaxEvents: true,
-    dateClick: this.handleDateClick.bind(this),
-    eventClick: this.handleEventClick.bind(this),
-    height: 650,
-  });
-  
   private dialog = inject(MatDialog);
-  private changeDetector = inject(ChangeDetectorRef);
-  private commonService = inject(CommonService);
+  private eventCache = inject(EventCacheService);
+  protected readonly util = inject(UtilService);
 
-  constructor() {}
+  protected readonly ORG = ORG;
+  protected readonly statCards = STAT_CARDS;
+  protected readonly activityMeta = ACTIVITY_META;
 
-  handleDateClick(arg: DateClickArg) {
-    const clickedDay = new Date(arg.date);
-    clickedDay.setHours(0, 0, 0, 0);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+  protected readonly loading = signal(true);
+  protected readonly error = signal<ApiError | null>(null);
+  protected readonly summary = signal<OrganizerSummary | null>(null);
 
-    if (clickedDay.getTime() < today.getTime()) {
-      this.commonService.warning("Can't create an event on a past day.");
-      return;
-    }
+  private readonly refresh$ = new BehaviorSubject<void>(undefined);
 
-    const dialogRef = this.dialog.open(EventDialogComponent, {
-      data: {
-        date: arg.date,
-      },
-      disableClose: true,
-      width: "500px"
-    });
-
-    dialogRef.afterClosed().pipe(
-      concatMap(() => this.events$)
-    ).subscribe({
-      next: (events) => {
-        this.refresh$.next(null);
-        this.calendarOptions.update(() => ({ events }));
+  constructor() {
+    this.refresh$.pipe(
+      switchMap(() => {
+        this.loading.set(true);
+        this.error.set(null);
+        return this.eventService.getOrganizerSummary().pipe(
+          catchError((err: ApiError) => {
+            this.error.set(err);
+            this.loading.set(false);
+            return of(null);
+          }),
+        );
+      }),
+      takeUntilDestroyed(),
+    ).subscribe((res) => {
+      if (res) {
+        this.summary.set(res.data);
+        this.loading.set(false);
       }
     });
   }
 
-  handleEventClick(clickInfo: EventClickArg) {
-    this.dialog.open(EventDetailsDialogComponent, {
-      data: {
-        id: clickInfo.event.id,
-      },
-      autoFocus: false,
-      width: "500px"
-    });
+  protected readonly isEmpty = (s: OrganizerSummary) =>
+    !s.next_event && s.upcoming_events_count === 0 && s.recent_activity.length === 0 && !s.live_meeting;
+
+  retry() {
+    this.refresh$.next();
   }
 
-  handleEvents() {
-    this.changeDetector.detectChanges();
+  openCreateEvent() {
+    this.dialog.open(EventDialogComponent, {
+      data: {},
+      disableClose: true,
+      width: '500px',
+    }).afterClosed().subscribe(() => {
+      this.eventCache.reset();
+      this.refresh$.next();
+    });
   }
 }

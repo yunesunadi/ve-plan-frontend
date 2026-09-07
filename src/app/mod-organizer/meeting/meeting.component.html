@@ -1,228 +1,227 @@
-@let is_created = is_created$ | async;
 @let event = this.event();
 @let query = (query$ | async)!;
+@let is_created = is_created$ | async;
 @let meeting = meeting$ | async;
-@let event_attendees = event_attendees$ | async;
 @let registered_users = registered_users$ | async;
 @let invitation_accepted_users = invitation_accepted_users$ | async;
 @let joined_participants_rows = (joined_participants_page$ | async)!;
+@let view = meetingView(is_created, meeting);
 
 <app-outlet-inner>
-  <app-page-header
-    title="Meeting"
-    [backTo]="['/organizer/dashboard/events', event._id, 'view']"
-  >
-    <div header-actions class="cluster meeting-actions">
-    @if (is_created) {
-      @if (meeting?.ended) {
-        <button
-          type="button"
-          mat-raised-button
-          class="bg-primary-clr text-secondary-clr"
-          (click)="reopenMeeting(event._id)"
-          [disabled]="util.is_event_expired(event)"
-        >
-          Re-open Meeting
-        </button>
-      } @else {
-        <button
-          type="button"
-          mat-raised-button
-          class="bg-primary-clr text-secondary-clr"
-          (click)="join(event._id)"
-          [disabled]="util.is_event_expired(event)"
-        >
-          Join Meeting
-        </button>
-        <button
-          type="button"
-          mat-raised-button
-          class="bg-primary-clr text-secondary-clr"
-          (click)="endMeeting(event._id)"
-          [disabled]="util.is_event_expired(event)"
-        >
-          End Meeting
-        </button>
-      }
-    } @else {
-      <button
-        type="button"
-        mat-raised-button
-        class="bg-primary-clr text-secondary-clr"
-        (click)="create()"
-        [disabled]="util.is_event_expired(event)"
-      >
-        Start Meeting
-      </button>
-    }
-      <button
-        type="button"
-        mat-raised-button
-        class="bg-primary-clr text-secondary-clr"
-        routerLink="attendees"
-      >
-        View Attendees
-      </button>
-    </div>
+  <app-page-header title="Meeting" [backTo]="['/organizer/dashboard/events', event._id, 'view']">
+    <a header-actions mat-stroked-button routerLink="attendees">
+      <mat-icon>groups</mat-icon> View attendees
+    </a>
   </app-page-header>
 
-  <ng-container>
-    <div #jitsi_iframe></div>
-  </ng-container>
-
   @if (summaryError(); as summary_error) {
-    <app-error-state [error]="summary_error" (retry)="retry()"></app-error-state>
+    <app-error-state [error]="summary_error" (retry)="retry()" />
   } @else {
 
-  @if (meeting?.ended) {
-    <p class="text-center fw-bold text-danger mb-3">This meeting has ended. Attendees can no longer join until it is re-opened.</p>
-  }
+    <section class="meeting-status">
+      <app-status-chip [status]="view.kind" />
+      <p class="meeting-status__text">{{ view.explanation }}</p>
+    </section>
 
-  <section class="card-grid meeting-summary-grid mx-auto mb-3">
-    <div class="meeting-info">
-      <b class="mb-0 text-primary-clr">From:</b>
-      <div class="meeting-info">
-        <mat-icon class="text-primary-clr">access_time</mat-icon>
-        <span>{{ meeting && (meeting.start_time | date: "hh:mm a") }}</span>
-      </div>
-    </div>
-    <div class="meeting-info">
-      <b class="mb-0 text-primary-clr">To:</b>
-      <div class="meeting-info">
-        <mat-icon class="text-primary-clr">access_time</mat-icon>
-        <span>{{ meeting && (meeting.end_time | date: "hh:mm a") }}</span>
-      </div>
-    </div>
-    <div class="meeting-info">
-      <b class="mb-0 text-primary-clr">Duration:</b>
-      <div class="meeting-info">
-        <mat-icon class="text-primary-clr">timer</mat-icon>
-        <span>{{ meeting && (meeting.duration + " minutes") }}</span>
-      </div>
-    </div>
-  </section>
+    <section class="meeting-panel">
+      <h2 class="meeting-panel__title">Meeting controls</h2>
 
-  <section class="card-grid stats-grid">
-    <div>
-      <mat-card appearance="outlined">
-        <div class="text-center py-3">
-          <mat-card-title class="fw-bold text-primary-clr">
-            {{ event_attendees?.length }}
-          </mat-card-title>
-          <mat-card-subtitle class="text-primary-clr">
-            Event Attendees
-          </mat-card-subtitle>
-        </div>
-      </mat-card>
-    </div>
-    <div>
-      <mat-card appearance="outlined">
-        <div class="text-center py-3">
-          <mat-card-title class="fw-bold text-primary-clr">
-            {{ joined_participants_total() }}
-          </mat-card-title>
-          <mat-card-subtitle class="text-primary-clr">
-            Joined Participants
-          </mat-card-subtitle>
-        </div>
-      </mat-card>
-    </div>
-    <div>
-      <mat-card appearance="outlined">
-        <div class="text-center py-3">
-          <mat-card-title class="fw-bold text-primary-clr">
-            {{ registered_users?.length }}
-          </mat-card-title>
-          <mat-card-subtitle class="text-primary-clr">
-            Registered Users
-          </mat-card-subtitle>
-        </div>
-      </mat-card>
-    </div>
-    <div>
-      <mat-card appearance="outlined">
-        <div class="text-center py-3">
-          <mat-card-title class="fw-bold text-primary-clr">
-            {{ invitation_accepted_users?.length }}
-          </mat-card-title>
-          <mat-card-subtitle class="text-primary-clr">
-            Invitation Accepted Users
-          </mat-card-subtitle>
-        </div>
-      </mat-card>
-    </div>
-  </section>
-
-  <section class="split split--7-5 charts-grid mb-4">
-    <div>
-      <h6 class="text-center">Event Attendees Vs Joined Participants</h6>
-      <div class="doughnut-wrap">
-        <canvas #doughnut_canvas></canvas>
-      </div>
-    </div>
-    <div>
-      <h6 class="text-center">Meeting Stay Times Per Participants</h6>
-      <div class="line-wrap">
-        <canvas #line_canvas [hidden]="!stay_times_available()"></canvas>
-        @if (!stay_times_available()) {
-          <p class="text-center text-secondary py-5 my-3">
-            {{ stay_times_reason() || 'Analytics will be available after the meeting ends.' }}
-          </p>
+      <div class="cluster meeting-controls">
+        @if (view.canStart) {
+          <button mat-flat-button type="button" (click)="create()">
+            <mat-icon>videocam</mat-icon> Start meeting
+          </button>
+        }
+        @if (view.canReopen) {
+          <button mat-flat-button type="button" (click)="reopenMeeting(event._id)">
+            <mat-icon>replay</mat-icon> Re-open meeting
+          </button>
+        }
+        @if (is_created && !meeting?.ended) {
+          <span
+            [matTooltip]="view.blockedReason"
+            [matTooltipDisabled]="view.canJoin"
+          >
+            <button
+              mat-flat-button
+              type="button"
+              [disabled]="!view.canJoin"
+              [attr.aria-describedby]="view.canJoin ? null : 'meeting-blocked-reason'"
+              (click)="join(event._id)"
+            >
+              <mat-icon>login</mat-icon> Join meeting
+            </button>
+          </span>
+          <span
+            [matTooltip]="view.blockedReason"
+            [matTooltipDisabled]="view.canEnd"
+          >
+            <button
+              mat-stroked-button
+              type="button"
+              [disabled]="!view.canEnd"
+              [attr.aria-describedby]="view.canEnd ? null : 'meeting-blocked-reason'"
+              (click)="endMeeting(event._id)"
+            >
+              <mat-icon>call_end</mat-icon> End meeting
+            </button>
+          </span>
         }
       </div>
-    </div>
-  </section>
 
+      @if (view.blockedReason) {
+        <p id="meeting-blocked-reason" class="meeting-controls__hint">
+          <mat-icon aria-hidden="true">info</mat-icon>
+          {{ view.blockedReason }}
+        </p>
+      }
+
+      @if (meeting) {
+        <dl class="meeting-schedule">
+          <div>
+            <dt>From</dt>
+            <dd>{{ (meeting.start_time | date: 'hh:mm a') || '—' }}</dd>
+          </div>
+          <div>
+            <dt>To</dt>
+            <dd>{{ (meeting.end_time | date: 'hh:mm a') || '—' }}</dd>
+          </div>
+          <div>
+            <dt>Duration</dt>
+            <dd>{{ meeting.duration ? meeting.duration + ' min' : '—' }}</dd>
+          </div>
+        </dl>
+      }
+    </section>
+
+    <section class="meeting-panel">
+      <h2 class="meeting-panel__title">Analytics</h2>
+
+      @if (chartsLoading()) {
+        <div class="card-grid" style="--card-min: 160px">
+          @for (i of [1,2,3,4]; track i) { <app-skeleton variant="card" /> }
+        </div>
+      } @else if (!is_created) {
+        <app-empty-state
+          compact
+          icon="analytics"
+          headline="Meeting not started"
+          supporting="Attendance and stay-time analytics appear once the meeting has run."
+        />
+      } @else {
+        <div class="card-grid stats-grid">
+          <div class="stat-card">
+            <span class="stat-card__value">{{ event_attendees_count() }}</span>
+            <span class="stat-card__label">Event attendees</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-card__value">{{ joined_participants_total() }}</span>
+            <span class="stat-card__label">Joined participants</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-card__value">{{ registered_users?.length ?? 0 }}</span>
+            <span class="stat-card__label">Registered</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-card__value">{{ invitation_accepted_users?.length ?? 0 }}</span>
+            <span class="stat-card__label">Invitation accepted</span>
+          </div>
+        </div>
+
+        <div class="split split--7-5 charts-grid">
+          <figure class="chart">
+            <figcaption class="chart__title">Event attendees vs joined participants</figcaption>
+            <div class="chart__canvas chart__canvas--doughnut">
+              <canvas #doughnut_canvas role="img" aria-label="Event attendees versus joined participants doughnut chart"></canvas>
+            </div>
+            <table class="visually-hidden">
+              <caption>Event attendees vs joined participants</caption>
+              <tbody>
+                @for (row of doughnutTable(); track row.label) {
+                  <tr><th scope="row">{{ row.label }}</th><td>{{ row.value }}</td></tr>
+                }
+              </tbody>
+            </table>
+          </figure>
+
+          <figure class="chart">
+            <figcaption class="chart__title">Meeting stay time per participant</figcaption>
+            @if (stay_times_available()) {
+              <div class="chart__canvas chart__canvas--line">
+                <canvas #line_canvas role="img" aria-label="Meeting stay time per participant line chart"></canvas>
+              </div>
+              <table class="visually-hidden">
+                <caption>Meeting stay time per participant (minutes)</caption>
+                <tbody>
+                  @for (row of stay_times_data(); track row.label) {
+                    <tr><th scope="row">{{ row.label }}</th><td>{{ row.value }}</td></tr>
+                  }
+                </tbody>
+              </table>
+            } @else {
+              <app-empty-state
+                compact
+                icon="timeline"
+                headline="No stay-time data yet"
+                [supporting]="stay_times_reason() || 'Stay times are calculated after the meeting ends.'"
+              />
+            }
+          </figure>
+        </div>
+      }
+    </section>
+
+    <section class="meeting-panel">
+      <h2 class="meeting-panel__title">Joined participants</h2>
+
+      <app-data-table
+        [dataSource]="joined_participants_rows"
+        [columns]="['id', 'name', 'start_time', 'end_time', 'duration']"
+        [loading]="tableLoading()"
+        [error]="tableError()"
+        searchLabel="Search participants"
+        searchPlaceholder="Enter name"
+        [searchValue]="participantSearch()"
+        (searchValueChange)="participantSearch.set($event)"
+        [total]="joined_participants_total()"
+        [pageSize]="PAGE_LIMIT"
+        [pageIndex]="(query?.offset ?? 0) / PAGE_LIMIT"
+        emptyIcon="groups"
+        emptyHeadline="No one has joined yet"
+        emptySupporting="Once attendees join the meeting, they'll show up here."
+        (pageChange)="handlePageChange($event, query, event._id)"
+        (retry)="retry()"
+      >
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef>ID</th>
+          <td mat-cell *matCellDef="let row">{{ row.id }}</td>
+        </ng-container>
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let row">{{ row.user.name }}</td>
+        </ng-container>
+        <ng-container matColumnDef="start_time">
+          <th mat-header-cell *matHeaderCellDef>From</th>
+          <td mat-cell *matCellDef="let row">{{ row.start_time | date: 'hh:mm a' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="end_time">
+          <th mat-header-cell *matHeaderCellDef>To</th>
+          <td mat-cell *matCellDef="let row">{{ row.end_time | date: 'hh:mm a' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="duration">
+          <th mat-header-cell *matHeaderCellDef>Stay time (min)</th>
+          <td mat-cell *matCellDef="let row">{{ row.duration }}</td>
+        </ng-container>
+
+        <ng-template #cardRow let-row>
+          <div class="stack" style="--stack-gap: var(--app-space-1)">
+            <span class="fw-bold">{{ row.user.name }}</span>
+            <span class="text-muted">
+              {{ row.start_time | date: 'hh:mm a' }} – {{ row.end_time | date: 'hh:mm a' }} ({{ row.duration }} min)
+            </span>
+          </div>
+        </ng-template>
+      </app-data-table>
+    </section>
   }
-
-  <h5 class="text-primary-clr mb-3">Joined Participants</h5>
-
-  <app-data-table
-    [dataSource]="joined_participants_rows"
-    [columns]="['id', 'name', 'start_time', 'end_time', 'duration']"
-    [loading]="tableLoading()"
-    [error]="tableError()"
-    searchLabel="Search Participants"
-    searchPlaceholder="Enter name"
-    [searchValue]="participantSearch()"
-    (searchValueChange)="participantSearch.set($event)"
-    [total]="joined_participants_total()"
-    [pageSize]="PAGE_LIMIT"
-    [pageIndex]="(query?.offset ?? 0) / PAGE_LIMIT"
-    emptyIcon="groups"
-    emptyHeadline="No one has joined yet"
-    emptySupporting="Once attendees join the meeting, they'll show up here."
-    (pageChange)="handlePageChange($event, query, event._id)"
-    (retry)="retry()"
-  >
-    <ng-container matColumnDef="id">
-      <th mat-header-cell *matHeaderCellDef>ID</th>
-      <td mat-cell *matCellDef="let row">{{row.id}}</td>
-    </ng-container>
-    <ng-container matColumnDef="name">
-      <th mat-header-cell *matHeaderCellDef>Name</th>
-      <td mat-cell *matCellDef="let row">{{row.user.name}}</td>
-    </ng-container>
-    <ng-container matColumnDef="start_time">
-      <th mat-header-cell *matHeaderCellDef>From</th>
-      <td mat-cell *matCellDef="let row">{{row.start_time | date: "hh:mm a"}}</td>
-    </ng-container>
-    <ng-container matColumnDef="end_time">
-      <th mat-header-cell *matHeaderCellDef>To</th>
-      <td mat-cell *matCellDef="let row">{{row.end_time | date: "hh:mm a"}}</td>
-    </ng-container>
-    <ng-container matColumnDef="duration">
-      <th mat-header-cell *matHeaderCellDef>Stay Time (Min)</th>
-      <td mat-cell *matCellDef="let row">{{row.duration}}</td>
-    </ng-container>
-
-    <ng-template #cardRow let-row>
-      <div class="stack" style="--stack-gap: var(--app-space-1)">
-        <span class="fw-bold">{{ row.user.name }}</span>
-        <span class="text-secondary-clr">
-          {{row.start_time | date: "hh:mm a"}} – {{row.end_time | date: "hh:mm a"}} ({{row.duration}} min)
-        </span>
-      </div>
-    </ng-template>
-  </app-data-table>
 </app-outlet-inner>

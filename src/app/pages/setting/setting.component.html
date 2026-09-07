@@ -1,107 +1,168 @@
 <app-outlet-inner>
-  <app-page-header title="Settings"></app-page-header>
+  <app-page-header title="Settings" subtitle="Manage your profile, security and account." />
 
-  <form [formGroup]="edit_profile_form" (ngSubmit)="editProfile()" class="stack edit-profile-form mb-4">
-    <h4 class="text-primary-clr mb-3">Edit Profile</h4>
-    <div class="profile-wrap mb-3">
-      <p class="mb-1">Profile</p>
-      <label for="profile" class="profile-img-container">
-        <input id="profile" type="file" accept="image/*" (change)="changeProfile($event)" class="profile-file-input">
-        <img [src]="profile()" #imgView alt="Profile image" class="profile-img rounded">
-      </label>
-    </div>
-    <mat-form-field appearance="outline">
-      <mat-label>Name</mat-label>
-      <input matInput type="text" formControlName="name" placeholder="Enter name">
-      <mat-error appFormError [control]="nameControl" labelFor="Name" />
-    </mat-form-field>
-    <mat-form-field appearance="outline">
-      <mat-label>Email</mat-label>
-      <input type="email" matInput formControlName="email" readonly>
-      <mat-hint>Email can't be changed.</mat-hint>
-    </mat-form-field>
-    <app-submit-button label="Edit Profile" [busy]="isSavingProfile()" />
-  </form>
+  <div class="settings">
 
-  @if (showChangePassword()) {
-  <form [formGroup]="change_password_form" (ngSubmit)="changePassword()" class="stack edit-profile-form mb-2">
-    <h4 class="text-primary-clr my-3">Change Password</h4>
-    <mat-form-field appearance="outline">
-      <mat-label>Current Password</mat-label>
-      <input matInput [type]="isCurrentPassword() ? 'password' : 'text'" formControlName="current_password" placeholder="Enter current password" />
-      <button
-        type="button"
-        mat-icon-button
-        matSuffix
-        (click)="toggleCurrentPasswordVisibility()"
-      >
-        <mat-icon>{{ isCurrentPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
-      </button>
-      <mat-error appFormError [control]="currentPasswordControl" labelFor="Current password" />
-    </mat-form-field>
+    <mat-card appearance="outlined" class="settings-card">
+      <mat-card-content>
+        <h2 class="settings-card__title">Profile</h2>
 
-    <mat-form-field appearance="outline">
-      <mat-label>New Password</mat-label>
-      <input matInput [type]="isNewPassword() ? 'password' : 'text'" formControlName="new_password" placeholder="Enter new password" />
-      <button
-        type="button"
-        mat-icon-button
-        matSuffix
-        (click)="toggleNewPasswordVisibility()"
-      >
-        <mat-icon>{{ isNewPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
-      </button>
-      <mat-error appFormError [control]="newPasswordControl" labelFor="New password" />
-    </mat-form-field>
+        <form [formGroup]="edit_profile_form" (ngSubmit)="editProfile()" class="stack settings-form">
+          <div class="photo">
+            @if (previewUrl(); as url) {
+              <img [src]="url" alt="Selected profile photo preview" class="photo__preview" />
+            } @else {
+              <app-avatar [user]="currentUser()" size="lg" />
+            }
 
-    <mat-form-field appearance="outline">
-      <mat-label>Confirm New Password</mat-label>
-      <input matInput [type]="isConfirmPassword() ? 'password' : 'text'" formControlName="confirm_password" placeholder="Enter confirm new password" />
-      <button
-        type="button"
-        mat-icon-button
-        matSuffix
-        (click)="toggleConfirmPasswordVisibility()"
-      >
-        <mat-icon>{{ isConfirmPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
-      </button>
-      <mat-error appFormError [control]="confirmPasswordControl" labelFor="Confirm new password" />
-      <mat-error appFormError [control]="change_password_form" />
-    </mat-form-field>
-    <app-submit-button label="Change Password" [busy]="isChangingPassword()" />
-  </form>
-  }
+            <div class="stack photo__controls">
+              <input
+                #photoInput
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                hidden
+                (change)="onPhotoSelected($event)"
+              />
+              <div class="cluster">
+                <button type="button" mat-stroked-button (click)="photoInput.click()">
+                  <mat-icon>photo_camera</mat-icon> Change photo
+                </button>
+                @if (stagedFile()) {
+                  <button type="button" mat-button (click)="clearStagedPhoto()">Cancel</button>
+                }
+              </div>
+              <p class="photo__hint">{{ PHOTO_HINT }}</p>
+              @if (stagedFile(); as file) {
+                <p class="photo__hint">Selected: {{ file.name }}</p>
+              }
+              @if (photoError(); as err) {
+                <p class="photo__error" role="alert">{{ err }}</p>
+              }
+            </div>
+          </div>
 
-  <mat-divider class="danger-zone-divider"></mat-divider>
+          @if (uploadProgress() !== null) {
+            <div
+              class="upload-progress"
+              role="progressbar"
+              aria-label="Upload progress"
+              [attr.aria-valuenow]="uploadProgress()"
+              aria-valuemin="0"
+              aria-valuemax="100"
+            >
+              <div class="upload-progress__fill" [style.width.%]="uploadProgress()"></div>
+            </div>
+          }
 
-  <form [formGroup]="delete_account_form" (ngSubmit)="deleteAccount()" class="stack edit-profile-form mt-4">
-    <h4 class="text-danger mb-1">Danger zone</h4>
-    <p class="text-muted mb-3">
-      Deleting your account permanently removes your events, registrations, invitations and meeting
-      history. This action cannot be undone.
-    </p>
+          <mat-form-field appearance="outline">
+            <mat-label>Name</mat-label>
+            <input matInput type="text" formControlName="name" placeholder="Enter name" autocomplete="name" />
+            <mat-error appFormError [control]="nameControl" labelFor="Name" />
+          </mat-form-field>
 
-    @if (showChangePassword()) {
-    <mat-form-field appearance="outline">
-      <mat-label>Confirm your password</mat-label>
-      <input matInput [type]="isDeletePassword() ? 'password' : 'text'" formControlName="password" placeholder="Enter your password" />
-      <button
-        type="button"
-        mat-icon-button
-        matSuffix
-        aria-label="Toggle password visibility"
-        (click)="toggleDeletePasswordVisibility()"
-      >
-        <mat-icon>{{ isDeletePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
-      </button>
-      <mat-error appFormError [control]="deletePasswordControl" labelFor="Password" />
-    </mat-form-field>
-    } @else {
-    <p class="text-muted mb-3">
-      You'll be asked to type your account email to confirm before this goes through.
-    </p>
-    }
+          <mat-form-field appearance="outline">
+            <mat-label>Email</mat-label>
+            <input matInput type="email" formControlName="email" readonly />
+            <mat-hint>Email can't be changed.</mat-hint>
+          </mat-form-field>
 
-    <app-submit-button label="Delete account" busyLabel="Deleting…" [busy]="isDeleting()" />
-  </form>
+          <app-submit-button label="Save profile" busyLabel="Saving…" [busy]="isSavingProfile()" />
+        </form>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card appearance="outlined" class="settings-card">
+      <mat-card-content>
+        <h2 class="settings-card__title">Security</h2>
+
+        @if (showChangePassword()) {
+          <form [formGroup]="change_password_form" (ngSubmit)="changePassword()" class="stack settings-form">
+            <mat-form-field appearance="outline">
+              <mat-label>Current password</mat-label>
+              <input matInput [type]="isCurrentPassword() ? 'password' : 'text'" formControlName="current_password" autocomplete="current-password" />
+              <button type="button" mat-icon-button matSuffix aria-label="Toggle current password visibility" (click)="toggleCurrentPasswordVisibility()">
+                <mat-icon>{{ isCurrentPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              <mat-error appFormError [control]="currentPasswordControl" labelFor="Current password" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>New password</mat-label>
+              <input matInput [type]="isNewPassword() ? 'password' : 'text'" formControlName="new_password" autocomplete="new-password" />
+              <button type="button" mat-icon-button matSuffix aria-label="Toggle new password visibility" (click)="toggleNewPasswordVisibility()">
+                <mat-icon>{{ isNewPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              <mat-hint>At least 8 characters.</mat-hint>
+              <mat-error appFormError [control]="newPasswordControl" labelFor="New password" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Confirm new password</mat-label>
+              <input matInput [type]="isConfirmPassword() ? 'password' : 'text'" formControlName="confirm_password" autocomplete="new-password" />
+              <button type="button" mat-icon-button matSuffix aria-label="Toggle confirm password visibility" (click)="toggleConfirmPasswordVisibility()">
+                <mat-icon>{{ isConfirmPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              <mat-error appFormError [control]="confirmPasswordControl" labelFor="Confirm new password" />
+              <mat-error appFormError [control]="change_password_form" />
+            </mat-form-field>
+
+            <app-submit-button label="Change password" busyLabel="Updating…" [busy]="isChangingPassword()" />
+          </form>
+        } @else {
+          <p class="settings-note">
+            <mat-icon aria-hidden="true">info</mat-icon>
+            You signed in with {{ socialProvider() }}, so there's no password to change here. Manage
+            your sign-in from your {{ socialProvider() }} account.
+          </p>
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card appearance="outlined" class="settings-card settings-card--danger">
+      <mat-card-content>
+        <h2 class="settings-card__title">Danger zone</h2>
+        <p class="settings-card__lead">
+          Deleting your account permanently removes your registrations, invitations and meeting
+          history. This action cannot be undone.
+        </p>
+
+        @if (liveMeeting(); as live) {
+          <p class="settings-warning" role="alert">
+            <mat-icon aria-hidden="true">warning</mat-icon>
+            You have a live meeting{{ live.title ? ' for “' + live.title + '”' : '' }}. End it before
+            you can delete your account.
+            <a [routerLink]="['/organizer/dashboard/events', live.event_id, 'meeting']">Go to meeting</a>
+          </p>
+        }
+
+        <form [formGroup]="delete_account_form" (ngSubmit)="deleteAccount()" class="stack settings-form">
+          @if (showChangePassword()) {
+            <mat-form-field appearance="outline">
+              <mat-label>Confirm your password</mat-label>
+              <input matInput [type]="isDeletePassword() ? 'password' : 'text'" formControlName="password" autocomplete="current-password" />
+              <button type="button" mat-icon-button matSuffix aria-label="Toggle password visibility" (click)="toggleDeletePasswordVisibility()">
+                <mat-icon>{{ isDeletePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              <mat-error appFormError [control]="deletePasswordControl" labelFor="Password" />
+            </mat-form-field>
+          } @else {
+            <p class="settings-note">
+              <mat-icon aria-hidden="true">info</mat-icon>
+              You'll be asked to type your account email to confirm.
+            </p>
+          }
+
+          @if (isOrganizer() && ownedEventsCount() !== null) {
+            <p class="settings-note">
+              <mat-icon aria-hidden="true">event</mat-icon>
+              This will also remove {{ ownedEventsCount() }}
+              event{{ ownedEventsCount() === 1 ? '' : 's' }} you own.
+            </p>
+          }
+
+          <app-submit-button label="Delete account" busyLabel="Deleting…" [busy]="isDeleting()" />
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
 </app-outlet-inner>

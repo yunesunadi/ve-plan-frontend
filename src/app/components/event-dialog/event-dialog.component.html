@@ -1,6 +1,6 @@
-<h6 mat-dialog-title class="text-primary-clr">
-  {{ dialog_data._id ? "Edit" : "Create" }} Event ({{ eventDate }})
-</h6>
+<h2 mat-dialog-title>
+  {{ dialog_data._id ? "Edit event" : "Create event" }}
+</h2>
 <form [formGroup]="create_form" (ngSubmit)="submit()">
 <mat-dialog-content>
   <div class="stack create-form">
@@ -26,6 +26,13 @@
         placeholder="Enter description"
       ></textarea>
       <mat-error appFormError [control]="descriptionControl" labelFor="Description" />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Date</mat-label>
+      <input matInput [matDatepicker]="datepicker" [min]="minDate" formControlName="date" placeholder="DD/MM/YYYY">
+      <mat-datepicker-toggle matIconSuffix [for]="datepicker" />
+      <mat-datepicker #datepicker />
+      <mat-error appFormError [control]="dateControl" labelFor="Date" />
     </mat-form-field>
     <mat-form-field appearance="outline">
       <mat-label>Start time</mat-label>

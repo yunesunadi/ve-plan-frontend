@@ -1,26 +1,43 @@
 <mat-dialog-content class="jitsi-dialog-content">
-  <div class="cluster cluster--end error-strip p-2">
-    @if (end_error()) {
-      <span class="text-light small me-auto">{{ end_error() }}</span>
-      <button
-        type="button"
-        mat-flat-button
-        class="fw-bold retry-btn"
-        [disabled]="is_ending()"
-        (click)="leaveAndEnd()"
-      >
-        Retry
-      </button>
+  <div class="meeting-region" role="region" [attr.aria-label]="meetingTitle">
+    @if (phase() === 'live') {
+      <div class="meeting-bar">
+        @if (endError()) {
+          <span class="meeting-bar__error">{{ endError() }}</span>
+        }
+        <button
+          type="button"
+          mat-stroked-button
+          class="meeting-bar__leave"
+          [disabled]="isEnding()"
+          (click)="leaveAndEnd()"
+        >
+          {{ isEnding() ? 'Ending…' : (endError() ? 'Retry ending' : 'Leave & end meeting') }}
+        </button>
+      </div>
     }
-    <button
-      type="button"
-      mat-stroked-button
-      class="fw-bold leave-btn"
-      [disabled]="is_ending()"
-      (click)="leaveAndEnd()"
-    >
-      {{ is_ending() ? "Ending…" : "Leave & End Meeting" }}
-    </button>
+
+    <div #jitsi_iframe class="jitsi-frame" [class.jitsi-frame--full]="phase() !== 'live'"></div>
+
+    @if (phase() !== 'live') {
+      <div class="meeting-overlay">
+        @if (phase() === 'loading') {
+          <mat-icon class="meeting-overlay__spin" aria-hidden="true">autorenew</mat-icon>
+          <p>Connecting to the meeting…</p>
+        } @else if (errorView(); as err) {
+          <mat-icon class="meeting-overlay__icon" aria-hidden="true">{{ err.icon }}</mat-icon>
+          <h2 class="meeting-overlay__title">{{ err.title }}</h2>
+          <p class="meeting-overlay__message">{{ err.message }}</p>
+          <div class="meeting-overlay__actions">
+            @if (err.canRetry) {
+              <button type="button" mat-flat-button (click)="retry()">Try again</button>
+            }
+            <button type="button" mat-stroked-button (click)="close()">Close</button>
+          </div>
+        }
+      </div>
+    }
   </div>
-  <div #jitsi_iframe class="jitsi-frame"></div>
+
+  <div class="visually-hidden" aria-live="polite">{{ liveAnnouncement() }}</div>
 </mat-dialog-content>

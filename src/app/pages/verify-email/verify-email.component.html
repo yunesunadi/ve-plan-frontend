@@ -1,23 +1,21 @@
 <app-register-wrapper>
   <ng-container form>
-    <h1 class="text-primary-clr mb-3 show-md-down text-center">VE-Plan</h1>
-
     @switch (status()) {
       @case ('verifying') {
-        <h3 class="text-primary-clr mb-4 text-center">Verifying Email</h3>
-        <p class="text-center mx-3">Please wait while we verify your email address&hellip;</p>
+        <h1 class="auth-title">Verifying your email</h1>
+        <p class="auth-subtitle">Hang tight while we confirm your email address&hellip;</p>
       }
 
       @case ('expired') {
-        <h3 class="text-primary-clr mb-4 text-center">Link Expired</h3>
+        <h1 class="auth-title">Link expired</h1>
         @if (resent()) {
-          <p class="text-center mx-3">If that address still needs verifying, a new link is on its way. Please check your email, and your spam folder if you don't see it.</p>
+          <p class="auth-subtitle">If that address still needs verifying, a new link is on its way. Check your email, and your spam folder if you don't see it.</p>
         } @else {
-          <p class="text-center mx-3 mb-4">{{ errorMessage() }}</p>
-          <form [formGroup]="resendForm" (ngSubmit)="resendExpired()" class="stack resend-form w-100">
+          <p class="auth-subtitle">{{ errorMessage() }}</p>
+          <form [formGroup]="resendForm" (ngSubmit)="resendExpired()" class="stack resend-form">
             <mat-form-field appearance="outline" class="w-100">
               <mat-label>Email</mat-label>
-              <input matInput formControlName="email" placeholder="Enter your email" />
+              <input matInput type="email" formControlName="email" placeholder="you@example.com" autocomplete="email" />
               <mat-error appFormError [control]="resendForm.controls['email']" labelFor="Email" />
             </mat-form-field>
             <div class="cluster cluster--center">
@@ -28,24 +26,23 @@
       }
 
       @case ('failed') {
-        <h3 class="text-primary-clr mb-4 text-center">Verification Failed</h3>
-        <p class="text-center mx-3">{{ errorMessage() }}</p>
+        <h1 class="auth-title">Verification failed</h1>
+        <p class="auth-subtitle">{{ errorMessage() }}</p>
       }
 
       @default {
-        <h3 class="text-primary-clr mb-4 text-center">Verify Email</h3>
-        <p class="text-center mx-3" [class.mb-4]="pendingEmail()">Email verification is sent to your email. Please check your email. If you don't receive the email, please check your spam folder.</p>
+        <h1 class="auth-title">Verify your email</h1>
+        <p class="auth-subtitle">We've sent a verification link to your email. Open it to finish setting up your account — check your spam folder if it doesn't arrive.</p>
         @if (pendingEmail()) {
           <div class="cluster cluster--center">
             <button
-              mat-raised-button
-              class="bg-primary-clr text-secondary-clr"
+              mat-flat-button
               type="button"
               [disabled]="resending() || resendCooldown()"
               (click)="resendPending()"
             >
               @if (resendCooldown()) {
-                Link sent &mdash; check your email
+                Link sent — check your email
               } @else {
                 Resend verification link
               }
@@ -55,10 +52,10 @@
       }
     }
 
-    <div class="mt-3">
-      <a routerLink="/login" class="text-primary-clr cluster cluster--center back-to-login">
-        <mat-icon>arrow_back</mat-icon>
-        <span>Back to Login</span>
+    <div class="mt-4">
+      <a routerLink="/login" class="auth-back-link cluster cluster--center">
+        <mat-icon aria-hidden="true">arrow_back</mat-icon>
+        <span>Back to log in</span>
       </a>
     </div>
   </ng-container>

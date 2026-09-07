@@ -1,16 +1,7 @@
-.event-header {
-  --stack-gap: var(--app-space-2);
-
-  @media (min-width: 768px) {
-    align-items: center;
-  }
+.event-tabs {
+  margin-bottom: var(--app-space-4);
 }
 
-.header-left {
-  --cluster-gap: var(--app-space-4);
-}
-
-.header-actions {
-  align-self: flex-end;
-  --cluster-gap: var(--app-space-2);
+.event-tabs__body {
+  padding-top: var(--app-space-2);
 }

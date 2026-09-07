@@ -1,13 +1,11 @@
-import { Component, inject, signal, ViewChild, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { EventCategoryType, EventQuery, EventTimeType } from '../../models/Event';
 import { DashboardCacheService } from '../../caches/dashboard-cache.service';
 import { MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
 import { Router } from '@angular/router';
 import { EventCacheService } from '../../caches/event-cache.service';
-import { MatAccordion, MatExpansionPanel } from '@angular/material/expansion';
 import { OutletInnerComponent } from '../../shared/outlet-inner/outlet-inner.component';
 import { MatButton, MatIconButton } from '@angular/material/button';
-import { MatBadge } from '@angular/material/badge';
 import { MatIcon } from '@angular/material/icon';
 import { MatFormField, MatLabel, MatInput, MatPrefix, MatSuffix, MatHint } from '@angular/material/input';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
@@ -21,6 +19,11 @@ import { SkeletonComponent } from '../../shared/ui/skeleton/skeleton.component';
 import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../shared/ui/error-state/error-state.component';
 
+interface FilterChip {
+  type: keyof EventQuery;
+  label: string;
+}
+
 @Component({
     selector: 'app-events',
     templateUrl: './events.component.html',
@@ -33,12 +36,9 @@ import { ErrorStateComponent } from '../../shared/ui/error-state/error-state.com
             useValue: "en-GB"
         },
     ],
-    imports: [OutletInnerComponent, PageHeaderComponent, MatButton, MatBadge, MatIcon, MatAccordion, MatExpansionPanel, MatFormField, MatLabel, MatInput, ReactiveFormsModule, FormsModule, MatPrefix, MatIconButton, MatSuffix, MatSelect, MatOption, MatDatepickerInput, MatHint, MatDatepickerToggle, MatDatepicker, MatPaginator, AsyncPipe, EventCardComponent, SkeletonComponent, EmptyStateComponent, ErrorStateComponent]
+    imports: [OutletInnerComponent, PageHeaderComponent, MatButton, MatIcon, MatFormField, MatLabel, MatInput, ReactiveFormsModule, FormsModule, MatPrefix, MatIconButton, MatSuffix, MatSelect, MatOption, MatDatepickerInput, MatHint, MatDatepickerToggle, MatDatepicker, MatPaginator, AsyncPipe, EventCardComponent, SkeletonComponent, EmptyStateComponent, ErrorStateComponent]
 })
 export class EventsComponent {
-  @ViewChild(MatAccordion) accordion!: MatAccordion;
-  private isAccordionOpened = false;
-
   private dashboardCache = inject(DashboardCacheService);
   private router = inject(Router);
   cache = inject(EventCacheService);
@@ -60,32 +60,39 @@ export class EventsComponent {
     });
   }
 
-  getBadgeCount(query: Partial<EventQuery>) {
-    let count = 0;
-    const values = Object.keys(query);
+  activeFilters(query: Partial<EventQuery>): FilterChip[] {
+    const chips: FilterChip[] = [];
 
-    if (values.includes("search_value")) {
-      count++;
+    if (query.search_value) {
+      chips.push({ type: "search_value", label: `Name: ${query.search_value}` });
+    }
+    if (query.time) {
+      chips.push({ type: "time", label: `Time: ${this.titleCase(query.time)}` });
+    }
+    if (query.category) {
+      chips.push({ type: "category", label: `Category: ${this.titleCase(query.category)}` });
+    }
+    if (query.date) {
+      chips.push({ type: "date", label: `Date: ${this.formatDate(query.date)}` });
     }
 
-    if (values.includes("time")) {
-      count++;
-    }
+    return chips;
+  }
 
-    if (values.includes("category")) {
-      count++;
-    }
+  private titleCase(value: string): string {
+    return value.charAt(0).toUpperCase() + value.slice(1);
+  }
 
-    if (values.includes("date")) {
-      count++;
-    }
-
-    return count;
+  private formatDate(iso: string): string {
+    const date = new Date(iso);
+    return Number.isNaN(date.getTime())
+      ? iso
+      : date.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
   }
 
   changeFilter(type: string, value: string, query: Partial<EventQuery>) {
     value = value.trim();
-    
+
     if (type === "date") {
       value = new Date(value).toISOString();
     }
@@ -120,15 +127,6 @@ export class EventsComponent {
       queryParams: { ...query, offset: event.pageIndex ? event.pageIndex * this.LIMIT : 0 },
       replaceUrl: true
     });
-  }
-
-  toggleAccordion() {
-    if (this.isAccordionOpened) {
-      this.accordion.closeAll();
-    } else {
-      this.accordion.openAll();
-    }
-    this.isAccordionOpened = !this.isAccordionOpened;
   }
 
 }

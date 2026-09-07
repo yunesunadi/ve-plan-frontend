@@ -1,96 +1,64 @@
 @let event = displayEvent();
-@let sessions = sessions$ | async;
-@let has_registered = has_registered$ | async;
-@let is_invited = is_invited$ | async;
-@let is_invite_accepted = is_invite_accepted$ | async;
-@let has_meeting_started = has_meeting_started$ | async;
-@let is_register_approved = is_register_approved$ | async;
+@let p = participation();
 
 <app-outlet-inner>
-  <section>
-    <app-page-header
-      [title]="event.title"
-      [backTo]="['/attendee/dashboard/events']"
-    >
-      <div header-actions class="cluster header-actions">
-      @if (is_invited) {
-        <div class="status-pill">
-          <mat-icon class="text-primary-clr">mail_outline</mat-icon>
-          <p class="mb-0 fw-bold text-primary-clr">Invited</p>
-        </div>
-      } @else if (is_invite_accepted) {
-        <div class="status-pill">
-          <mat-icon class="text-primary-clr">done_all</mat-icon>
-          <p class="mb-0 fw-bold text-primary-clr">Invitation Accepted</p>
-        </div>
-      } @else {
-        @if (is_register_approved) {
-          <div class="status-pill">
-            <mat-icon class="text-primary-clr">done_all</mat-icon>
-            <p class="mb-0 fw-bold text-primary-clr">Register Approved</p>
-          </div>
-        } @else if (has_registered) {
-          <button
-            mat-raised-button
-            type="button"
-            class="bg-secondary-clr text-primary-clr"
-            (click)="unregister(event._id)"
-            [disabled]="util.is_event_expired(event)"
-          >
-            <mat-icon>how_to_reg</mat-icon>
-            Registered
-          </button>
-        } @else {
-          <button
-            mat-raised-button
-            type="button"
-            class="bg-secondary-clr text-primary-clr"
-            (click)="register(event._id)"
-            [disabled]="util.is_event_expired(event)"
-          >
-            <mat-icon>how_to_reg</mat-icon>
-            Register
-          </button>
+  <app-page-header [title]="event.title" [backTo]="['/attendee/dashboard/events']" />
+
+  <section class="participation" aria-label="Your participation">
+    <div class="participation__status">
+      @switch (p.state) {
+        @case ('invited') {
+          <app-status-chip status="invited" />
+          <p class="participation__hint">You've been invited to this event.</p>
+        }
+        @case ('invitation_accepted') {
+          <app-status-chip status="invitation_accepted" />
+          <p class="participation__hint">You've accepted this invitation.</p>
+        }
+        @case ('registration_approved') {
+          <app-status-chip status="register_approved" />
+          <p class="participation__hint">Your registration is approved.</p>
+        }
+        @case ('registered') {
+          <app-status-chip status="registered" />
+          <p class="participation__hint">Your registration is awaiting the organizer's approval.</p>
+        }
+        @default {
+          <p class="participation__hint">Register to attend this event.</p>
         }
       }
-      @if (has_meeting_started) {
-        <button
-          mat-raised-button
-          type="button"
-          class="bg-secondary-clr text-primary-clr"
-          (click)="joinMeeting(event._id)"
-          [disabled]="util.is_event_expired(event)"
-        >
-          <mat-icon>meeting_room</mat-icon>
-          Join Meeting
+    </div>
+
+    <div class="participation__actions">
+      @if (p.state === 'none') {
+        <button mat-flat-button type="button" [disabled]="p.expired" (click)="register(event._id)">
+          <mat-icon>how_to_reg</mat-icon> Register
+        </button>
+      } @else if (p.state === 'registered') {
+        <button mat-stroked-button type="button" [disabled]="p.expired" (click)="unregister(event._id)">
+          <mat-icon>cancel</mat-icon> Cancel registration
         </button>
       }
-      </div>
-    </app-page-header>
-    <app-event-details-card [event]="event" />
-  </section>
-  <section class="mt-3">
-    <div class="cluster cluster--between mb-3">
-      <h5 class="text-primary-clr mb-0">Sessions</h5>
-    </div>
-    <ng-container>
-      @if (sessionsError(); as sessions_error) {
-        <app-error-state [error]="sessions_error" (retry)="retrySessions()"></app-error-state>
-      } @else if (sessions && sessions.length > 0) {
-      <div class="form-grid">
-        @for (session of sessions; track $index) {
-        <div>
-          <app-session-details-card [session]="session" />
-        </div>
-        }
-      </div>
-      } @else {
-        <app-empty-state
-          icon="event_note"
-          headline="No sessions yet"
-          supporting="The organizer hasn't published an agenda for this event."
-        />
+      @if (p.meetingStarted) {
+        <button mat-flat-button type="button" [disabled]="p.expired" (click)="joinMeeting(event._id)">
+          <mat-icon>meeting_room</mat-icon> Join meeting
+        </button>
       }
-    </ng-container>
+    </div>
   </section>
+
+  <nav class="tab-nav event-tabs" aria-label="Event sections">
+    <a class="tab-nav__link" routerLink="overview" routerLinkActive="tab-nav__link--active"
+       #overview="routerLinkActive" [attr.aria-current]="overview.isActive ? 'page' : null">
+      Overview
+    </a>
+    <a class="tab-nav__link" routerLink="agenda" routerLinkActive="tab-nav__link--active"
+       #agenda="routerLinkActive" [attr.aria-current]="agenda.isActive ? 'page' : null">
+      Agenda
+    </a>
+  </nav>
+
+  <div class="event-tabs__body">
+    <router-outlet />
+  </div>
 </app-outlet-inner>

@@ -1,0 +1,78 @@
+@if (event(); as event) {
+  @switch (tab()) {
+
+    @case ('overview') {
+      <app-event-details-card [event]="event" />
+    }
+
+    @case ('agenda') {
+      @let sessions = sessions$ | async;
+
+      <div class="agenda-head">
+        <h2 class="agenda-head__title">Agenda</h2>
+        @if (store.canManage()) {
+          <button mat-flat-button type="button" (click)="addSession()">
+            <mat-icon>add</mat-icon> Add session
+          </button>
+        }
+      </div>
+
+      @if (sessionsError(); as err) {
+        <app-error-state [error]="err" (retry)="retrySessions()" />
+      } @else if (sessionsLoading()) {
+        <div class="form-grid">
+          @for (i of skeletonPlaceholders; track $index) {
+            <app-skeleton variant="card" />
+          }
+        </div>
+      } @else if (sessions && sessions.length > 0) {
+        <div class="form-grid">
+          @for (session of sessions; track session._id) {
+            <app-session-details-card [session]="session">
+              @if (store.canManage()) {
+                <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Session actions">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <button mat-menu-item (click)="editSession(session._id)">
+                    <mat-icon>edit</mat-icon> Edit
+                  </button>
+                  <button mat-menu-item (click)="deleteSession(session._id)">
+                    <mat-icon>delete</mat-icon> Delete
+                  </button>
+                </mat-menu>
+              }
+            </app-session-details-card>
+          }
+        </div>
+      } @else {
+        <app-empty-state
+          icon="event_note"
+          headline="No sessions yet"
+          supporting="Add a session to build out this event's agenda."
+          [ctaLabel]="store.canManage() ? 'Add session' : ''"
+          ctaIcon="add"
+          (ctaClick)="addSession()"
+        />
+      }
+    }
+
+    @case ('people') {
+      <h2 class="people-head">People</h2>
+      <div class="people-links">
+        <a class="people-link" [routerLink]="['/organizer/dashboard/events', event._id, 'registered_users']">
+          <mat-icon>people_outline</mat-icon>
+          <span class="people-link__label">Registered users</span>
+          <span class="people-link__hint">Review and approve registrations</span>
+          <mat-icon class="people-link__chevron">chevron_right</mat-icon>
+        </a>
+        <a class="people-link" [routerLink]="['/organizer/dashboard/events', event._id, 'invite']">
+          <mat-icon>person_add</mat-icon>
+          <span class="people-link__label">Invite users</span>
+          <span class="people-link__hint">Send invitations to attendees</span>
+          <mat-icon class="people-link__chevron">chevron_right</mat-icon>
+        </a>
+      </div>
+    }
+  }
+}

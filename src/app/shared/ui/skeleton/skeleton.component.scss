@@ -70,4 +70,9 @@
   .skeleton-block {
     height: 14px;
   }
+
+  .skeleton-block:nth-child(1) { width: 24%; }
+  .skeleton-block:nth-child(2) { width: 28%; }
+  .skeleton-block:nth-child(3) { width: 22%; }
+  .skeleton-block:nth-child(4) { width: 18%; }
 }

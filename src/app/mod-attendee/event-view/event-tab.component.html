@@ -1,0 +1,36 @@
+@if (event(); as event) {
+  @switch (tab()) {
+
+    @case ('overview') {
+      <app-event-details-card [event]="event" />
+    }
+
+    @case ('agenda') {
+      @let sessions = sessions$ | async;
+
+      <h2 class="agenda-title">Agenda</h2>
+
+      @if (sessionsError(); as err) {
+        <app-error-state [error]="err" (retry)="retrySessions()" />
+      } @else if (sessionsLoading()) {
+        <div class="form-grid">
+          @for (i of skeletonPlaceholders; track $index) {
+            <app-skeleton variant="card" />
+          }
+        </div>
+      } @else if (sessions && sessions.length > 0) {
+        <div class="form-grid">
+          @for (session of sessions; track session._id) {
+            <app-session-details-card [session]="session" />
+          }
+        </div>
+      } @else {
+        <app-empty-state
+          icon="event_note"
+          headline="No sessions yet"
+          supporting="The organizer hasn't published an agenda for this event."
+        />
+      }
+    }
+  }
+}

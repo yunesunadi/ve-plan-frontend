@@ -1,3 +1,12 @@
-<div class="cluster cluster--center text-center h-100">
-  <h5 class="text-primary-clr">404 | Page not found</h5>
+<div class="status-page">
+  <mat-icon class="status-page__icon" aria-hidden="true">explore_off</mat-icon>
+  <h1 class="status-page__title">Page not found</h1>
+  <p class="status-page__body">
+    We couldn't find the page you're looking for. It may have been moved, or the link might
+    be out of date.
+  </p>
+  <a mat-flat-button [routerLink]="homeLink()">
+    <mat-icon aria-hidden="true">home</mat-icon>
+    {{ homeLabel() }}
+  </a>
 </div>

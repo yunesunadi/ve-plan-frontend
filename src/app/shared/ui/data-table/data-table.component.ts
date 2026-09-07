@@ -7,6 +7,7 @@ import {
   ContentChild,
   ContentChildren,
   DestroyRef,
+  ElementRef,
   QueryList,
   TemplateRef,
   ViewChild,
@@ -86,7 +87,10 @@ const SELECT_COLUMN = '__select';
 export class DataTableComponent<T> implements AfterContentInit, AfterViewChecked {
   private readonly layout = inject(LayoutService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   protected readonly isCompact = this.layout.isCompact;
+
+  protected readonly focusedIndex = signal(0);
 
   // data
   dataSource = input.required<MatTableDataSource<T> | T[]>();
@@ -192,6 +196,11 @@ export class DataTableComponent<T> implements AfterContentInit, AfterViewChecked
         this.lastAppliedSearchValue = value;
         this.searchValue.set(value);
       });
+
+    effect(() => {
+      this.rows();
+      this.focusedIndex.set(0);
+    });
   }
 
   ngAfterContentInit(): void {
@@ -269,13 +278,43 @@ export class DataTableComponent<T> implements AfterContentInit, AfterViewChecked
     }
   }
 
-  protected onRowKeydown(event: KeyboardEvent, row: T): void {
-    if (event.key === ' ' || event.key === 'Spacebar') {
-      event.preventDefault();
-      this.onRowActivate(row);
-    } else if (event.key === 'Enter') {
-      this.onRowActivate(row);
+  protected onRowKeydown(event: KeyboardEvent, row: T, index: number): void {
+    switch (event.key) {
+      case ' ':
+      case 'Spacebar':
+        event.preventDefault();
+        this.onRowActivate(row);
+        break;
+      case 'Enter':
+        this.onRowActivate(row);
+        break;
+      case 'ArrowDown':
+        event.preventDefault();
+        this.moveFocus(index + 1);
+        break;
+      case 'ArrowUp':
+        event.preventDefault();
+        this.moveFocus(index - 1);
+        break;
+      case 'Home':
+        event.preventDefault();
+        this.moveFocus(0);
+        break;
+      case 'End':
+        event.preventDefault();
+        this.moveFocus(this.rows().length - 1);
+        break;
     }
+  }
+
+  private moveFocus(to: number): void {
+    const max = this.rows().length - 1;
+    if (max < 0) return;
+    const next = Math.max(0, Math.min(max, to));
+    this.focusedIndex.set(next);
+    this.host.nativeElement
+      .querySelector<HTMLElement>(`[data-row-index="${next}"]`)
+      ?.focus();
   }
 
   protected trackRow = (index: number, row: T): unknown => {

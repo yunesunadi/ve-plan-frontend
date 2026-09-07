@@ -1,9 +1,94 @@
 <app-outlet-inner>
-  <full-calendar  [options]='calendarOptions()' class="mx-auto calendar">
-    <ng-template #eventContent let-arg>
-      <div class="event-item">
-        <i>{{ arg.event.title }}</i>
+  <app-page-header title="Home" subtitle="What's happening for you." />
+
+  @if (error(); as err) {
+    <app-error-state [error]="err" (retry)="retry()" />
+  } @else if (loading()) {
+    <div class="stack" style="--stack-gap: var(--app-space-5)">
+      @for (i of skeletonCards; track $index) {
+        <app-skeleton variant="card" />
+      }
+    </div>
+  } @else if (summary(); as s) {
+    @if (isEmpty()) {
+      <app-empty-state
+        icon="explore"
+        headline="Your feed is empty"
+        supporting="Browse public events and register to see what's coming up here."
+        ctaLabel="Browse events"
+        ctaIcon="event"
+      >
+        <a mat-flat-button [routerLink]="[ATT, 'events']">Browse events</a>
+      </app-empty-state>
+    } @else {
+      <div class="stack feed" style="--stack-gap: var(--app-space-6)">
+        @if (s.happening_now.length) {
+          <section class="feed-section">
+            <h2 class="feed-section__title">
+              <mat-icon aria-hidden="true">sensors</mat-icon> Happening now
+            </h2>
+            <div class="card-grid" style="--card-min: 300px">
+              @for (ev of s.happening_now; track ev._id) {
+                <app-event-card [event]="ev" [link]="[ATT, 'events', ev._id, 'view']" status="happening">
+                  <a card-actions mat-flat-button [routerLink]="[ATT, 'events', ev._id, 'view']">
+                    <mat-icon aria-hidden="true">meeting_room</mat-icon>
+                    Join meeting
+                  </a>
+                </app-event-card>
+              }
+            </div>
+          </section>
+        }
+
+        @if (s.starting_soon.length) {
+          <section class="feed-section">
+            <h2 class="feed-section__title">
+              <mat-icon aria-hidden="true">schedule</mat-icon> Starting soon
+            </h2>
+            <div class="card-grid" style="--card-min: 300px">
+              @for (ev of s.starting_soon; track ev._id) {
+                <app-event-card [event]="ev" [link]="[ATT, 'events', ev._id, 'view']" status="upcoming" />
+              }
+            </div>
+          </section>
+        }
+
+        @if (s.pending_invitations.length) {
+          <section class="feed-section">
+            <h2 class="feed-section__title">
+              <mat-icon aria-hidden="true">mail_outline</mat-icon> Invitations awaiting your response
+            </h2>
+            <div class="card-grid" style="--card-min: 300px">
+              @for (ev of s.pending_invitations; track ev._id) {
+                <app-event-card [event]="ev" [link]="[ATT, 'events', ev._id, 'view']" status="invited">
+                  <button
+                    card-actions
+                    mat-flat-button
+                    type="button"
+                    [disabled]="acceptingId() === ev._id"
+                    (click)="accept(ev._id)"
+                  >
+                    Accept
+                  </button>
+                </app-event-card>
+              }
+            </div>
+          </section>
+        }
+
+        @if (s.recommended.length) {
+          <section class="feed-section">
+            <h2 class="feed-section__title">
+              <mat-icon aria-hidden="true">recommend</mat-icon> Recommended for you
+            </h2>
+            <div class="card-grid" style="--card-min: 300px">
+              @for (ev of s.recommended; track ev._id) {
+                <app-event-card [event]="ev" [link]="[ATT, 'events', ev._id, 'view']" />
+              }
+            </div>
+          </section>
+        }
       </div>
-    </ng-template>
-  </full-calendar>
+    }
+  }
 </app-outlet-inner>

@@ -1,0 +1,42 @@
+<app-outlet-inner>
+  <app-page-header
+    title="Calendar"
+    [subtitle]="canCreate() ? 'Click a day to create an event.' : 'Every event on VE-Plan, at a glance.'"
+  >
+    @if (!layout.isCompact() && !error()) {
+      <mat-button-toggle-group
+        header-actions
+        hideSingleSelectionIndicator
+        [value]="view()"
+        (change)="setView($event.value)"
+        aria-label="Calendar view"
+      >
+        <mat-button-toggle value="dayGridMonth" aria-label="Month grid">
+          <mat-icon aria-hidden="true">calendar_view_month</mat-icon>
+        </mat-button-toggle>
+        <mat-button-toggle value="listMonth" aria-label="List">
+          <mat-icon aria-hidden="true">view_list</mat-icon>
+        </mat-button-toggle>
+      </mat-button-toggle-group>
+    }
+  </app-page-header>
+
+  @if (error(); as err) {
+    <app-error-state [error]="err" (retry)="retry()" />
+  } @else if (loading()) {
+    <app-skeleton variant="rect" height="520px" />
+  } @else {
+    <div class="calendar-legend" role="list" aria-label="Event visibility">
+      <span class="calendar-legend__item calendar-legend__item--public" role="listitem">
+        <mat-icon aria-hidden="true">public</mat-icon> Public
+      </span>
+      <span class="calendar-legend__item calendar-legend__item--private" role="listitem">
+        <mat-icon aria-hidden="true">lock</mat-icon> Private
+      </span>
+    </div>
+
+    <div class="calendar-shell">
+      <full-calendar [options]="calendarOptions()" />
+    </div>
+  }
+</app-outlet-inner>

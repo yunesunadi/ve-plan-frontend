@@ -1,0 +1,14 @@
+.my-events__filters {
+  display: inline-flex;
+  max-inline-size: 100%;
+  margin-bottom: var(--app-space-4);
+  overflow-x: auto;
+  flex-wrap: nowrap;
+}
+
+.my-events__end {
+  margin: 0;
+  text-align: center;
+  color: var(--mat-sys-on-surface-variant);
+  font: var(--mat-sys-body-small);
+}

@@ -7,6 +7,8 @@
 @use 'styles/layout';
 @use 'styles/utilities';
 @use 'styles/toast';
+@use 'styles/auth';
+@use 'styles/legal';
 
 *,
 *::before,
@@ -15,7 +17,7 @@
 }
 
 html {
-  color-scheme: light;
+  color-scheme: light dark;
 
   @include mat.theme((
     color: (
@@ -34,8 +36,21 @@ html {
   ), $overrides: (primary: #432E54, on-primary: #FFFFFF));
 }
 
+html[data-theme='light'] {
+  color-scheme: light;
+}
+
+html[data-theme='dark'] {
+  color-scheme: dark;
+}
+
 html, body {
   height: 100%;
+}
+
+:where(a, button, input, select, textarea, summary, [tabindex]:not([tabindex='-1'])):focus-visible {
+  outline: 2px solid var(--mat-sys-primary);
+  outline-offset: 2px;
 }
 
 body {
@@ -53,5 +68,5 @@ body {
 
 a {
   text-decoration: none;
-  color: var(--primary-clr);
+  color: var(--mat-sys-primary);
 }

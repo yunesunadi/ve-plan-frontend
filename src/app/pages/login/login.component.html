@@ -1,44 +1,75 @@
 <app-register-wrapper>
   <ng-container form>
-    <h1 class="text-primary-clr mb-3 show-md-down text-center">VE-Plan</h1>
-    <h3 class="text-primary-clr mb-4 text-center">Login</h3>
-    <div class="stack oauth-buttons border-bottom pb-4 mb-4">
-      <button mat-stroked-button class="text-primary-clr" (click)="loginWithGoogle()">
-        <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google logo" class="oauth-logo" />
-        Sign in with Google
+    <h1 class="auth-title">Log in</h1>
+    <p class="auth-subtitle">Welcome back. Sign in to your VE-Plan account.</p>
+
+    <div class="stack oauth-buttons">
+      <button mat-stroked-button type="button" (click)="loginWithGoogle()">
+        <img src="assets/images/google.svg" alt="" class="oauth-logo" aria-hidden="true" />
+        Continue with Google
       </button>
-      <button mat-stroked-button class="text-primary-clr" (click)="loginWithFacebook()">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_%282019%29.png" alt="Facebook logo" class="oauth-logo oauth-logo--facebook" />
-        Sign in with Facebook
+      <button mat-stroked-button type="button" (click)="loginWithFacebook()">
+        <img src="assets/images/facebook.svg" alt="" class="oauth-logo" aria-hidden="true" />
+        Continue with Facebook
       </button>
     </div>
-    <form [formGroup]="login_form" (ngSubmit)="submit()" class="stack login-form">
+
+    <div class="auth-divider"><span>or</span></div>
+
+    <form [formGroup]="login_form" (ngSubmit)="submit()" class="stack login-form" novalidate>
+      @if (formError(); as message) {
+        <p class="auth-form-error" role="alert">
+          <mat-icon aria-hidden="true">error_outline</mat-icon>
+          <span>{{ message }}</span>
+        </p>
+      }
+
       <mat-form-field appearance="outline">
         <mat-label>Email</mat-label>
-        <input type="email" matInput formControlName="email" placeholder="Enter email">
+        <input
+          type="email"
+          matInput
+          formControlName="email"
+          placeholder="you@example.com"
+          autocomplete="username"
+          autocapitalize="off"
+          spellcheck="false"
+        >
         <mat-error appFormError [control]="emailControl" labelFor="Email" />
       </mat-form-field>
+
       <mat-form-field appearance="outline">
         <mat-label>Password</mat-label>
-        <input matInput [type]="isPassword() ? 'password' : 'text'" formControlName="password" placeholder="Enter password" />
+        <input
+          matInput
+          [type]="isPassword() ? 'password' : 'text'"
+          formControlName="password"
+          placeholder="Enter password"
+          autocomplete="current-password"
+        />
         <button
           type="button"
           mat-icon-button
           matSuffix
+          [attr.aria-label]="isPassword() ? 'Show password' : 'Hide password'"
+          [attr.aria-pressed]="!isPassword()"
           (click)="togglePasswordVisibility()"
         >
           <mat-icon>{{ isPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
         </button>
         <mat-error appFormError [control]="passwordControl" labelFor="Password" />
       </mat-form-field>
+
       <div class="text-end mb-3">
-        <a routerLink="/forgot_password" class="text-primary-clr text-decoration-none">Forgot Password?</a>
+        <a routerLink="/forgot_password" class="text-decoration-none">Forgot password?</a>
       </div>
-      <app-submit-button label="Login" [busy]="submitting()" />
+
+      <app-submit-button label="Log in" [busy]="submitting()" />
     </form>
-    <p class="mt-3 mb-0">
+
+    <p class="auth-alt mt-3 mb-0">
       Don't have an account?
-      <a class="text-decoration-underline" routerLink="/signup">Sign Up</a>
+      <a class="text-decoration-underline" routerLink="/signup">Sign up</a>
     </p>
   </ng-container>
 </app-register-wrapper>

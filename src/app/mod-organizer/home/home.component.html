@@ -1,9 +1,120 @@
 <app-outlet-inner>
-  <full-calendar [options]='calendarOptions()' class="mx-auto calendar">
-    <ng-template #eventContent let-arg>
-      <div class="event-item">
-        <i>{{ arg.event.title }}</i>
+  <app-page-header title="Home" subtitle="Everything you're running, at a glance.">
+    <button header-actions mat-flat-button type="button" (click)="openCreateEvent()">
+      <mat-icon aria-hidden="true">add</mat-icon>
+      Create event
+    </button>
+  </app-page-header>
+
+  @if (error(); as err) {
+    <app-error-state [error]="err" (retry)="retry()" />
+  } @else if (loading()) {
+    <div class="stack" style="--stack-gap: var(--app-space-5)">
+      <div class="card-grid dashboard-stats" style="--card-min: 200px">
+        @for (card of statCards; track card.label) {
+          <app-skeleton variant="rect" height="96px" />
+        }
       </div>
-    </ng-template>
-  </full-calendar>
+      <app-skeleton variant="card" />
+    </div>
+  } @else if (summary(); as s) {
+    @if (isEmpty(s)) {
+      <app-empty-state
+        icon="event"
+        headline="No events yet"
+        supporting="Create your first event to start inviting attendees and hosting meetings."
+        ctaLabel="Create event"
+        ctaIcon="add"
+        (ctaClick)="openCreateEvent()"
+      />
+    } @else {
+      <div class="stack" style="--stack-gap: var(--app-space-5)">
+        @if (s.live_meeting; as live) {
+          <a class="live-banner" [routerLink]="[ORG, 'events', live.event_id, 'meeting']">
+            <span class="live-banner__pulse" aria-hidden="true"></span>
+            <span class="live-banner__text">
+              <strong>Meeting live</strong>
+              <span>{{ live.title }}</span>
+            </span>
+            <span class="live-banner__cta">
+              Join <mat-icon aria-hidden="true">arrow_forward</mat-icon>
+            </span>
+          </a>
+        }
+
+        <div class="card-grid dashboard-stats" style="--card-min: 200px">
+          @for (card of statCards; track card.label) {
+            <a class="stat-card" [routerLink]="card.link">
+              <mat-icon class="stat-card__icon" aria-hidden="true">{{ card.icon }}</mat-icon>
+              <span class="stat-card__value">{{ card.value(s) }}</span>
+              <span class="stat-card__label">{{ card.label }}</span>
+            </a>
+          }
+        </div>
+
+        @if (s.next_event; as next) {
+          <section class="dashboard-section">
+            <h2 class="dashboard-section__title">Next event</h2>
+            <app-event-card
+              [event]="next"
+              [link]="[ORG, 'events', next._id, 'view']"
+            >
+              @if (s.live_meeting && s.live_meeting.event_id === next._id) {
+                <a
+                  card-actions
+                  mat-flat-button
+                  [routerLink]="[ORG, 'events', next._id, 'meeting']"
+                >
+                  <mat-icon aria-hidden="true">sensors</mat-icon>
+                  Join meeting
+                </a>
+              } @else {
+                <a
+                  card-actions
+                  mat-stroked-button
+                  [routerLink]="[ORG, 'events', next._id, 'meeting']"
+                >
+                  Meeting
+                </a>
+              }
+            </app-event-card>
+          </section>
+        }
+
+        <section class="dashboard-section">
+          <h2 class="dashboard-section__title">Recent activity</h2>
+          @if (s.recent_activity.length) {
+            <ul class="activity-list">
+              @for (item of s.recent_activity; track $index) {
+                <li class="activity-item">
+                  <mat-icon class="activity-item__icon" aria-hidden="true">
+                    {{ activityMeta[item.type].icon }}
+                  </mat-icon>
+                  <a class="activity-item__text" [routerLink]="[ORG, 'events', item.event_id, 'view']">
+                    @if (item.actor_name) {
+                      <strong>{{ item.actor_name }}</strong>
+                    } @else {
+                      <strong>Someone</strong>
+                    }
+                    {{ activityMeta[item.type].verb }}
+                    <strong>{{ item.event_title || 'an event' }}</strong>
+                  </a>
+                  <time class="activity-item__time" [attr.datetime]="item.at">
+                    {{ util.time_ago(item.at) }}
+                  </time>
+                </li>
+              }
+            </ul>
+          } @else {
+            <app-empty-state
+              compact
+              icon="history"
+              headline="No recent activity"
+              supporting="Registrations, accepted invitations and started meetings show up here."
+            />
+          }
+        </section>
+      </div>
+    }
+  }
 </app-outlet-inner>

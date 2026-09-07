@@ -1,44 +1,107 @@
-.meeting-info {
+.meeting-status {
   display: flex;
-  gap: .3rem;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--app-space-2) var(--app-space-3);
+  margin-bottom: var(--app-space-4);
 }
 
-.header-left {
-  --cluster-gap: var(--app-space-4);
+.meeting-status__text {
+  margin: 0;
+  color: var(--mat-sys-on-surface-variant);
 }
 
-.meeting-actions {
+.meeting-panel {
+  margin-bottom: var(--app-space-6);
+}
+
+.meeting-panel__title {
+  margin: 0 0 var(--app-space-3);
+  font: var(--mat-sys-title-medium);
+  color: var(--mat-sys-on-surface);
+}
+
+.meeting-controls {
   --cluster-gap: var(--app-space-2);
-  align-self: flex-end;
+}
 
-  @media (min-width: 768px) {
-    align-self: auto;
+.meeting-controls__hint {
+  display: flex;
+  align-items: center;
+  gap: var(--app-space-1);
+  margin: var(--app-space-3) 0 0;
+  color: var(--mat-sys-on-surface-variant);
+  font: var(--mat-sys-body-small);
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
   }
 }
 
-.meeting-summary-grid {
-  width: 100%;
-  max-width: 730px;
-  gap: var(--app-space-2);
-  --card-min: 220px;
+.meeting-schedule {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--app-space-5);
+  margin: var(--app-space-4) 0 0;
+
+  dt {
+    font: var(--mat-sys-label-medium);
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  dd {
+    margin: 0;
+    font: var(--mat-sys-title-small);
+    color: var(--mat-sys-on-surface);
+  }
 }
 
 .stats-grid {
-  margin-bottom: 1.7rem;
+  --card-min: 150px;
+  margin-bottom: var(--app-space-5);
+}
+
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--app-space-1);
+  padding: var(--app-space-4);
+  border-radius: var(--app-radius-md);
+  background: var(--mat-sys-surface);
+  box-shadow: var(--app-elev-1);
+  text-align: center;
+
+  &__value {
+    font: var(--mat-sys-headline-small);
+    color: var(--mat-sys-primary);
+  }
+
+  &__label {
+    font: var(--mat-sys-body-small);
+    color: var(--mat-sys-on-surface-variant);
+  }
 }
 
 .charts-grid {
   gap: var(--app-space-5);
 }
 
-.doughnut-wrap {
-  width: 100%;
-  max-width: 300px;
-  margin: 0 auto;
+.chart {
+  margin: 0;
 }
 
-.line-wrap {
-  width: 100%;
-  max-width: 550px;
+.chart__title {
+  margin-bottom: var(--app-space-2);
+  text-align: center;
+  font: var(--mat-sys-title-small);
+  color: var(--mat-sys-on-surface);
+}
+
+.chart__canvas {
   margin: 0 auto;
+
+  &--doughnut { max-width: 300px; }
+  &--line { max-width: 550px; }
 }

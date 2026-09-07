@@ -27,6 +27,7 @@ export class ForgotPasswordComponent {
   });
 
   submitting = signal(false);
+  sent = signal(false);
 
   onSubmit() {
     this.forgotPasswordForm.markAllAsTouched();
@@ -39,7 +40,7 @@ export class ForgotPasswordComponent {
     this.authService.forgotPassword(email).subscribe({
       next: () => {
         this.submitting.set(false);
-        this.commonService.success("Sent password reset email successfully. Please check your email.");
+        this.sent.set(true);
       },
       error: (err) => {
         this.submitting.set(false);

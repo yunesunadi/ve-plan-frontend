@@ -1,53 +1,62 @@
 <mat-card appearance="outlined">
-  <mat-card-content>
-    @if (event.cover) {
-      <img [src]="cover_url + '/' + event.cover" alt="Event photo" class="cover-img">
-    }
-    <h6 class="text-primary-clr">{{ event.title }}</h6>
-    <p>{{ event.description }}</p>
-    <div class="card-grid">
-      <div>
-        <b class="mb-0 text-primary-clr">Date:</b>
-        <div class="event-info">
-          <mat-icon class="text-primary-clr">event_available</mat-icon>
-          <span>{{ event.date | date: "dd/MM/yyyy" }}</span>
+  <mat-card-content class="details">
+    <div class="details__cover">
+      @if (coverSrc(); as src) {
+        <img [src]="src" [alt]="event().title + ' cover image'" loading="lazy" decoding="async" />
+      } @else {
+        <div class="details__cover-fallback" aria-hidden="true">
+          <mat-icon>{{ categoryIcon() }}</mat-icon>
         </div>
-      </div>
-      <div>
-        <b class="mb-0 text-primary-clr">From:</b>
-        <div class="event-info">
-          <mat-icon class="text-primary-clr">access_time</mat-icon>
-          <span>{{ event.start_time | date: "hh:mm a" }}</span>
-        </div>
-      </div>
-      <div>
-        <b class="mb-0 text-primary-clr">To:</b>
-        <div class="event-info">
-          <mat-icon class="text-primary-clr">access_time</mat-icon>
-          <span>{{ event.end_time | date: "hh:mm a" }}</span>
-        </div>
-      </div>
-      <div>
-        <b class="mb-0 text-primary-clr">Category:</b>
-        <div class="event-info">
-          <mat-icon class="text-primary-clr">developer_board</mat-icon>
-          <span class="text-capitalize">{{ event.category }}</span>
-        </div>
-      </div>
-      <div>
-        <b class="mb-0 text-primary-clr">Type:</b>
-        <div class="event-info">
-          <mat-icon class="text-primary-clr">visibility</mat-icon>
-          <span class="text-capitalize">{{ event.type }}</span>
-        </div>
-      </div>
-      <div>
-        <b class="mb-0 text-primary-clr">Organizer:</b>
-        <div class="event-info">
-          <mat-icon class="text-primary-clr">person_outline</mat-icon>
-          <span>{{ event.user.name }}</span>
-        </div>
-      </div>
+      }
     </div>
+
+    <p class="details__description">{{ event().description }}</p>
+
+    <dl class="details__grid">
+      <div class="details__item">
+        <dt>Date</dt>
+        <dd>
+          <mat-icon aria-hidden="true">event_available</mat-icon>
+          <span>{{ schedule().date }}</span>
+        </dd>
+      </div>
+      <div class="details__item">
+        <dt>Time</dt>
+        <dd>
+          <mat-icon aria-hidden="true">access_time</mat-icon>
+          <span>{{ schedule().time }}</span>
+        </dd>
+      </div>
+      @if (schedule().zone; as zone) {
+        <div class="details__item">
+          <dt>Timezone</dt>
+          <dd>
+            <mat-icon aria-hidden="true">public</mat-icon>
+            <span>{{ zone }}</span>
+          </dd>
+        </div>
+      }
+      <div class="details__item">
+        <dt>Category</dt>
+        <dd>
+          <mat-icon aria-hidden="true">developer_board</mat-icon>
+          <span class="text-capitalize">{{ event().category }}</span>
+        </dd>
+      </div>
+      <div class="details__item">
+        <dt>Visibility</dt>
+        <dd>
+          <mat-icon aria-hidden="true">visibility</mat-icon>
+          <span class="text-capitalize">{{ event().type }}</span>
+        </dd>
+      </div>
+      <div class="details__item">
+        <dt>Organizer</dt>
+        <dd>
+          <mat-icon aria-hidden="true">person_outline</mat-icon>
+          <span>{{ event().user.name }}</span>
+        </dd>
+      </div>
+    </dl>
   </mat-card-content>
 </mat-card>

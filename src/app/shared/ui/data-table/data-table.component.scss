@@ -15,6 +15,9 @@
 }
 
 .data-table__bulk-bar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -25,6 +28,7 @@
   border-radius: var(--app-radius-md);
   background: var(--mat-sys-primary-container);
   color: var(--mat-sys-on-primary-container);
+  box-shadow: var(--app-elev-2);
 }
 
 .data-table__bulk-count {

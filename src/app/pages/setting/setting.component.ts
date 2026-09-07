@@ -1,211 +1,228 @@
-import { ChangeDetectorRef, Component, ElementRef, inject, signal, ViewChild, ChangeDetectionStrategy } from '@angular/core';
+import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators, ReactiveFormsModule } from '@angular/forms';
+import { HttpEventType } from '@angular/common/http';
 import { filter, switchMap } from 'rxjs';
+import { Router, RouterLink } from '@angular/router';
 import { CommonService } from '../../services/common.service';
 import { ConfirmService } from '../../services/confirm.service';
 import { ApiError } from '../../models/ApiError';
 import { UserService } from '../../services/user.service';
-import { environment } from '../../../environments/environment';
-import { Router } from '@angular/router';
+import { EventService } from '../../services/event.service';
 import { DashboardCacheService } from '../../caches/dashboard-cache.service';
 import { SocketService } from '../../services/socket.service';
+import { User } from '../../models/User';
 import { OutletInnerComponent } from '../../shared/outlet-inner/outlet-inner.component';
 import { MatIconButton } from '@angular/material/button';
+import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
+import { MatCard, MatCardContent } from '@angular/material/card';
 import { MatFormField, MatLabel, MatInput, MatError, MatSuffix, MatHint } from '@angular/material/input';
-import { MatDivider } from '@angular/material/divider';
 import { PageHeaderComponent } from '../../shared/ui/page-header/page-header.component';
+import { AvatarComponent } from '../../shared/ui/avatar/avatar.component';
 import { FormErrorComponent } from '../../shared/ui/form-error/form-error.component';
 import { SubmitButtonComponent } from '../../shared/ui/submit-button/submit-button.component';
 
 const MIN_LENGTH = 8;
+const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
+const ALLOWED_PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 @Component({
-    selector: 'app-setting',
-    templateUrl: './setting.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    styleUrl: './setting.component.scss',
-    imports: [OutletInnerComponent, PageHeaderComponent, MatIcon, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, MatIconButton, MatSuffix, MatHint, MatDivider, FormErrorComponent, SubmitButtonComponent]
+  selector: 'app-setting',
+  templateUrl: './setting.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  styleUrl: './setting.component.scss',
+  imports: [
+    OutletInnerComponent, PageHeaderComponent, AvatarComponent, RouterLink,
+    ReactiveFormsModule, MatCard, MatCardContent,
+    MatFormField, MatLabel, MatInput, MatError, MatIconButton, MatButton, MatIcon, MatSuffix, MatHint,
+    FormErrorComponent, SubmitButtonComponent,
+  ],
 })
 export class SettingComponent {
-  @ViewChild("imgView") imgView!: ElementRef;
-  isCurrentPassword = signal(true);
-  isNewPassword = signal(true);
-  isConfirmPassword = signal(true);
-  showChangePassword = signal(true);
-  isDeletePassword = signal(true);
-  isSavingProfile = signal(false);
-  isChangingPassword = signal(false);
-  isDeleting = signal(false);
-  edit_profile_form: FormGroup;
-  change_password_form: FormGroup;
-  delete_account_form: FormGroup;
-  profile = signal("");
-  current_user_email = signal("");
-
   private form_builder = inject(FormBuilder);
   private userService = inject(UserService);
+  private eventService = inject(EventService);
   private cacheService = inject(DashboardCacheService);
   private commonService = inject(CommonService);
   private confirmService = inject(ConfirmService);
   private socketService = inject(SocketService);
-  private changeDetectorRef = inject(ChangeDetectorRef);
   private router = inject(Router);
 
+  readonly PHOTO_HINT = 'JPG, PNG or WebP · up to 5 MB';
+
+  isCurrentPassword = signal(true);
+  isNewPassword = signal(true);
+  isConfirmPassword = signal(true);
+  isDeletePassword = signal(true);
+  showChangePassword = signal(true);
+
+  isSavingProfile = signal(false);
+  isChangingPassword = signal(false);
+  isDeleting = signal(false);
+
+  currentUser = signal<User | null>(null);
+  currentUserEmail = signal('');
+  uploadProgress = signal<number | null>(null);
+
+  stagedFile = signal<File | null>(null);
+  previewUrl = signal<string | null>(null);
+  photoError = signal('');
+
+  liveMeeting = signal<{ event_id: string; title: string | null } | null>(null);
+  ownedEventsCount = signal<number | null>(null);
+
+  readonly isOrganizer = computed(() => this.currentUser()?.role === 'organizer');
+  readonly socialProvider = computed(() => {
+    const u = this.currentUser();
+    if (u?.googleId) return 'Google';
+    if (u?.facebookId) return 'Facebook';
+    return null;
+  });
+
+  edit_profile_form: FormGroup;
+  change_password_form: FormGroup;
+  delete_account_form: FormGroup;
+
   constructor() {
-    this.edit_profile_form = this.form_builder.group(
-      {
-        profile: [''],
-        name: [''],
-        email: [{ value: '', disabled: true }],
-      }
-    );
+    this.edit_profile_form = this.form_builder.group({
+      name: ['', Validators.required],
+      email: [{ value: '', disabled: true }],
+    });
 
     this.change_password_form = this.form_builder.group(
       {
         current_password: ['', [Validators.required]],
         new_password: ['', [Validators.required, Validators.minLength(MIN_LENGTH)]],
-        confirm_password: ['', [Validators.required, Validators.minLength(MIN_LENGTH)]]
+        confirm_password: ['', [Validators.required, Validators.minLength(MIN_LENGTH)]],
       },
-      {
-        validators: this.checkPasswordsValidator()
-      }
+      { validators: this.checkPasswordsValidator() },
     );
 
-    this.delete_account_form = this.form_builder.group(
-      {
-        password: ['', Validators.required],
-      }
-    );
+    this.delete_account_form = this.form_builder.group({
+      password: ['', Validators.required],
+    });
   }
 
   checkPasswordsValidator(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       const isNotMatched = control.value['new_password'] !== control.value['confirm_password'];
-      return  isNotMatched ? { passwordMismatch: true } : null;
+      return isNotMatched ? { passwordMismatch: true } : null;
     };
   }
 
   ngOnInit() {
     this.cacheService.current_user.subscribe({
       next: (user) => {
-        if (user.profile) {
-          if (user.googleId || user.facebookId) {
-            this.profile.set(user.profile);
-          } else {
-            this.profile.set(environment.profileUrl + "/" + user.profile);
-          }
-        } else {
-          this.profile.set("assets/images/placeholder_person.png");
-        }
+        this.currentUser.set(user);
+        this.currentUserEmail.set(user.email || '');
 
         const isSocialOnly = !!(user.googleId || user.facebookId) && !user.hasPassword;
         this.showChangePassword.set(!isSocialOnly);
-        this.current_user_email.set(user.email || '');
 
         this.delete_account_form = isSocialOnly
           ? this.form_builder.group({})
           : this.form_builder.group({ password: ['', Validators.required] });
 
-        this.edit_profile_form = this.form_builder.group(
-          {
-            profile: [user.profile || ''],
-            name: [user.name || '', Validators.required],
-            email: [{ value: user.email || '', disabled: true }],
-          }
-        );
+        this.edit_profile_form.patchValue({ name: user.name || '', email: user.email || '' });
 
-        this.changeDetectorRef.markForCheck();
-      }
+        if (user.role === 'organizer') {
+          this.loadOrganizerContext();
+        }
+      },
     });
   }
 
-  get nameControl() {
-    return this.edit_profile_form.controls["name"];
+  private loadOrganizerContext(): void {
+    this.eventService.getOrganizerSummary().subscribe({
+      next: (res) => this.liveMeeting.set(res.data.live_meeting),
+    });
+    this.eventService.getMyEvents({ type: 'all', limit: 1 }).subscribe({
+      next: (res) => this.ownedEventsCount.set(res.meta?.total ?? 0),
+    });
   }
 
-  get currentPasswordControl() {
-    return this.change_password_form.controls["current_password"];
-  }
+  get nameControl() { return this.edit_profile_form.controls['name']; }
+  get currentPasswordControl() { return this.change_password_form.controls['current_password']; }
+  get newPasswordControl() { return this.change_password_form.controls['new_password']; }
+  get confirmPasswordControl() { return this.change_password_form.controls['confirm_password']; }
+  get deletePasswordControl() { return this.delete_account_form.controls['password']; }
 
-  get newPasswordControl() {
-    return this.change_password_form.controls["new_password"];
-  }
+  toggleDeletePasswordVisibility() { this.isDeletePassword.update((p) => !p); }
+  toggleCurrentPasswordVisibility() { this.isCurrentPassword.update((p) => !p); }
+  toggleNewPasswordVisibility() { this.isNewPassword.update((p) => !p); }
+  toggleConfirmPasswordVisibility() { this.isConfirmPassword.update((p) => !p); }
 
-  get confirmPasswordControl() {
-    return this.change_password_form.controls["confirm_password"];
-  }
+  onPhotoSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+    if (!file) return;
 
-  get deletePasswordControl() {
-    return this.delete_account_form.controls["password"];
-  }
+    this.photoError.set('');
 
-  toggleDeletePasswordVisibility() {
-    this.isDeletePassword.update(prev => !prev);
-  }
-
-  toggleCurrentPasswordVisibility() {
-    this.isCurrentPassword.update(prev => !prev);
-  }
-
-  toggleNewPasswordVisibility() {
-    this.isNewPassword.update(prev => !prev);
-  }
-
-  toggleConfirmPasswordVisibility() {
-    this.isConfirmPassword.update(prev => !prev);
-  }
-
-  changeProfile(event: Event) {
-    const file = (event.target as HTMLInputElement).files?.[0];
-    
-    if (file) {
-      if (!file.type.startsWith("image")) return;
-
-      const fileReader = new FileReader();
-      fileReader.onload = (event) => {
-        this.imgView.nativeElement.src = event.target?.result;
-      }
-      fileReader.readAsDataURL(file);
-
-      this.edit_profile_form.get("profile")?.patchValue(file);
+    if (!ALLOWED_PHOTO_TYPES.includes(file.type)) {
+      this.photoError.set('That file type is not supported. Use a JPG, PNG or WebP image.');
+      return;
     }
+    if (file.size > MAX_PHOTO_BYTES) {
+      this.photoError.set('That image is larger than 5 MB. Choose a smaller file.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => this.previewUrl.set(reader.result as string);
+    reader.readAsDataURL(file);
+    this.stagedFile.set(file);
   }
 
-  editProfile() {
-    this.edit_profile_form.markAllAsTouched();
+  clearStagedPhoto(): void {
+    this.stagedFile.set(null);
+    this.previewUrl.set(null);
+    this.photoError.set('');
+  }
 
+  editProfile(): void {
+    this.edit_profile_form.markAllAsTouched();
     if (this.edit_profile_form.invalid) return;
 
     this.isSavingProfile.set(true);
-    this.userService.editProfile(this.edit_profile_form.value).subscribe({
-      next: (res) => {
-        this.isSavingProfile.set(false);
-        this.commonService.success(res.message);
-        this.cacheService.resetCurrentUser();
-      },
-      error: (err) => {
-        this.isSavingProfile.set(false);
-        if (err instanceof ApiError) {
-          this.commonService.error(err);
+    this.uploadProgress.set(this.stagedFile() ? 0 : null);
+
+    this.userService.editProfile({
+      profile: this.stagedFile(),
+      name: this.edit_profile_form.getRawValue().name,
+    }).subscribe({
+      next: (event) => {
+        if (event.type === HttpEventType.UploadProgress && event.total) {
+          this.uploadProgress.set(Math.round((event.loaded / event.total) * 100));
+        } else if (event.type === HttpEventType.Response) {
+          this.isSavingProfile.set(false);
+          this.uploadProgress.set(null);
+          this.clearStagedPhoto();
+          this.commonService.success(event.body?.message ?? 'Profile updated.');
+          this.cacheService.resetCurrentUser();
         }
-      }
+      },
+      error: (err: unknown) => {
+        this.isSavingProfile.set(false);
+        this.uploadProgress.set(null);
+        this.photoError.set(this.stagedFile() ? 'Upload failed. Please try again.' : '');
+        if (err instanceof ApiError) this.commonService.error(err);
+      },
     });
   }
 
-  changePassword() {
+  changePassword(): void {
     this.change_password_form.markAllAsTouched();
-    
     if (this.change_password_form.invalid) return;
 
-    const current_password = this.change_password_form.value.current_password;
-    const new_password = this.change_password_form.value.new_password;
+    const { current_password, new_password } = this.change_password_form.value;
 
     this.isChangingPassword.set(true);
     this.userService.updatePassword(current_password, new_password).subscribe({
       next: (res) => {
         this.isChangingPassword.set(false);
-        localStorage.setItem("token", res.token);
+        localStorage.setItem('token', res.token);
         this.socketService.connect(res.token);
         this.commonService.success(res.message);
         this.change_password_form.reset();
@@ -214,30 +231,40 @@ export class SettingComponent {
         this.confirmPasswordControl.setErrors(null);
         this.cacheService.resetCurrentUser();
       },
-      error: (err) => {
+      error: (err: unknown) => {
         this.isChangingPassword.set(false);
-        if (err instanceof ApiError) {
-          this.commonService.error(err);
-        }
-      }
+        if (err instanceof ApiError) this.commonService.error(err);
+      },
     });
   }
 
-  deleteAccount() {
+  deleteAccount(): void {
     this.delete_account_form.markAllAsTouched();
-
     if (this.delete_account_form.invalid) return;
 
+    const live = this.liveMeeting();
+    if (live) {
+      this.commonService.warning(
+        `End your live meeting${live.title ? ` for “${live.title}”` : ''} before deleting your account.`,
+      );
+      return;
+    }
+
     const isSocialOnly = !this.showChangePassword();
-    const email = this.current_user_email();
+    const email = this.currentUserEmail();
+    const count = this.ownedEventsCount();
+
+    const eventsClause = this.isOrganizer() && count !== null
+      ? ` This removes ${count} event${count === 1 ? '' : 's'} you own and everything in ${count === 1 ? 'it' : 'them'}.`
+      : '';
 
     this.confirmService.confirm({
-      title: "Delete your account?",
-      body: "This permanently removes your events, registrations, invitations and meeting history and cannot be undone.",
-      confirmLabel: "Delete account",
+      title: 'Delete your account?',
+      body: `This permanently removes your registrations, invitations and meeting history and cannot be undone.${eventsClause}`,
+      confirmLabel: 'Delete account',
       destructive: true,
       confirmationPhrase: email,
-      confirmationHint: "Type your account email to confirm",
+      confirmationHint: 'Type your account email to confirm',
     }).pipe(
       filter(Boolean),
       switchMap(() => {
@@ -246,19 +273,17 @@ export class SettingComponent {
           ? { confirm_email: email }
           : { password: this.delete_account_form.value.password };
         return this.userService.deleteAccount(body);
-      })
+      }),
     ).subscribe({
       next: (res) => {
         this.commonService.success(res.message);
-        localStorage.removeItem("token");
-        this.router.navigateByUrl("login");
+        localStorage.removeItem('token');
+        this.router.navigateByUrl('login');
       },
-      error: (err) => {
+      error: (err: unknown) => {
         this.isDeleting.set(false);
-        if (err instanceof ApiError) {
-          this.commonService.error(err);
-        }
-      }
+        if (err instanceof ApiError) this.commonService.error(err);
+      },
     });
   }
 }

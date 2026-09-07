@@ -1,6 +1,8 @@
-import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy, afterNextRender } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DashboardCacheService } from '../../caches/dashboard-cache.service';
-import { Router, NavigationStart, NavigationEnd, RouterLink } from '@angular/router';
+import { Router, NavigationStart, RouterLink } from '@angular/router';
+import { filter } from 'rxjs';
 import { EventCacheService } from '../../caches/event-cache.service';
 import { Event, MyEventQuery, MyEventType } from '../../models/Event';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
@@ -15,6 +17,8 @@ import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.com
 import { ErrorStateComponent } from '../../shared/ui/error-state/error-state.component';
 import { StatusKind } from '../../shared/ui/status-chip/status-chip.component';
 import { UtilService } from '../../services/util.service';
+
+const SCROLL_KEY = 'my_events_scroll';
 
 @Component({
     selector: 'app-my-events',
@@ -36,26 +40,14 @@ export class MyEventsComponent {
   role = signal("");
 
   constructor() {
-    this.router.events.subscribe(event => {
-      const container = document.querySelector('#main-content') as HTMLElement;
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationStart), takeUntilDestroyed())
+      .subscribe(() => {
+        const container = this.mainContent();
+        if (container) sessionStorage.setItem(SCROLL_KEY, `${container.scrollTop}`);
+      });
 
-      if (event instanceof NavigationStart) {
-        if (container) {
-          localStorage.setItem('my_events_scroll', `${container.scrollTop}`);
-        }
-      }
-
-      if (event instanceof NavigationEnd) {
-        const scrollY = localStorage.getItem('my_events_scroll');
-
-        if (container && scrollY) {
-          setTimeout(() => {
-            container.scrollTop = +scrollY;
-            localStorage.removeItem('my_events_scroll');
-          }, 0);
-        }
-      }
-    });
+    afterNextRender(() => this.restoreScroll());
   }
 
   ngOnInit() {
@@ -69,10 +61,38 @@ export class MyEventsComponent {
   ngOnDestroy() {
     this.cache.changeRoute$.next(true);
   }
-  
+
+  private mainContent(): HTMLElement | null {
+    return document.querySelector<HTMLElement>('#main-content');
+  }
+
+  private restoreScroll(): void {
+    const saved = sessionStorage.getItem(SCROLL_KEY);
+    if (!saved) return;
+    sessionStorage.removeItem(SCROLL_KEY);
+
+    const target = Number(saved);
+    if (!target || Number.isNaN(target)) return;
+
+    let frames = 0;
+    const tick = () => {
+      const container = this.mainContent();
+      if (!container) {
+        if (frames++ < 30) requestAnimationFrame(tick);
+        return;
+      }
+      if (container.scrollHeight - container.clientHeight >= target || frames++ > 30) {
+        container.scrollTop = target;
+        return;
+      }
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+
   changeFilter(value: string, query: Partial<MyEventQuery>) {
     this.cache.resetMyEventsQuery$.next(true);
-    
+
     this.router.navigate([`/${this.role()}/dashboard/my_events`], {
       queryParams: { ...query, type: value, offset: 0 },
       replaceUrl: true
@@ -81,8 +101,12 @@ export class MyEventsComponent {
 
   onScroll(query: Partial<MyEventQuery>, result_length: number) {
     if (result_length >= this.cache.myEventsTotal()) return;
-    const new_query = { ...query, offset: result_length };
-    this.cache.loadMoreMyEvents(new_query);
+    if (this.cache.isMyEventsLoadingMore() || this.cache.myEventsLoadMoreError()) return;
+    this.cache.loadMoreMyEvents({ ...query, offset: result_length });
+  }
+
+  retryLoadMore(query: Partial<MyEventQuery>, result_length: number) {
+    this.cache.loadMoreMyEvents({ ...query, offset: result_length });
   }
 
   retry() {

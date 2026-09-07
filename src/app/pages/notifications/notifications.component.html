@@ -1,89 +1,114 @@
-@let notifications = notifications$ | async;
+@let groups = groups$ | async;
 
 <app-outlet-inner>
   <app-page-header title="Notifications">
-    <div header-actions class="cluster cluster--end actions-row">
-      <button
-        mat-raised-button
-        class="text-primary-clr bg-secondary-clr"
-        (click)="markAllRead()"
-        [disabled]="!hasUnread(notifications)"
+    <div header-actions class="cluster">
+      <mat-button-toggle-group
+        aria-label="Filter notifications"
+        [value]="unreadOnly() ? 'unread' : 'all'"
+        (change)="unreadOnly.set($event.value === 'unread')"
       >
-        <mat-icon class="text-primary-clr">mark_email_read</mat-icon>
-        <span>Mark all read</span>
-      </button>
-      <button mat-raised-button class="text-primary-clr bg-secondary-clr" (click)="markAsRead()">
-        <mat-icon class="text-primary-clr">done_all</mat-icon>
-        <span>Mark as read</span>
-      </button>
-      <button mat-stroked-button (click)="deleteSelected()">
-        <mat-icon class="text-danger">delete</mat-icon>
-        <span class="text-danger">Delete</span>
+        <mat-button-toggle value="all">All</mat-button-toggle>
+        <mat-button-toggle value="unread">Unread</mat-button-toggle>
+      </mat-button-toggle-group>
+
+      <button mat-stroked-button type="button" (click)="markAllRead()" [disabled]="!hasUnread()">
+        <mat-icon>mark_email_read</mat-icon> Mark all read
       </button>
     </div>
   </app-page-header>
 
+  @if (selectedCount() > 0) {
+    <div class="selection-bar" role="region" aria-label="Selected notifications">
+      <span class="selection-bar__count">{{ selectedCount() }} selected</span>
+      <div class="cluster">
+        <button mat-flat-button type="button" (click)="markSelectedRead()">
+          <mat-icon>done_all</mat-icon> Mark read
+        </button>
+        <button mat-stroked-button type="button" (click)="deleteSelected()">
+          <mat-icon>delete</mat-icon> Delete
+        </button>
+        <button mat-button type="button" (click)="clearSelection()">Clear</button>
+      </div>
+    </div>
+  }
+
   @if (error(); as err) {
     <app-error-state [error]="err" (retry)="retry()" />
   } @else if (isLoading()) {
-    <div class="stack w-100 mx-auto notifications-list" aria-hidden="true">
-      @for (i of skeletonPlaceholders; track $index) {
-        <mat-card appearance="outlined">
-          <mat-card-content>
-            <div class="notification-row">
-              <app-skeleton variant="circle" height="20px" />
-              <div class="stack" style="--stack-gap: var(--app-space-2); flex: 1">
-                <app-skeleton variant="text" width="40%" height="16px" />
-                <app-skeleton variant="text" width="85%" height="14px" />
-              </div>
-            </div>
-          </mat-card-content>
-        </mat-card>
-      }
-    </div>
-  } @else if (notifications && notifications.length > 0) {
-    <div class="stack w-100 mx-auto notifications-list">
-      @for (notification of notifications; track notification._id) {
-      @let sid = senderId(notification);
-      <mat-card
-        appearance="outlined"
-        [ngClass]="{ 'bg-secondary-clr': !notification.isRead, 'notification-card--linked': sid }"
-        [routerLink]="sid ? '/' + role() + '/dashboard/events/' + sid + '/view' : null"
-        [attr.role]="sid ? 'link' : null"
-        [attr.tabindex]="sid ? 0 : null"
-        (keydown.enter)="navigateToSender(notification)"
-      >
-        <mat-card-content>
-          <div class="notification-row">
-            <mat-checkbox
-              (click)="$event.stopPropagation()"
-              [checked]="selection.isSelected(notification._id)"
-              (change)="selection.toggle(notification._id)"
-              color="primary"
-            ></mat-checkbox>
-            <div>
-              <h4 class="text-primary-clr">{{ notification.title }}</h4>
-              <p class="text-primary-clr mb-0">{{ notification.message }}</p>
+    <div class="notifications" aria-hidden="true">
+      <div class="notif-group">
+        <div class="notif-group__label"><app-skeleton variant="text" width="30%" height="16px" /></div>
+        @for (i of skeletonPlaceholders; track $index) {
+          <div class="notif-row">
+            <app-skeleton variant="circle" height="18px" />
+            <div class="stack" style="--stack-gap: var(--app-space-2); flex: 1">
+              <app-skeleton variant="text" width="45%" height="15px" />
+              <app-skeleton variant="text" width="80%" height="13px" />
             </div>
           </div>
-        </mat-card-content>
-      </mat-card>
+        }
+      </div>
+    </div>
+  } @else if (groups && groups.length > 0) {
+    <div
+      class="notifications"
+      infiniteScroll
+      [infiniteScrollDistance]="1"
+      [infiniteScrollThrottle]="400"
+      [infiniteScrollContainer]="'#main-content'"
+      [fromRoot]="true"
+      (scrolled)="onScroll()"
+    >
+      @for (group of groups; track group.key) {
+        <section class="notif-group">
+          <h2 class="notif-group__label">{{ group.label }}</h2>
+
+          @for (notification of group.items; track notification._id) {
+            @let link = eventLink(notification);
+
+            <div class="notif-row" [class.notif-row--unread]="!notification.isRead">
+              <mat-checkbox
+                class="notif-row__check"
+                [checked]="selected().has(notification._id)"
+                (change)="toggleSelection(notification._id)"
+                [attr.aria-label]="'Select notification: ' + notification.title"
+              />
+
+              @if (link) {
+                <a class="notif-row__body" [href]="link" (click)="activate(notification, $event)">
+                  <ng-container [ngTemplateOutlet]="content" [ngTemplateOutletContext]="{ $implicit: notification }" />
+                </a>
+              } @else {
+                <button type="button" class="notif-row__body notif-row__body--plain" (click)="activate(notification)">
+                  <ng-container [ngTemplateOutlet]="content" [ngTemplateOutletContext]="{ $implicit: notification }" />
+                </button>
+              }
+            </div>
+          }
+        </section>
       }
     </div>
 
     @if (loadedCount() < total()) {
-    <div class="cluster cluster--center mt-4">
-      <button mat-stroked-button class="bg-secondary-clr text-primary-clr" (click)="loadMore()">
-        <mat-icon>expand_more</mat-icon>
-        <span>Load more</span>
-      </button>
-    </div>
+      <p class="notifications__more" aria-live="polite">Loading more…</p>
     }
   } @else {
     <app-empty-state
       icon="notifications_none"
-      headline="You're all caught up"
+      [headline]="unreadOnly() ? 'No unread notifications' : 'You\'re all caught up'"
       supporting="New activity on your events will show up here."
     />
   }
 </app-outlet-inner>
+
+<ng-template #content let-notification>
+  <span class="notif-row__head">
+    @if (!notification.isRead) {
+      <span class="notif-row__dot" aria-hidden="true"></span>
+      <span class="notif-row__new">New</span>
+    }
+    <span class="notif-row__title">{{ notification.title }}</span>
+  </span>
+  <span class="notif-row__message">{{ notification.message }}</span>
+</ng-template>

@@ -28,12 +28,14 @@ export class EventCacheService {
 
   isEventsLoading = signal(true);
   isMyEventsLoading = signal(true);
+  isMyEventsLoadingMore = signal(false);
 
   eventsTotal = signal(0);
   myEventsTotal = signal(0);
 
   eventsError = signal<ApiError | null>(null);
   myEventsError = signal<ApiError | null>(null);
+  myEventsLoadMoreError = signal<ApiError | null>(null);
 
   private retryEvents$ = new BehaviorSubject(0);
   private retryMyEvents$ = new BehaviorSubject(0);
@@ -129,13 +131,21 @@ export class EventCacheService {
         switchMap((query) => this.eventService.getMyEvents(query).pipe(
           tap((res) => {
             this.isMyEventsLoading.set(false);
+            this.isMyEventsLoadingMore.set(false);
             this.myEventsTotal.set(res.meta?.total ?? 0);
             this.myEventsError.set(null);
+            this.myEventsLoadMoreError.set(null);
           }),
           map(res => ({ data: res.data, query })),
           catchError((err: unknown) => {
+            const apiErr = err instanceof ApiError ? err : null;
             this.isMyEventsLoading.set(false);
-            this.myEventsError.set(err instanceof ApiError ? err : null);
+            this.isMyEventsLoadingMore.set(false);
+            if (query.offset) {
+              this.myEventsLoadMoreError.set(apiErr);
+            } else {
+              this.myEventsError.set(apiErr);
+            }
             return of({ data: [] as Event[], query });
           })
         )),
@@ -156,12 +166,15 @@ export class EventCacheService {
   }
 
   loadMoreMyEvents(query: Partial<MyEventQuery>) {
+    this.isMyEventsLoadingMore.set(true);
+    this.myEventsLoadMoreError.set(null);
     this.myEventsPagination$.next(query);
   }
 
   retryMyEvents(): void {
     this.isMyEventsLoading.set(true);
     this.myEventsError.set(null);
+    this.myEventsLoadMoreError.set(null);
     this.retryMyEvents$.next(this.retryMyEvents$.value + 1);
   }
 

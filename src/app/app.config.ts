@@ -1,5 +1,5 @@
 import { ApplicationConfig, inject, provideZonelessChangeDetection } from '@angular/core';
-import { provideRouter, withComponentInputBinding, withNavigationErrorHandler } from '@angular/router';
+import { provideRouter, withComponentInputBinding, withNavigationErrorHandler, withRouterConfig } from '@angular/router';
 
 import { routes } from './app.routes';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
@@ -16,6 +16,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(
       routes,
       withComponentInputBinding(),
+      withRouterConfig({ paramsInheritanceStrategy: 'always' }),
       withNavigationErrorHandler((navError) => {
         const err = navError.error;
         inject(CommonService).error(err instanceof ApiError ? err : 'Something went wrong.');

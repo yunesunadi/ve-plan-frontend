@@ -1,3 +1,35 @@
 <mat-dialog-content class="jitsi-dialog-content">
-  <div #jitsi_iframe class="jitsi-frame"></div>
+  <div class="meeting-region" role="region" [attr.aria-label]="meetingTitle">
+    <div #jitsi_iframe class="jitsi-frame"></div>
+
+    @if (phase() !== 'live') {
+      <div class="meeting-overlay">
+        @if (phase() === 'loading') {
+          <mat-icon class="meeting-overlay__spin" aria-hidden="true">autorenew</mat-icon>
+          <p>Connecting to the meeting…</p>
+        } @else if (phase() === 'ended') {
+          <mat-icon class="meeting-overlay__icon" aria-hidden="true">event_busy</mat-icon>
+          <h2 class="meeting-overlay__title">This meeting has ended</h2>
+          <p class="meeting-overlay__message">
+            The organizer has closed this meeting. You can rejoin if it's re-opened.
+          </p>
+          <div class="meeting-overlay__actions">
+            <button type="button" mat-flat-button (click)="close()">Close</button>
+          </div>
+        } @else if (errorView(); as err) {
+          <mat-icon class="meeting-overlay__icon" aria-hidden="true">{{ err.icon }}</mat-icon>
+          <h2 class="meeting-overlay__title">{{ err.title }}</h2>
+          <p class="meeting-overlay__message">{{ err.message }}</p>
+          <div class="meeting-overlay__actions">
+            @if (err.canRetry) {
+              <button type="button" mat-flat-button (click)="retry()">Try again</button>
+            }
+            <button type="button" mat-stroked-button (click)="close()">Close</button>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <div class="visually-hidden" aria-live="polite">{{ liveAnnouncement() }}</div>
 </mat-dialog-content>

@@ -1,7 +1,6 @@
 import { Component, ElementRef, inject, signal, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogTitle, MatDialogContent, MatDialogActions, MatDialogClose } from '@angular/material/dialog';
-import { format } from "date-fns";
 import { EventService } from '../../services/event.service';
 import { CommonService } from '../../services/common.service';
 import { concatMap, iif, of } from 'rxjs';
@@ -13,17 +12,28 @@ import { CdkScrollable } from '@angular/cdk/scrolling';
 import { MatFormField, MatLabel, MatInput, MatError, MatSuffix } from '@angular/material/input';
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { MatTimepickerInput, MatTimepicker, MatTimepickerToggle } from '@angular/material/timepicker';
+import { MatDatepickerInput, MatDatepickerToggle, MatDatepicker } from '@angular/material/datepicker';
 import { MatSelect, MatOption } from '@angular/material/select';
 import { MatButton } from '@angular/material/button';
 import { FormErrorComponent } from '../../shared/ui/form-error/form-error.component';
 import { SubmitButtonComponent } from '../../shared/ui/submit-button/submit-button.component';
+
+function startOfToday(): Date {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+function toIso(value: unknown): unknown {
+  return value instanceof Date ? value.toISOString() : value;
+}
 
 @Component({
     selector: 'app-event-dialog',
     templateUrl: './event-dialog.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrl: './event-dialog.component.scss',
-    imports: [MatDialogTitle, CdkScrollable, MatDialogContent, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, CdkTextareaAutosize, MatTimepickerInput, MatTimepicker, MatTimepickerToggle, MatSuffix, MatSelect, MatOption, MatDialogActions, MatButton, MatDialogClose, FormErrorComponent, SubmitButtonComponent]
+    imports: [MatDialogTitle, CdkScrollable, MatDialogContent, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, CdkTextareaAutosize, MatTimepickerInput, MatTimepicker, MatTimepickerToggle, MatDatepickerInput, MatDatepickerToggle, MatDatepicker, MatSuffix, MatSelect, MatOption, MatDialogActions, MatButton, MatDialogClose, FormErrorComponent, SubmitButtonComponent]
 })
 export class EventDialogComponent {
   @ViewChild("imgView") imgView!: ElementRef;
@@ -32,6 +42,7 @@ export class EventDialogComponent {
   categories: EventCategoryType[] = ["conference", "meetup", "webinar"];
   types: EventType[] = ["public", "private"];
   submitting = signal(false);
+  readonly minDate = startOfToday();
 
   private form_builder = inject(FormBuilder);
   dialog_data = inject(MAT_DIALOG_DATA);
@@ -41,11 +52,13 @@ export class EventDialogComponent {
   cache = inject(EventCacheService);
 
   constructor() {
+    const initialDate = this.dialog_data.date ? new Date(this.dialog_data.date) : null;
+
     this.create_form = this.form_builder.group({
       cover: [this.dialog_data.cover],
       title: [this.dialog_data.title || '', Validators.required],
       description: [this.dialog_data.description || '', Validators.required],
-      date: [this.dialog_data.date, Validators.required],
+      date: [initialDate, [Validators.required, this.notInThePast()]],
       start_time: [this.dialog_data.start_time || '', Validators.required],
       end_time: [this.dialog_data.end_time || '', Validators.required],
       category: [this.dialog_data.category || '', Validators.required],
@@ -54,6 +67,15 @@ export class EventDialogComponent {
     {
       validators: this.checkTimeValidator()
     });
+  }
+
+  private notInThePast(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (this.dialog_data._id || !control.value) return null;
+      const day = new Date(control.value);
+      day.setHours(0, 0, 0, 0);
+      return day.getTime() < this.minDate.getTime() ? { pastDate: true } : null;
+    };
   }
 
   checkTimeValidator(): ValidatorFn {
@@ -91,6 +113,10 @@ export class EventDialogComponent {
     this.imgView.nativeElement.src = this.dialog_data.cover ? `${environment.coverUrl}/${this.dialog_data.cover}` : 'assets/images/placeholder.jpg';
   }
 
+  get dateControl() {
+    return this.create_form.controls["date"];
+  }
+
   get titleControl() {
     return this.create_form.controls["title"];
   }
@@ -113,10 +139,6 @@ export class EventDialogComponent {
 
   get typeControl() {
     return this.create_form.controls["type"];
-  }
-
-  get eventDate() {
-    return format(this.dialog_data.date, "dd/MM/yyyy");
   }
 
   changeCover(event: Event) {
@@ -142,11 +164,18 @@ export class EventDialogComponent {
 
     this.submitting.set(true);
 
+    const payload = {
+      ...this.create_form.value,
+      date: toIso(this.create_form.value.date),
+      start_time: toIso(this.create_form.value.start_time),
+      end_time: toIso(this.create_form.value.end_time),
+    };
+
     of(true).pipe(
       concatMap(() => iif(
         () => !!this.dialog_data._id,
-        this.eventService.update(this.dialog_data._id, this.create_form.value),
-        this.eventService.create(this.create_form.value)
+        this.eventService.update(this.dialog_data._id, payload),
+        this.eventService.create(payload)
       ))
     ).subscribe({
       next: (res) => {

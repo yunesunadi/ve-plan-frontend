@@ -1,0 +1,15 @@
+<div class="status-page">
+  <mat-icon class="status-page__icon" aria-hidden="true">error_outline</mat-icon>
+  <h1 class="status-page__title">Something went wrong</h1>
+  <p class="status-page__body">
+    An unexpected error stopped the page from loading. Reloading often fixes it — if it keeps
+    happening, head back and try again shortly.
+  </p>
+  <div class="cluster cluster--center">
+    <button mat-flat-button type="button" (click)="reload()">
+      <mat-icon aria-hidden="true">refresh</mat-icon>
+      Reload
+    </button>
+    <a mat-stroked-button [routerLink]="homeLink()">{{ homeLabel() }}</a>
+  </div>
+</div>
