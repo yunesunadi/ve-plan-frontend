@@ -6,6 +6,7 @@ import { of, switchMap } from 'rxjs';
 import { VALIDATION_MESSAGES } from '../../validation-messages';
 
 @Component({
+  // eslint-disable-next-line @angular-eslint/component-selector
   selector: 'mat-error[appFormError]',
   templateUrl: './form-error.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
