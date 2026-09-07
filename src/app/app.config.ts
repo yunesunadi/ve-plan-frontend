@@ -1,4 +1,4 @@
-import { ApplicationConfig, inject, provideZonelessChangeDetection } from '@angular/core';
+import { ApplicationConfig, ErrorHandler, inject, provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter, withComponentInputBinding, withNavigationErrorHandler, withRouterConfig } from '@angular/router';
 
 import { routes } from './app.routes';
@@ -9,6 +9,7 @@ import { authInterceptor } from './interceptors/auth.interceptor';
 import { errorInterceptor } from './interceptors/error.interceptor';
 import { CommonService } from './services/common.service';
 import { ApiError } from './models/ApiError';
+import { GlobalErrorHandler } from './core/global-error-handler';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -28,5 +29,6 @@ export const appConfig: ApplicationConfig = {
       errorInterceptor,
     ])),
     provideNativeDateAdapter(),
+    { provide: ErrorHandler, useClass: GlobalErrorHandler },
   ]
 };
