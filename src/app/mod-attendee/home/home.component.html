@@ -22,10 +22,11 @@
         icon="explore"
         headline="Your feed is empty"
         supporting="Browse public events and register to see what's coming up here."
-        ctaLabel="Browse events"
-        ctaIcon="event"
       >
-        <a mat-flat-button [routerLink]="[ATT, 'events']">Browse events</a>
+        <a mat-flat-button [routerLink]="[ATT, 'events']">
+          <mat-icon aria-hidden="true">event</mat-icon>
+          Browse events
+        </a>
       </app-empty-state>
     } @else {
       <div class="stack feed" style="--stack-gap: var(--app-space-6)">

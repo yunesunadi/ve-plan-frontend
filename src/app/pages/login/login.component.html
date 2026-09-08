@@ -24,6 +24,14 @@
         </p>
       }
 
+      @if (unverifiedEmail(); as email) {
+        <p class="auth-alt mt-0 mb-2">
+          <a class="text-decoration-underline" routerLink="/verify_email" [queryParams]="{ email }">
+            Resend verification link
+          </a>
+        </p>
+      }
+
       <mat-form-field appearance="outline">
         <mat-label>Email</mat-label>
         <input

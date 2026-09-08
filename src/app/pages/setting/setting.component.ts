@@ -21,6 +21,7 @@ import { PageHeaderComponent } from '../../shared/ui/page-header/page-header.com
 import { AvatarComponent } from '../../shared/ui/avatar/avatar.component';
 import { FormErrorComponent } from '../../shared/ui/form-error/form-error.component';
 import { SubmitButtonComponent } from '../../shared/ui/submit-button/submit-button.component';
+import { ParentErrorStateMatcher } from '../../shared/parent-error-state-matcher';
 
 const MIN_LENGTH = 8;
 const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
@@ -82,6 +83,7 @@ export class SettingComponent {
   edit_profile_form: FormGroup;
   change_password_form: FormGroup;
   delete_account_form: FormGroup;
+  confirmPasswordMatcher = new ParentErrorStateMatcher();
 
   constructor() {
     this.edit_profile_form = this.form_builder.group({

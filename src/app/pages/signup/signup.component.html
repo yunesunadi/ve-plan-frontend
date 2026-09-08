@@ -89,6 +89,7 @@
           formControlName="confirm_password"
           placeholder="Re-enter password"
           autocomplete="new-password"
+          [errorStateMatcher]="confirmPasswordMatcher"
         />
         <button
           type="button"

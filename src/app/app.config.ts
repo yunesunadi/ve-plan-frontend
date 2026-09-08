@@ -1,5 +1,5 @@
 import { ApplicationConfig, ErrorHandler, inject, provideZonelessChangeDetection } from '@angular/core';
-import { provideRouter, withComponentInputBinding, withNavigationErrorHandler, withRouterConfig } from '@angular/router';
+import { provideRouter, withComponentInputBinding, withInMemoryScrolling, withNavigationErrorHandler, withRouterConfig } from '@angular/router';
 
 import { routes } from './app.routes';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
@@ -18,6 +18,7 @@ export const appConfig: ApplicationConfig = {
       routes,
       withComponentInputBinding(),
       withRouterConfig({ paramsInheritanceStrategy: 'always' }),
+      withInMemoryScrolling({ anchorScrolling: 'enabled', scrollPositionRestoration: 'enabled' }),
       withNavigationErrorHandler((navError) => {
         const err = navError.error;
         inject(CommonService).error(err instanceof ApiError ? err : 'Something went wrong.');

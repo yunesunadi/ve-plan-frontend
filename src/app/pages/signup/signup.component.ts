@@ -10,6 +10,7 @@ import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { FormErrorComponent } from '../../shared/ui/form-error/form-error.component';
 import { SubmitButtonComponent } from '../../shared/ui/submit-button/submit-button.component';
+import { ParentErrorStateMatcher } from '../../shared/parent-error-state-matcher';
 
 const MIN_LENGTH = 8;
 
@@ -61,6 +62,7 @@ export class SignupComponent {
   submitting = signal(false);
   formError = signal<string | null>(null);
   passwordStrength = signal<PasswordStrength>({ score: 0, label: '' });
+  confirmPasswordMatcher = new ParentErrorStateMatcher();
   signup_form: FormGroup;
 
   private form_builder = inject(FormBuilder);
@@ -74,7 +76,7 @@ export class SignupComponent {
         name: ['', Validators.required],
         email: ['', [Validators.required, Validators.email]],
         password: ['', [Validators.required, Validators.minLength(MIN_LENGTH)]],
-        confirm_password: ['', [Validators.required, Validators.minLength(MIN_LENGTH)]]
+        confirm_password: ['', [Validators.required]]
       },
       {
         validators: this.checkPasswordsValidator()

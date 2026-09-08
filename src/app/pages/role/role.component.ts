@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { CommonService } from '../../services/common.service';
 import { ConfirmService } from '../../services/confirm.service';
 import { DashboardCacheService } from '../../caches/dashboard-cache.service';
+import { FormsModule } from '@angular/forms';
 import { filter, map } from 'rxjs';
 import { RoleType, UserPayload } from '../../models/User';
 import { jwtDecode } from 'jwt-decode';
@@ -24,7 +25,7 @@ interface RoleOption {
     templateUrl: './role.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrl: './role.component.scss',
-    imports: [RegisterWrapperComponent, MatIcon, SubmitButtonComponent]
+    imports: [RegisterWrapperComponent, FormsModule, MatIcon, SubmitButtonComponent]
 })
 export class RoleComponent {
   readonly roleOptions: RoleOption[] = [

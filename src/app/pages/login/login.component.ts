@@ -27,6 +27,7 @@ export class LoginComponent {
   isPassword = signal(true);
   submitting = signal(false);
   formError = signal<string | null>(null);
+  unverifiedEmail = signal<string | null>(null);
   login_form: FormGroup;
 
   private form_builder = inject(FormBuilder);
@@ -57,6 +58,7 @@ export class LoginComponent {
   submit() {
     this.login_form.markAllAsTouched();
     this.formError.set(null);
+    this.unverifiedEmail.set(null);
 
     if (this.login_form.invalid) return;
 
@@ -72,11 +74,16 @@ export class LoginComponent {
         this.dashboardCache.resetHasRole();
 
         const decoded: UserPayload = jwtDecode(token);
-        this.router.navigateByUrl(`${decoded.role}/dashboard/home`);
+        this.router.navigateByUrl(
+          decoded.role ? `${decoded.role}/dashboard/home` : "/role",
+        );
       },
       error: (err) => {
         this.submitting.set(false);
         this.formError.set(err instanceof ApiError && err.message ? err.message : "We couldn't sign you in. Please try again.");
+        if (err instanceof ApiError && err.status === 403) {
+          this.unverifiedEmail.set(this.emailControl.value);
+        }
       }
     });
   }

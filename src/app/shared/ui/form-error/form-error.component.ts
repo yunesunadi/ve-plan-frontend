@@ -11,6 +11,7 @@ import { VALIDATION_MESSAGES } from '../../validation-messages';
   templateUrl: './form-error.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './form-error.component.scss',
+  host: { '[style.display]': "message() ? null : 'none'" },
   imports: [],
 })
 export class FormErrorComponent {
