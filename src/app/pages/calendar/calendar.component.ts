@@ -75,7 +75,9 @@ export class CalendarComponent {
   protected readonly calendarOptions = computed<CalendarOptions>(() => ({
     plugins: [dayGridPlugin, listPlugin, interactionPlugin],
     initialView: this.view(),
-    headerToolbar: { left: 'prev,next', center: 'title', right: 'today' },
+    headerToolbar: this.layout.isCompact()
+      ? { left: 'title', center: '', right: 'prev,next today' }
+      : { left: 'prev,next', center: 'title', right: 'today' },
     events: this.mappedEvents(),
     weekends: true,
     dayMaxEvents: true,

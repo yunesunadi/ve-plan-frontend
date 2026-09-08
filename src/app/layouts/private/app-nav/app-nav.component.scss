@@ -39,6 +39,11 @@
   flex-shrink: 0;
 }
 
+:host(.app-nav--rail) .app-nav__item {
+  justify-content: center;
+  padding-inline: var(--app-space-2);
+}
+
 .app-nav__label {
   font: var(--mat-sys-label-large);
   white-space: nowrap;

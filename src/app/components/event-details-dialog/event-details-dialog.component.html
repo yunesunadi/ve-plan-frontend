@@ -1,67 +1,99 @@
-@let event = event$ | async;
-
-@if (event) {
-  @let detailUrl = (role$ | async) + '/dashboard/events/' + event._id + '/view';
-
-  <mat-dialog-actions class="stack stack--row-md cluster--between-md dialog-header">
-    <h3 class="mb-0">{{ event.title }}</h3>
-    <a class="text-decoration-underline cursor-pointer text-nowrap header-action" (click)="navigate(detailUrl)">
-      <span>See Details</span>
-      <mat-icon>arrow_forward</mat-icon>
-    </a>
-  </mat-dialog-actions>
-  <mat-dialog-content class="pt-2 pb-4">
-    @if (event.cover) {
-      <img [src]="cover_url + '/' + event.cover" alt="Event photo" class="cover-img">
-    }
-    <p>{{ event.description }}</p>
-    <div class="form-grid details-grid mb-2">
-      <div>
-        <b class="mb-0">Date:</b>
-        <div class="event-info">
-          <mat-icon>event_available</mat-icon>
-          <span>{{ event.date | date: "dd/MM/yyyy" }}</span>
-        </div>
-      </div>
-      <div>
-        <b class="mb-0">Organizer:</b>
-        <div class="event-info">
-          <mat-icon>person_outline</mat-icon>
-          <span>{{ event.user.name }}</span>
-        </div>
-      </div>
-    </div>
-    <div class="form-grid details-grid mb-2">
-      <div>
-        <b class="mb-0">From:</b>
-        <div class="event-info">
-          <mat-icon>access_time</mat-icon>
-          <span>{{ event.start_time | date: "hh:mm a" }}</span>
-        </div>
-      </div>
-      <div>
-        <b class="mb-0">To:</b>
-        <div class="event-info">
-          <mat-icon>access_time</mat-icon>
-          <span>{{ event.end_time | date: "hh:mm a" }}</span>
-        </div>
-      </div>
-    </div>
-    <div class="form-grid details-grid">
-      <div>
-        <b class="mb-0">Category:</b>
-        <div class="event-info">
-          <mat-icon>developer_board</mat-icon>
-          <span class="text-capitalize">{{ event.category }}</span>
-        </div>
-      </div>
-      <div>
-        <b class="mb-0">Type:</b>
-        <div class="event-info">
-          <mat-icon>visibility</mat-icon>
-          <span class="text-capitalize">{{ event.type }}</span>
-        </div>
-      </div>
+@if (loading()) {
+  <h2 mat-dialog-title>Event</h2>
+  <mat-dialog-content class="event-details">
+    <app-skeleton variant="rect" height="200px" />
+    <app-skeleton variant="text" [lines]="3" />
+    <div class="event-details__grid">
+      @for (row of [1, 2, 3, 4]; track row) {
+        <app-skeleton variant="text" width="140px" />
+      }
     </div>
   </mat-dialog-content>
+} @else if (error(); as err) {
+  <h2 mat-dialog-title>Event</h2>
+  <mat-dialog-content>
+    <app-error-state compact [error]="err" (retry)="retry()" />
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" mat-dialog-close>Close</button>
+  </mat-dialog-actions>
+} @else if (event(); as ev) {
+  <h2 mat-dialog-title class="event-details__title">{{ ev.title }}</h2>
+
+  <mat-dialog-content class="event-details">
+    <div class="event-details__cover">
+      @if (showCover()) {
+        <img
+          [src]="coverSrc()"
+          [alt]="ev.title + ' cover image'"
+          loading="lazy"
+          decoding="async"
+          (error)="onCoverError()"
+        />
+      } @else {
+        <div class="event-details__cover-fallback" aria-hidden="true">
+          <mat-icon>{{ categoryIcon() }}</mat-icon>
+        </div>
+      }
+    </div>
+
+    <div class="cluster event-details__chips">
+      <app-status-chip [status]="timeStatus()" dense />
+      <app-status-chip [status]="ev.type" variant="outlined" dense />
+    </div>
+
+    @if (ev.description) {
+      <p class="event-details__description">{{ ev.description }}</p>
+    }
+
+    <dl class="event-details__grid">
+      @if (schedule(); as sched) {
+        <div class="event-details__item">
+          <dt>Date</dt>
+          <dd>
+            <mat-icon aria-hidden="true">event_available</mat-icon>
+            <span>{{ sched.date }}</span>
+          </dd>
+        </div>
+        <div class="event-details__item">
+          <dt>Time</dt>
+          <dd>
+            <mat-icon aria-hidden="true">access_time</mat-icon>
+            <span>{{ sched.time }}</span>
+          </dd>
+        </div>
+        @if (sched.zone; as zone) {
+          <div class="event-details__item">
+            <dt>Timezone</dt>
+            <dd>
+              <mat-icon aria-hidden="true">public</mat-icon>
+              <span>{{ zone }}</span>
+            </dd>
+          </div>
+        }
+      }
+      <div class="event-details__item">
+        <dt>Category</dt>
+        <dd>
+          <mat-icon aria-hidden="true">{{ categoryIcon() }}</mat-icon>
+          <span class="text-capitalize">{{ ev.category }}</span>
+        </dd>
+      </div>
+      <div class="event-details__item">
+        <dt>Organizer</dt>
+        <dd>
+          <app-avatar [user]="ev.user" size="xs" />
+          <span>{{ ev.user.name }}</span>
+        </dd>
+      </div>
+    </dl>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" mat-dialog-close>Close</button>
+    <button mat-flat-button type="button" (click)="seeDetails()">
+      See details
+      <mat-icon iconPositionEnd aria-hidden="true">arrow_forward</mat-icon>
+    </button>
+  </mat-dialog-actions>
 }

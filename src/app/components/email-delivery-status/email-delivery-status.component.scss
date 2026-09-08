@@ -52,3 +52,10 @@
 .retry-btn {
   flex-shrink: 0;
 }
+
+.retry-btn__content {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--app-space-2);
+}

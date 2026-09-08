@@ -58,10 +58,6 @@
 }
 
 .fc-header-toolbar {
-  flex-direction: column;
+  flex-wrap: wrap;
   gap: var(--app-space-2);
-
-  @media (min-width: 768px) {
-    flex-direction: row;
-  }
 }

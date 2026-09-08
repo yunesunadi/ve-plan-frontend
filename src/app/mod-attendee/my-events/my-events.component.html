@@ -3,18 +3,36 @@
 
 <app-outlet-inner>
   <section>
-    <app-page-header title="My Events" subtitle="Everything you're invited to or registered for." />
+    <app-page-header title="My Events" subtitle="Everything you're invited to or registered for.">
+      <div header-actions class="my-events__filter">
+        <span class="my-events__filter-label">Showing</span>
+        <button
+          type="button"
+          mat-stroked-button
+          class="my-events__filter-trigger"
+          [matMenuTriggerFor]="filterMenu"
+          aria-label="Filter events"
+        >
+          {{ tab.label }}
+          <mat-icon iconPositionEnd aria-hidden="true">arrow_drop_down</mat-icon>
+        </button>
+      </div>
+    </app-page-header>
 
-    <mat-button-toggle-group
-      class="my-events__filters"
-      aria-label="Filter events"
-      [value]="currentFilter()"
-      (change)="changeFilter($event.value)"
-    >
+    <mat-menu #filterMenu="matMenu">
       @for (option of tabs; track option.value) {
-        <mat-button-toggle [value]="option.value">{{ option.label }}</mat-button-toggle>
+        <button
+          mat-menu-item
+          type="button"
+          (click)="changeFilter(option.value)"
+        >
+          <span>{{ option.label }}</span>
+          @if (currentFilter() === option.value) {
+            <mat-icon iconPositionEnd>check</mat-icon>
+          }
+        </button>
       }
-    </mat-button-toggle-group>
+    </mat-menu>
 
     <div class="my-events__body stack">
     @if (error(); as err) {

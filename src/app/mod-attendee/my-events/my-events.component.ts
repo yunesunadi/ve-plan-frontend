@@ -6,8 +6,8 @@ import {
   catchError, map, of, scan, shareReplay, startWith, switchMap, tap,
 } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
-import { MatButtonToggleGroup, MatButtonToggle } from '@angular/material/button-toggle';
 import { MatButton } from '@angular/material/button';
+import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
 import { MatIcon } from '@angular/material/icon';
 import { EventService } from '../../services/event.service';
 import { EventInviteService } from '../../services/event-invite.service';
@@ -81,7 +81,7 @@ const LOAD_LIMIT = 12;
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './my-events.component.scss',
   imports: [
-    OutletInnerComponent, PageHeaderComponent, MatButtonToggleGroup, MatButtonToggle, MatButton, MatIcon,
+    OutletInnerComponent, PageHeaderComponent, MatButton, MatMenu, MatMenuItem, MatMenuTrigger, MatIcon,
     RouterLink, AsyncPipe, EventCardComponent, SkeletonComponent, EmptyStateComponent, ErrorStateComponent,
   ],
 })

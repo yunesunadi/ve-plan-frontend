@@ -5,8 +5,10 @@
   [disabled]="busy() || disabled()"
   [attr.aria-busy]="busy()"
 >
-  @if (busy()) {
-    <mat-spinner diameter="18" aria-hidden="true" />
-  }
-  {{ busy() ? (busyLabel() || label()) : label() }}
+  <span class="submit-button__content">
+    @if (busy()) {
+      <mat-spinner class="submit-button__spinner" diameter="18" aria-hidden="true" />
+    }
+    <span>{{ busy() ? (busyLabel() || label()) : label() }}</span>
+  </span>
 </button>

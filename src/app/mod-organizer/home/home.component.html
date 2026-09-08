@@ -9,13 +9,22 @@
   @if (error(); as err) {
     <app-error-state [error]="err" (retry)="retry()" />
   } @else if (loading()) {
-    <div class="stack" style="--stack-gap: var(--app-space-5)">
+    <div class="stack" style="--stack-gap: var(--app-space-5)" aria-busy="true">
       <div class="card-grid dashboard-stats" style="--card-min: 200px">
         @for (card of statCards; track card.label) {
           <app-skeleton variant="rect" height="96px" />
         }
       </div>
-      <app-skeleton variant="card" />
+
+      <div class="stack skeleton-group">
+        <app-skeleton variant="title" width="110px" />
+        <app-skeleton class="skeleton-next-event" variant="card" />
+      </div>
+
+      <div class="stack skeleton-group">
+        <app-skeleton variant="title" width="150px" />
+        <app-skeleton variant="rect" height="188px" />
+      </div>
     </div>
   } @else if (summary(); as s) {
     @if (isEmpty(s)) {

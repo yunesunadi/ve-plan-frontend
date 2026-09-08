@@ -49,6 +49,11 @@
   table {
     width: 100%;
   }
+
+  th.mat-column-__select,
+  td.mat-column-__select {
+    width: 3rem;
+  }
 }
 
 .data-table__row {

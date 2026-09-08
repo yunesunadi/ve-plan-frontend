@@ -1,0 +1,18 @@
+.mat-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+}
+
+:is(button, a):not(.mat-mdc-icon-button, .bottom-nav__item) > .mat-icon,
+.mat-mdc-menu-item > .mat-icon,
+.status-chip__icon,
+.toast > .toast__icon,
+.people-link__chevron,
+.event-card__tag > .mat-icon,
+.event-card__time > .mat-icon,
+.filter-chip .mat-icon,
+.retry-btn__content > .mat-icon {
+  margin-block-start: -0.09em;
+}

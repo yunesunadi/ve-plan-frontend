@@ -34,8 +34,13 @@
   }
 }
 
-.calendar-shell {
+.calendar-view {
+  display: block;
   max-inline-size: 1100px;
+  margin-inline: auto;
+}
+
+.calendar-shell {
   padding: var(--app-space-3);
   border-radius: var(--app-radius-md);
   background: var(--mat-sys-surface);

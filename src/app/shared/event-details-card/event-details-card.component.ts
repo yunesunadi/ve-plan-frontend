@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, computed, effect, inject, input, signal, ChangeDetectionStrategy } from '@angular/core';
 import { Event, EventCategoryType } from '../../models/Event';
 import { environment } from '../../../environments/environment';
 import { MatCard, MatCardContent } from '@angular/material/card';
@@ -23,12 +23,27 @@ export class EventDetailsCardComponent {
 
   event = input.required<Event>();
 
+  private readonly coverFailed = signal(false);
+
   protected readonly coverSrc = computed(() => {
     const cover = this.event().cover;
     return cover ? `${environment.coverUrl}/${cover}` : null;
   });
 
+  protected readonly showCover = computed(() => !!this.coverSrc() && !this.coverFailed());
+
   protected readonly categoryIcon = computed(() => CATEGORY_ICON[this.event().category]);
 
   protected readonly schedule = computed(() => this.util.formatEventSchedule(this.event()));
+
+  constructor() {
+    effect(() => {
+      this.coverSrc();
+      this.coverFailed.set(false);
+    });
+  }
+
+  protected onCoverError(): void {
+    this.coverFailed.set(true);
+  }
 }

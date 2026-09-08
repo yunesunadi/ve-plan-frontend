@@ -25,4 +25,15 @@
 
   --app-status-neutral-container: var(--mat-sys-surface-container-highest);
   --app-status-neutral-on-container: var(--mat-sys-on-surface-variant);
+
+  --app-toast-success: light-dark(
+    #{map.get(brand.$success-palette, 40)},
+    #{map.get(brand.$success-palette, 80)}
+  );
+  --app-toast-warning: light-dark(
+    #{map.get(brand.$warning-palette, 40)},
+    #{map.get(brand.$warning-palette, 80)}
+  );
+  --app-toast-error: light-dark(#ba1a1a, #ffb4ab);
+  --app-toast-info: var(--mat-sys-primary);
 }

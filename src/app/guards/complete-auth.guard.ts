@@ -1,31 +1,26 @@
 import { inject } from '@angular/core';
 import { CanMatchFn, Router } from '@angular/router';
-import { map } from 'rxjs';
 import { AuthService } from '../services/auth.service';
-import { DashboardCacheService } from '../caches/dashboard-cache.service';
 
 export const completeAuthGuard: CanMatchFn = (route, _segments) => {
   const authService = inject(AuthService);
-  const cacheService = inject(DashboardCacheService);
   const router = inject(Router);
 
   if (!authService.isLoggedIn()) {
     return router.parseUrl('/login');
   }
 
-  return cacheService.has_role.pipe(
-    map((res) => {
-      if (!res.has_role) {
-        return router.parseUrl('/role');
-      }
+  const role = authService.role();
 
-      const expected_role = route.path?.startsWith('organizer') ? 'organizer' : 'attendee';
+  if (!role) {
+    return router.parseUrl('/role');
+  }
 
-      if (res.role !== expected_role) {
-        return router.parseUrl(`/${res.role}/dashboard/home`);
-      }
+  const expectedRole = route.path?.startsWith('organizer') ? 'organizer' : 'attendee';
 
-      return true;
-    })
-  );
+  if (role !== expectedRole) {
+    return router.parseUrl(`/${role}/dashboard/home`);
+  }
+
+  return true;
 };

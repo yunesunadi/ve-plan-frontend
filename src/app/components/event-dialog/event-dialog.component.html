@@ -8,7 +8,7 @@
       <p class="mb-1">Cover</p>
       <label for="cover" class="cover-img-container">
         <input id="cover" type="file" accept="image/*" (change)="changeCover($event)" class="cover-file-input">
-        <img src="assets/images/placeholder.jpg" #imgView alt="Cover image" class="cover-img rounded">
+        <img src="assets/images/placeholder.jpg" #imgView alt="Cover image" class="cover-img rounded" (error)="onCoverError($event)">
       </label>
     </div>
     <mat-form-field appearance="outline">

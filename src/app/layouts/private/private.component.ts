@@ -17,10 +17,12 @@ import { MatTooltip } from '@angular/material/tooltip';
 import { MatDrawerContainer, MatDrawer, MatDrawerContent } from '@angular/material/sidenav';
 import { AsyncPipe } from '@angular/common';
 import { AvatarComponent } from '../../shared/ui/avatar/avatar.component';
+import { BrandLogoComponent } from '../../shared/ui/brand-logo/brand-logo.component';
 import { AppNavComponent } from './app-nav/app-nav.component';
 import { BottomNavComponent } from './bottom-nav/bottom-nav.component';
 import { NAV_DESTINATIONS, NavDestination } from './nav-destinations';
 import { RoleType } from '../../models/User';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
     selector: 'app-private',
@@ -30,7 +32,7 @@ import { RoleType } from '../../models/User';
     imports: [
       MatToolbar, MatIconButton, MatButton, MatIcon, RouterLink, MatBadge, MatTooltip, MatMenuTrigger,
       MatMenu, MatMenuItem, MatDrawerContainer, MatDrawer, MatDrawerContent, RouterOutlet, AsyncPipe,
-      AvatarComponent, AppNavComponent, BottomNavComponent,
+      AvatarComponent, BrandLogoComponent, AppNavComponent, BottomNavComponent,
     ]
 })
 export class PrivateComponent {
@@ -38,6 +40,7 @@ export class PrivateComponent {
   private notificationService = inject(NotificationService);
   private socketService = inject(SocketService);
   private dashboardCache = inject(DashboardCacheService);
+  private authService = inject(AuthService);
   private confirmService = inject(ConfirmService);
   private destroyRef = inject(DestroyRef);
   protected readonly layout = inject(LayoutService);
@@ -56,11 +59,11 @@ export class PrivateComponent {
   private readonly currentUser = toSignal(this.current_user$, { initialValue: null });
 
   protected readonly destinations = computed<NavDestination[]>(() => {
-    const role = this.currentUser()?.role as RoleType | undefined;
+    const role = this.authService.role() ?? (this.currentUser()?.role as RoleType | undefined);
     return role ? NAV_DESTINATIONS[role] : [];
   });
 
-  protected readonly isRail = computed(() => this.layout.mode() === 'medium' && !this.layout.navExpanded());
+  protected readonly isRail = computed(() => this.layout.mode() === 'medium');
 
   socketConnected$ = this.socketService.connected$();
 

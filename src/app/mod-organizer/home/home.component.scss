@@ -9,6 +9,15 @@
   max-inline-size: 420px;
 }
 
+.skeleton-group {
+  --stack-gap: var(--app-space-3);
+}
+
+.skeleton-next-event {
+  display: block;
+  max-inline-size: 420px;
+}
+
 .dashboard-stats {
   gap: var(--app-space-3);
 }

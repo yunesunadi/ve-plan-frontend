@@ -89,6 +89,7 @@
   color: var(--mat-sys-on-surface);
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -99,6 +100,7 @@
   color: var(--mat-sys-on-surface-variant);
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -139,7 +141,6 @@
 
 .event-card__organizer {
   --cluster-gap: var(--app-space-2);
-  margin-top: auto;
   padding-top: var(--app-space-2);
   font: var(--mat-sys-body-small);
   color: var(--mat-sys-on-surface-variant);

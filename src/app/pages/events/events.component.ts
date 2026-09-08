@@ -7,10 +7,10 @@ import { EventCacheService } from '../../caches/event-cache.service';
 import { OutletInnerComponent } from '../../shared/outlet-inner/outlet-inner.component';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
-import { MatFormField, MatLabel, MatInput, MatPrefix, MatSuffix, MatHint } from '@angular/material/input';
-import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { MatSelect, MatOption } from '@angular/material/select';
-import { MatDatepickerInput, MatDatepickerToggle, MatDatepicker } from '@angular/material/datepicker';
+import { MatFormField, MatInput, MatPrefix, MatSuffix } from '@angular/material/input';
+import { FormsModule } from '@angular/forms';
+import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
+import { MatDatepicker, MatDatepickerInput } from '@angular/material/datepicker';
 import { PageEvent, MatPaginator } from '@angular/material/paginator';
 import { AsyncPipe } from '@angular/common';
 import { PageHeaderComponent } from '../../shared/ui/page-header/page-header.component';
@@ -36,7 +36,7 @@ interface FilterChip {
             useValue: "en-GB"
         },
     ],
-    imports: [OutletInnerComponent, PageHeaderComponent, MatButton, MatIcon, MatFormField, MatLabel, MatInput, ReactiveFormsModule, FormsModule, MatPrefix, MatIconButton, MatSuffix, MatSelect, MatOption, MatDatepickerInput, MatHint, MatDatepickerToggle, MatDatepicker, MatPaginator, AsyncPipe, EventCardComponent, SkeletonComponent, EmptyStateComponent, ErrorStateComponent]
+    imports: [OutletInnerComponent, PageHeaderComponent, MatButton, MatIcon, MatFormField, MatInput, FormsModule, MatPrefix, MatIconButton, MatSuffix, MatMenu, MatMenuItem, MatMenuTrigger, MatDatepicker, MatDatepickerInput, MatPaginator, AsyncPipe, EventCardComponent, SkeletonComponent, EmptyStateComponent, ErrorStateComponent]
 })
 export class EventsComponent {
   private dashboardCache = inject(DashboardCacheService);
@@ -79,15 +79,35 @@ export class EventsComponent {
     return chips;
   }
 
-  private titleCase(value: string): string {
+  protected titleCase(value: string): string {
     return value.charAt(0).toUpperCase() + value.slice(1);
   }
 
-  private formatDate(iso: string): string {
+  protected formatDate(iso: string): string {
     const date = new Date(iso);
     return Number.isNaN(date.getTime())
       ? iso
       : date.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
+  }
+
+  private dateModel: { key: string; value: Date | null } = { key: '', value: null };
+
+  protected selectedDate(query: Partial<EventQuery>): Date | null {
+    const key = query.date ?? '';
+    if (key !== this.dateModel.key) {
+      const date = key ? new Date(key) : null;
+      this.dateModel = {
+        key,
+        value: date && !Number.isNaN(date.getTime()) ? date : null,
+      };
+    }
+    return this.dateModel.value;
+  }
+
+  protected onDateChange(date: Date | null, query: Partial<EventQuery>): void {
+    if (date) {
+      this.changeFilter("date", date.toISOString(), query);
+    }
   }
 
   changeFilter(type: string, value: string, query: Partial<EventQuery>) {

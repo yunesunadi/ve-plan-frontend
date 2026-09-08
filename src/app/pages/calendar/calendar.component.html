@@ -1,5 +1,6 @@
 <app-outlet-inner>
   <app-page-header
+    class="calendar-view"
     title="Calendar"
     [subtitle]="canCreate() ? 'Click a day to create an event.' : 'Every event on VE-Plan, at a glance.'"
   >
@@ -24,19 +25,23 @@
   @if (error(); as err) {
     <app-error-state [error]="err" (retry)="retry()" />
   } @else if (loading()) {
-    <app-skeleton variant="rect" height="520px" />
-  } @else {
-    <div class="calendar-legend" role="list" aria-label="Event visibility">
-      <span class="calendar-legend__item calendar-legend__item--public" role="listitem">
-        <mat-icon aria-hidden="true">public</mat-icon> Public
-      </span>
-      <span class="calendar-legend__item calendar-legend__item--private" role="listitem">
-        <mat-icon aria-hidden="true">lock</mat-icon> Private
-      </span>
+    <div class="calendar-view">
+      <app-skeleton variant="rect" height="520px" />
     </div>
+  } @else {
+    <div class="calendar-view">
+      <div class="calendar-legend" role="list" aria-label="Event visibility">
+        <span class="calendar-legend__item calendar-legend__item--public" role="listitem">
+          <mat-icon aria-hidden="true">public</mat-icon> Public
+        </span>
+        <span class="calendar-legend__item calendar-legend__item--private" role="listitem">
+          <mat-icon aria-hidden="true">lock</mat-icon> Private
+        </span>
+      </div>
 
-    <div class="calendar-shell">
-      <full-calendar [options]="calendarOptions()" />
+      <div class="calendar-shell">
+        <full-calendar [options]="calendarOptions()" />
+      </div>
     </div>
   }
 </app-outlet-inner>

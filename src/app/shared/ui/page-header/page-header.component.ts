@@ -22,5 +22,16 @@ export class PageHeaderComponent {
   crumbs = input<Breadcrumb[] | undefined>(undefined);
   headingLevel = input<1 | 2>(1);
 
-  protected readonly effectiveCrumbs = computed(() => this.crumbs() ?? this.breadcrumbService.crumbs());
+  protected readonly effectiveCrumbs = computed(() => {
+    const crumbs = this.crumbs() ?? this.breadcrumbService.crumbs();
+
+    if (
+      crumbs.length === 1 &&
+      crumbs[0].label.trim().toLowerCase() === this.title().trim().toLowerCase()
+    ) {
+      return [];
+    }
+
+    return crumbs;
+  });
 }

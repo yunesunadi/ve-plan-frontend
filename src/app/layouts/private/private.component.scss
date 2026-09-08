@@ -3,11 +3,6 @@
 .app-shell {
   display: grid;
   grid-template-rows: auto 1fr auto;
-  // A definite height (not `min-block-size`) so the `1fr` body track is
-  // definite too — otherwise the `height: 100%` chain down to
-  // `.mat-drawer-content` never resolves, that element grows instead of
-  // scrolling, and wheel events die on the `overflow: hidden`
-  // `.mat-drawer-container` while only the document scrollbar still works.
   block-size: 100dvh;
   overflow: hidden;
 }
@@ -56,9 +51,6 @@
   background: var(--mat-sys-primary);
   color: var(--mat-sys-on-primary);
 
-  // Material buttons/icons in the toolbar inherit the on-primary colour
-  // rather than their own default so they read against the primary bar
-  // in both light and dark schemes.
   .mat-mdc-icon-button,
   .mat-mdc-button,
   .mat-icon,
@@ -67,8 +59,6 @@
     color: var(--mat-sys-on-primary);
   }
 
-  // The app-wide focus ring is `--mat-sys-primary`, which would be invisible
-  // against the primary-coloured bar.
   :focus-visible {
     outline-color: var(--mat-sys-on-primary);
   }
@@ -85,17 +75,16 @@
   }
 }
 
-.brand__wordmark {
-  font: var(--mat-sys-title-medium);
-  display: none;
-
-  @media (min-width: 576px) {
-    display: inline;
-  }
+.profile-trigger.mat-mdc-button {
+  min-width: 0;
+  padding-inline: var(--app-space-2);
 }
 
-.profile-trigger {
+.profile-trigger__identity {
+  display: inline-flex;
   align-items: center;
+  gap: var(--app-space-2);
+  min-width: 0;
 }
 
 .profile-trigger__name {
@@ -119,8 +108,6 @@
 
 .app-drawer-container {
   background-color: transparent;
-  // Fill the body track and never grow past it so `.mat-drawer-content`
-  // (the routed scroll container) has a definite height to scroll within.
   block-size: 100%;
   min-block-size: 0;
 }

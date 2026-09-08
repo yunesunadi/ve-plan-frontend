@@ -40,22 +40,28 @@
   }
 
   > mat-icon:first-child {
+    grid-column: 1;
     grid-row: 1 / span 2;
     color: var(--mat-sys-primary);
   }
 }
 
 .people-link__label {
+  grid-column: 2;
+  grid-row: 1;
   font: var(--mat-sys-title-medium);
 }
 
 .people-link__hint {
   grid-column: 2;
+  grid-row: 2;
   font: var(--mat-sys-body-small);
   color: var(--mat-sys-on-surface-variant);
 }
 
 .people-link__chevron {
+  grid-column: 3;
   grid-row: 1 / span 2;
+  align-self: center;
   color: var(--mat-sys-on-surface-variant);
 }

@@ -5,104 +5,118 @@
 
 <app-outlet-inner>
   <section>
-    <app-page-header title="Events">
-      @if (filterChips.length) {
-        <button
-          header-actions
-          mat-stroked-button
-          type="button"
-          (click)="clearAllFilters()"
+    <app-page-header title="Events" />
+
+    <div class="events-filters" role="search">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="events-filters__search">
+        <mat-icon matPrefix aria-hidden="true">search</mat-icon>
+        <input
+          matInput
+          type="text"
+          placeholder="Search events"
+          [ngModel]="query.search_value || ''"
+          (keyup.enter)="changeFilter('search_value', searchInput.value, query)"
+          #searchInput
         >
-          <mat-icon>filter_list_off</mat-icon> Clear all
-        </button>
-      }
-    </app-page-header>
-
-    <div class="filter-bar">
-      <div class="form-grid">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Search by Event Name</mat-label>
-          <input
-            matInput
-            type="text"
-            [(ngModel)]="query.search_value"
-            placeholder="Enter event name"
-            (keyup.enter)="changeFilter('search_value', searchInput.value, query)"
-            #searchInput
-            class="ms-1"
+        @if (query.search_value) {
+          <button
+            matSuffix
+            mat-icon-button
+            type="button"
+            aria-label="Clear search"
+            (click)="clearFilter('search_value', query); searchInput.value = ''"
           >
-          <span matPrefix class="ms-2">
-            <mat-icon>search</mat-icon>
-          </span>
-          @if (query.search_value) {
-          <button (click)="clearFilter('search_value', query)" matSuffix mat-icon-button aria-label="Clear name filter" type="button">
             <mat-icon>close</mat-icon>
           </button>
-          }
-        </mat-form-field>
+        }
+      </mat-form-field>
 
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Search by Time</mat-label>
-          <mat-select [(ngModel)]="query.time" (selectionChange)="changeFilter('time', $event.value, query)">
-            @for (time of times; track time) {
-              <mat-option [value]="time" class="text-capitalize">
-                {{ time }}
-              </mat-option>
-            }
-          </mat-select>
-          @if (query.time) {
-          <button (click)="clearFilter('time', query)" matSuffix mat-icon-button aria-label="Clear time filter" type="button">
-            <mat-icon>close</mat-icon>
+      <button
+        type="button"
+        mat-stroked-button
+        class="events-filters__pill"
+        [class.events-filters__pill--active]="!!query.time"
+        [matMenuTriggerFor]="timeMenu"
+      >
+        <mat-icon aria-hidden="true">schedule</mat-icon>
+        {{ query.time ? titleCase(query.time) : 'Time' }}
+        <mat-icon iconPositionEnd aria-hidden="true">arrow_drop_down</mat-icon>
+      </button>
+      <mat-menu #timeMenu="matMenu">
+        <button mat-menu-item type="button" [disabled]="!query.time" (click)="clearFilter('time', query)">
+          Any time
+        </button>
+        @for (time of times; track time) {
+          <button mat-menu-item type="button" (click)="changeFilter('time', time, query)">
+            <span>{{ titleCase(time) }}</span>
+            @if (query.time === time) { <mat-icon iconPositionEnd>check</mat-icon> }
           </button>
-          }
-        </mat-form-field>
+        }
+      </mat-menu>
 
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Search by Category</mat-label>
-          <mat-select [(ngModel)]="query.category" (selectionChange)="changeFilter('category', $event.value, query)">
-            @for (category of categories; track category) {
-              <mat-option [value]="category" class="text-capitalize">
-                {{ category }}
-              </mat-option>
-            }
-          </mat-select>
-          @if (query.category) {
-          <button (click)="clearFilter('category', query)" matSuffix mat-icon-button aria-label="Clear category filter" type="button">
-            <mat-icon>close</mat-icon>
+      <button
+        type="button"
+        mat-stroked-button
+        class="events-filters__pill"
+        [class.events-filters__pill--active]="!!query.category"
+        [matMenuTriggerFor]="categoryMenu"
+      >
+        <mat-icon aria-hidden="true">sell</mat-icon>
+        {{ query.category ? titleCase(query.category) : 'Category' }}
+        <mat-icon iconPositionEnd aria-hidden="true">arrow_drop_down</mat-icon>
+      </button>
+      <mat-menu #categoryMenu="matMenu">
+        <button mat-menu-item type="button" [disabled]="!query.category" (click)="clearFilter('category', query)">
+          Any category
+        </button>
+        @for (category of categories; track category) {
+          <button mat-menu-item type="button" (click)="changeFilter('category', category, query)">
+            <span>{{ titleCase(category) }}</span>
+            @if (query.category === category) { <mat-icon iconPositionEnd>check</mat-icon> }
           </button>
-          }
-        </mat-form-field>
+        }
+      </mat-menu>
 
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Search by Date</mat-label>
-          <input matInput [matDatepicker]="picker" [(ngModel)]="query.date" (dateChange)="changeFilter('date', $event.target.value, query)">
-          <mat-hint>DD/MM/YYYY</mat-hint>
-          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-          <mat-datepicker #picker></mat-datepicker>
-          @if (query.date) {
-          <button (click)="clearFilter('date', query)" matSuffix mat-icon-button aria-label="Clear date filter" type="button">
+      <span class="events-filters__date">
+        <button
+          type="button"
+          mat-stroked-button
+          class="events-filters__pill"
+          [class.events-filters__pill--active]="!!query.date"
+          (click)="datePicker.open()"
+        >
+          <mat-icon aria-hidden="true">event</mat-icon>
+          {{ query.date ? formatDate(query.date) : 'Date' }}
+          <mat-icon iconPositionEnd aria-hidden="true">arrow_drop_down</mat-icon>
+        </button>
+        <input
+          class="events-filters__date-input"
+          [matDatepicker]="datePicker"
+          [ngModel]="selectedDate(query)"
+          (dateChange)="onDateChange($event.value, query)"
+          aria-hidden="true"
+          tabindex="-1"
+          readonly
+        >
+        <mat-datepicker #datePicker />
+        @if (query.date) {
+          <button
+            type="button"
+            mat-icon-button
+            class="events-filters__date-clear"
+            aria-label="Clear date filter"
+            (click)="clearFilter('date', query)"
+          >
             <mat-icon>close</mat-icon>
           </button>
-          }
-        </mat-form-field>
-      </div>
+        }
+      </span>
 
       @if (filterChips.length) {
-        <ul class="filter-chips" aria-label="Active filters">
-          @for (chip of filterChips; track chip.type) {
-            <li class="filter-chip">
-              <span class="filter-chip__label">{{ chip.label }}</span>
-              <button
-                type="button"
-                class="filter-chip__remove"
-                [attr.aria-label]="'Remove ' + chip.label + ' filter'"
-                (click)="clearFilter(chip.type, query)"
-              >
-                <mat-icon>close</mat-icon>
-              </button>
-            </li>
-          }
-        </ul>
+        <button type="button" mat-button class="events-filters__clear" (click)="clearAllFilters()">
+          <mat-icon>filter_list_off</mat-icon>
+          Clear all
+        </button>
       }
     </div>
 

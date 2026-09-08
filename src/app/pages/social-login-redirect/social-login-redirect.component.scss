@@ -1,5 +1,3 @@
-.social-redirect__brand {
-  margin: 0 0 var(--app-space-3);
-  font: var(--mat-sys-headline-small);
-  color: var(--mat-sys-primary);
+:host {
+  display: block;
 }

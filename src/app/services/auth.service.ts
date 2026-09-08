@@ -1,8 +1,9 @@
 import { inject, Injectable } from '@angular/core';
+import { jwtDecode } from 'jwt-decode';
 import { environment } from '../../environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { GeneralResponse, Response } from '../models/Utils';
-import { SignUpData } from '../models/User';
+import { RoleType, SignUpData, UserPayload } from '../models/User';
 
 @Injectable({
   providedIn: 'root'
@@ -30,6 +31,16 @@ export class AuthService {
     const token = localStorage.getItem("token");
     if (!token) return false;
     return true;
+  }
+
+  role(): RoleType | null {
+    const token = localStorage.getItem("token");
+    if (!token) return null;
+    try {
+      return jwtDecode<UserPayload>(token).role ?? null;
+    } catch {
+      return null;
+    }
   }
 
   login(data: { email: string; password: string; }) {

@@ -6,8 +6,8 @@ import { filter } from 'rxjs';
 import { EventCacheService } from '../../caches/event-cache.service';
 import { Event, MyEventQuery, MyEventType } from '../../models/Event';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
-import { MatButtonToggleGroup, MatButtonToggle } from '@angular/material/button-toggle';
-import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
+import { MatIcon } from '@angular/material/icon';
 import { MatButton } from '@angular/material/button';
 import { AsyncPipe } from '@angular/common';
 import { PageHeaderComponent } from '../../shared/ui/page-header/page-header.component';
@@ -25,7 +25,7 @@ const SCROLL_KEY = 'my_events_scroll';
     templateUrl: './my-events.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrl: './my-events.component.scss',
-    imports: [PageHeaderComponent, InfiniteScrollDirective, MatButtonToggleGroup, ReactiveFormsModule, FormsModule, MatButtonToggle, MatButton, RouterLink, AsyncPipe, EventCardComponent, SkeletonComponent, EmptyStateComponent, ErrorStateComponent]
+    imports: [PageHeaderComponent, InfiniteScrollDirective, MatMenu, MatMenuItem, MatMenuTrigger, MatIcon, MatButton, RouterLink, AsyncPipe, EventCardComponent, SkeletonComponent, EmptyStateComponent, ErrorStateComponent]
 })
 export class MyEventsComponent {
   private dashboardCache = inject(DashboardCacheService);

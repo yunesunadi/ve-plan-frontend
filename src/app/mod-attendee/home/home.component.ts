@@ -34,6 +34,7 @@ export class HomeComponent {
   private common = inject(CommonService);
 
   protected readonly ATT = ATT;
+  protected readonly skeletonSections = Array.from({ length: 2 });
   protected readonly skeletonCards = Array.from({ length: 3 });
 
   protected readonly loading = signal(true);

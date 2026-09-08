@@ -1,9 +1,22 @@
-.my-events__filters {
-  display: inline-flex;
-  max-inline-size: 100%;
-  margin-bottom: var(--app-space-4);
-  overflow-x: auto;
-  flex-wrap: nowrap;
+.my-events__filter {
+  display: flex;
+  align-items: center;
+  gap: var(--app-space-2);
+}
+
+.my-events__filter-label {
+  font: var(--mat-sys-body-medium);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.my-events__filter-trigger.mat-mdc-outlined-button {
+  height: 40px;
+  border-radius: var(--app-radius-full);
+  font-weight: 500;
+
+  .mat-icon {
+    color: var(--mat-sys-on-surface-variant);
+  }
 }
 
 .my-events__end {

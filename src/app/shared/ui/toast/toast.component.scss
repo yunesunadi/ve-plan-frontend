@@ -1,0 +1,68 @@
+:host {
+  display: flex;
+  align-items: center;
+  gap: var(--app-space-3);
+  padding: var(--app-space-3) var(--app-space-3) var(--app-space-3) var(--app-space-4);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
+}
+
+.toast__icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  font-size: 20px;
+  line-height: 20px;
+}
+
+:host(.toast--success) .toast__icon { color: var(--app-toast-success); }
+:host(.toast--info) .toast__icon { color: var(--app-toast-info); }
+:host(.toast--warning) .toast__icon { color: var(--app-toast-warning); }
+:host(.toast--error) .toast__icon { color: var(--app-toast-error); }
+
+.toast__message {
+  flex: 1;
+  min-width: 0;
+  padding-block: 2px;
+}
+
+.toast__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--app-space-1);
+  flex-shrink: 0;
+}
+
+.toast__action {
+  height: 32px;
+  padding: 0 var(--app-space-3);
+  border: 0;
+  border-radius: var(--app-radius-full);
+  background: transparent;
+  color: var(--mat-sys-primary);
+  font: var(--mat-sys-label-large);
+  cursor: pointer;
+
+  &:hover {
+    background: color-mix(in srgb, var(--mat-sys-on-surface) 8%, transparent);
+  }
+}
+
+.toast__close.mat-mdc-icon-button {
+  width: 32px;
+  height: 32px;
+  padding: 4px;
+  color: var(--mat-sys-on-surface-variant);
+  opacity: 0.9;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  .mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+    line-height: 18px;
+  }
+}

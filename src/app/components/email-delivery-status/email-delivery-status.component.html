@@ -30,12 +30,14 @@
           [disabled]="retrying()"
           (click)="retryFailed()"
         >
-          @if (retrying()) {
-            <mat-spinner diameter="18" aria-label="Retrying failed emails"></mat-spinner>
-          } @else {
-            <mat-icon>refresh</mat-icon>
-          }
-          Retry failed
+          <span class="retry-btn__content">
+            @if (retrying()) {
+              <mat-spinner diameter="18" aria-label="Retrying failed emails"></mat-spinner>
+            } @else {
+              <mat-icon>refresh</mat-icon>
+            }
+            <span>Retry failed</span>
+          </span>
         </button>
       }
     </mat-card-content>

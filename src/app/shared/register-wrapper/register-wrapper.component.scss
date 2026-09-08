@@ -20,15 +20,7 @@
 .auth-shell__lockup {
   display: inline-flex;
   align-items: center;
-  gap: var(--app-space-2);
   color: var(--mat-sys-on-primary);
-  font: var(--mat-sys-headline-small);
-
-  mat-icon {
-    font-size: 2rem;
-    inline-size: 2rem;
-    block-size: 2rem;
-  }
 
   &:focus-visible {
     outline: 2px solid var(--mat-sys-on-primary);
@@ -68,10 +60,6 @@
   .auth-shell__brand {
     gap: var(--app-space-5);
     padding: var(--app-space-7) var(--app-space-6);
-  }
-
-  .auth-shell__lockup {
-    font: var(--mat-sys-headline-medium);
   }
 
   .auth-shell__tagline {

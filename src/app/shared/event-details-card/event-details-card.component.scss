@@ -7,6 +7,7 @@
 .details__cover {
   position: relative;
   aspect-ratio: 16 / 9;
+  max-block-size: 320px;
   border-radius: var(--app-radius-md);
   overflow: hidden;
   background: var(--mat-sys-surface-container-high);

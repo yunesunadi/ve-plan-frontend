@@ -12,18 +12,36 @@
   (scrolled)="onScroll(my_query, my_events!.length)"
 >
   <app-page-header title="My Events">
-    <mat-button-toggle-group
-      header-actions
-      [(ngModel)]="my_query.type"
-      (change)="changeFilter($event.value, my_query)"
-    >
-      @for (type of types; track type) {
-        <mat-button-toggle [value]="type">
-          <span class="text-capitalize">{{ type }}</span>
-        </mat-button-toggle>
-      }
-    </mat-button-toggle-group>
+    <div header-actions class="my-events__filter">
+      <span class="my-events__filter-label">Showing</span>
+      <button
+        type="button"
+        mat-stroked-button
+        class="my-events__filter-trigger text-capitalize"
+        [matMenuTriggerFor]="filterMenu"
+        aria-label="Filter events"
+      >
+        {{ my_query.type || 'all' }}
+        <mat-icon iconPositionEnd aria-hidden="true">arrow_drop_down</mat-icon>
+      </button>
+    </div>
   </app-page-header>
+
+  <mat-menu #filterMenu="matMenu">
+    @for (type of types; track type) {
+      <button
+        mat-menu-item
+        type="button"
+        class="text-capitalize"
+        (click)="changeFilter(type, my_query)"
+      >
+        <span>{{ type }}</span>
+        @if ((my_query.type || 'all') === type) {
+          <mat-icon iconPositionEnd>check</mat-icon>
+        }
+      </button>
+    }
+  </mat-menu>
 
   <div class="mt-4">
   @if (cache.myEventsError(); as error) {

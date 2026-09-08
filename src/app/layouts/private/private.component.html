@@ -14,8 +14,7 @@
     </button>
 
     <a routerLink="home" class="brand cluster" aria-label="VE-Plan home">
-      <mat-icon class="brand__mark" aria-hidden="true">celebration</mat-icon>
-      <span class="brand__wordmark">VE-Plan</span>
+      <app-brand-logo collapseWordmark />
     </a>
 
     <span class="spacer"></span>
@@ -43,15 +42,17 @@
 
     <button
       mat-button
-      class="profile-trigger cluster"
+      class="profile-trigger"
       [matMenuTriggerFor]="menu"
       #menuTrigger="matMenuTrigger"
       aria-haspopup="menu"
       [attr.aria-expanded]="menuTrigger.menuOpen"
     >
-      <app-avatar [user]="current_user" size="sm" />
-      <span class="profile-trigger__name">{{ current_user?.name }}</span>
-      <mat-icon aria-hidden="true">keyboard_arrow_down</mat-icon>
+      <span class="profile-trigger__identity">
+        <app-avatar [user]="current_user" size="sm" />
+        <span class="profile-trigger__name">{{ current_user?.name }}</span>
+      </span>
+      <mat-icon iconPositionEnd aria-hidden="true">keyboard_arrow_down</mat-icon>
     </button>
     <mat-menu #menu="matMenu">
       <button mat-menu-item [matMenuTriggerFor]="themeMenu">
@@ -88,7 +89,8 @@
         [opened]="!layout.isCompact()"
       >
         <app-nav
-          [destinations]="destinations()"
+          [destinations]="layout.isCompact() ? [] : destinations()"
+          [compact]="layout.isCompact()"
           [expanded]="!isRail()"
           (linkActivated)="layout.isCompact() && drawer.close()"
         />

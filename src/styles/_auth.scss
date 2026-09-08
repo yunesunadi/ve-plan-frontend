@@ -35,10 +35,16 @@
   --stack-gap: var(--app-space-3);
 }
 
+.oauth-buttons button .mdc-button__label {
+  display: inline-flex;
+  align-items: center;
+}
+
 .oauth-logo {
+  flex: none;
   inline-size: 20px;
   block-size: 20px;
-  margin-inline-end: var(--app-space-2);
+  margin-inline-end: var(--app-space-3);
 }
 
 .auth-divider {

@@ -4,9 +4,16 @@
   @if (error(); as err) {
     <app-error-state [error]="err" (retry)="retry()" />
   } @else if (loading()) {
-    <div class="stack" style="--stack-gap: var(--app-space-5)">
-      @for (i of skeletonCards; track $index) {
-        <app-skeleton variant="card" />
+    <div class="stack feed" style="--stack-gap: var(--app-space-6)" aria-busy="true">
+      @for (section of skeletonSections; track $index) {
+        <div class="stack skeleton-group">
+          <app-skeleton variant="title" width="200px" />
+          <div class="card-grid" style="--card-min: 300px">
+            @for (card of skeletonCards; track $index) {
+              <app-skeleton variant="card" />
+            }
+          </div>
+        </div>
       }
     </div>
   } @else if (summary(); as s) {

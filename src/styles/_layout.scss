@@ -97,6 +97,12 @@
   gap: var(--app-space-1);
   border-bottom: 1px solid var(--mat-sys-outline-variant);
   overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   &__link {
     position: relative;
@@ -110,6 +116,11 @@
 
     &:hover {
       color: var(--mat-sys-on-surface);
+    }
+
+    &:focus-visible {
+      outline-offset: -2px;
+      border-radius: var(--app-radius-xs);
     }
 
     &--active {

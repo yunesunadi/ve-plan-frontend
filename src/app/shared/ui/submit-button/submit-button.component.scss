@@ -1,10 +1,10 @@
-.submit-button {
+.submit-button__content {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--app-space-2);
+}
 
-  mat-spinner {
-    display: inline-flex;
-  }
+.submit-button__spinner {
+  flex-shrink: 0;
 }

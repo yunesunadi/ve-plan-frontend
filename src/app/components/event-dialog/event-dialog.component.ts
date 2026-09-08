@@ -109,8 +109,17 @@ export class EventDialogComponent {
     };
   }
 
+  private readonly placeholderCover = 'assets/images/placeholder.jpg';
+
   ngAfterViewInit() {
-    this.imgView.nativeElement.src = this.dialog_data.cover ? `${environment.coverUrl}/${this.dialog_data.cover}` : 'assets/images/placeholder.jpg';
+    this.imgView.nativeElement.src = this.dialog_data.cover ? `${environment.coverUrl}/${this.dialog_data.cover}` : this.placeholderCover;
+  }
+
+  onCoverError(event: Event) {
+    const img = event.target as HTMLImageElement;
+    if (!img.src.endsWith(this.placeholderCover)) {
+      img.src = this.placeholderCover;
+    }
   }
 
   get dateControl() {

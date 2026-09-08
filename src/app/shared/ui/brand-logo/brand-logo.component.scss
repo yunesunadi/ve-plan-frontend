@@ -1,0 +1,27 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--app-space-2);
+  color: inherit;
+  line-height: 1;
+}
+
+.brand-logo__mark {
+  display: block;
+  flex-shrink: 0;
+}
+
+.brand-logo__wordmark {
+  font-family: 'Ubuntu', system-ui, sans-serif;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  white-space: nowrap;
+}
+
+:host(.brand-logo--collapse) {
+  @media (max-width: 575.98px) {
+    .brand-logo__wordmark {
+      display: none;
+    }
+  }
+}

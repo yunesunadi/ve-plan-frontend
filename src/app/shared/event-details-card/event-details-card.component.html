@@ -1,8 +1,14 @@
 <mat-card appearance="outlined">
   <mat-card-content class="details">
     <div class="details__cover">
-      @if (coverSrc(); as src) {
-        <img [src]="src" [alt]="event().title + ' cover image'" loading="lazy" decoding="async" />
+      @if (showCover()) {
+        <img
+          [src]="coverSrc()"
+          [alt]="event().title + ' cover image'"
+          loading="lazy"
+          decoding="async"
+          (error)="onCoverError()"
+        />
       } @else {
         <div class="details__cover-fallback" aria-hidden="true">
           <mat-icon>{{ categoryIcon() }}</mat-icon>

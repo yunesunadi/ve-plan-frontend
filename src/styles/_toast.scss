@@ -1,29 +1,26 @@
-@mixin toast-variant($container, $on-container) {
-  --mat-snack-bar-container-color: #{$container};
-  --mat-snack-bar-supporting-text-color: #{$on-container};
-  --mat-snack-bar-button-color: #{$on-container};
+.app-toast {
+  max-width: min(440px, calc(100vw - 2 * var(--app-space-4)));
+
+  --mat-snack-bar-container-color: var(--mat-sys-surface);
+  --mdc-snackbar-container-color: var(--mat-sys-surface);
+  --mat-snack-bar-supporting-text-color: var(--mat-sys-on-surface);
 
   .mat-mdc-snackbar-surface {
-    box-shadow:
-      inset 4px 0 0 0 #{$on-container},
-      0px 3px 5px -1px rgba(0, 0, 0, 0.2),
-      0px 6px 10px 0px rgba(0, 0, 0, 0.14),
-      0px 1px 18px 0px rgba(0, 0, 0, 0.12);
+    min-width: 0;
+    padding: 0;
+    border-radius: var(--app-radius-md);
+    background: var(--mat-sys-surface);
+    color: var(--mat-sys-on-surface);
+    border: 1px solid var(--mat-sys-outline-variant);
+    box-shadow: var(--app-elev-3);
   }
-}
 
-.app-toast--success {
-  @include toast-variant(var(--app-status-success-container), var(--app-status-success-on-container));
-}
+  .mat-mdc-snack-bar-label,
+  .mdc-snackbar__label {
+    padding: 0;
+  }
 
-.app-toast--info {
-  @include toast-variant(var(--app-status-info-container), var(--app-status-info-on-container));
-}
-
-.app-toast--warning {
-  @include toast-variant(var(--app-status-warning-container), var(--app-status-warning-on-container));
-}
-
-.app-toast--error {
-  @include toast-variant(var(--mat-sys-error-container), var(--mat-sys-on-error-container));
+  .mat-mdc-snack-bar-actions {
+    margin-inline-start: 0;
+  }
 }
