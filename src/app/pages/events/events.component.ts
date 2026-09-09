@@ -76,10 +76,27 @@ export class EventsComponent {
   }
 
   protected formatDate(iso: string): string {
-    const date = new Date(iso);
-    return Number.isNaN(date.getTime())
-      ? iso
-      : date.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
+    const date = this.parseDateKey(iso);
+    return date
+      ? date.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })
+      : iso;
+  }
+
+  private toDateKey(date: Date): string {
+    const y = date.getFullYear();
+    const m = `${date.getMonth() + 1}`.padStart(2, "0");
+    const d = `${date.getDate()}`.padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  }
+
+  private parseDateKey(key: string): Date | null {
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(key);
+    if (match) {
+      return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+    }
+
+    const legacy = new Date(key);
+    return Number.isNaN(legacy.getTime()) ? null : legacy;
   }
 
   private dateModel: { key: string; value: Date | null } = { key: '', value: null };
@@ -87,10 +104,9 @@ export class EventsComponent {
   protected selectedDate(query: Partial<EventQuery>): Date | null {
     const key = query.date ?? '';
     if (key !== this.dateModel.key) {
-      const date = key ? new Date(key) : null;
       this.dateModel = {
         key,
-        value: date && !Number.isNaN(date.getTime()) ? date : null,
+        value: key ? this.parseDateKey(key) : null,
       };
     }
     return this.dateModel.value;
@@ -98,16 +114,12 @@ export class EventsComponent {
 
   protected onDateChange(date: Date | null, query: Partial<EventQuery>): void {
     if (date) {
-      this.changeFilter("date", date.toISOString(), query);
+      this.changeFilter("date", this.toDateKey(date), query);
     }
   }
 
   changeFilter(type: string, value: string, query: Partial<EventQuery>) {
     value = value.trim();
-
-    if (type === "date") {
-      value = new Date(value).toISOString();
-    }
 
     this.router.navigate([`/${this.role()}/dashboard/events`], {
       queryParams: { ...query, [type]: value, offset: 0 },
