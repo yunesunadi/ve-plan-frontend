@@ -1,4 +1,5 @@
 import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators, ReactiveFormsModule } from '@angular/forms';
 import { HttpEventType } from '@angular/common/http';
 import { filter, switchMap } from 'rxjs';
@@ -21,6 +22,7 @@ import { PageHeaderComponent } from '../../shared/ui/page-header/page-header.com
 import { AvatarComponent } from '../../shared/ui/avatar/avatar.component';
 import { FormErrorComponent } from '../../shared/ui/form-error/form-error.component';
 import { SubmitButtonComponent } from '../../shared/ui/submit-button/submit-button.component';
+import { PasswordStrengthComponent } from '../../shared/ui/password-strength/password-strength.component';
 import { ParentErrorStateMatcher } from '../../shared/parent-error-state-matcher';
 
 const MIN_LENGTH = 8;
@@ -36,7 +38,7 @@ const ALLOWED_PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
     OutletInnerComponent, PageHeaderComponent, AvatarComponent, RouterLink,
     ReactiveFormsModule, MatCard, MatCardContent,
     MatFormField, MatLabel, MatInput, MatError, MatIconButton, MatButton, MatIcon, MatSuffix, MatHint,
-    FormErrorComponent, SubmitButtonComponent,
+    FormErrorComponent, SubmitButtonComponent, PasswordStrengthComponent,
   ],
 })
 export class SettingComponent {
@@ -60,6 +62,8 @@ export class SettingComponent {
   isSavingProfile = signal(false);
   isChangingPassword = signal(false);
   isDeleting = signal(false);
+
+  newPasswordValue = signal('');
 
   currentUser = signal<User | null>(null);
   currentUserEmail = signal('');
@@ -99,6 +103,10 @@ export class SettingComponent {
       },
       { validators: this.checkPasswordsValidator() },
     );
+
+    this.change_password_form.controls['new_password'].valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe((value) => this.newPasswordValue.set(value ?? ''));
 
     this.delete_account_form = this.form_builder.group({
       password: ['', Validators.required],

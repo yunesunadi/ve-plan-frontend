@@ -6,6 +6,7 @@
   <app-page-header
     title="Invite Users"
     [backTo]="['/organizer/dashboard/events', event._id, 'view']"
+    inlineActions
   >
     <div header-actions class="cluster">
       @if (event) {
@@ -26,16 +27,17 @@
     </div>
   </app-page-header>
 
-  <app-email-delivery-status [eventId]="event._id"></app-email-delivery-status>
+  <app-email-delivery-status [eventId]="event._id" action="invitation_sent"></app-email-delivery-status>
 
   <app-data-table
     [dataSource]="rows"
-    [columns]="['id', 'name']"
+    [columns]="['id', 'name', 'email']"
     [loading]="tableLoading()"
     [error]="tableError()"
     searchLabel="Search Users"
     searchPlaceholder="Enter name or email"
     [searchValue]="query.search"
+    serverSearch
     (searchValueChange)="handleSearchChange($event, query, event._id)"
     [selectable]="true"
     [selection]="selection"
@@ -56,6 +58,10 @@
     <ng-container matColumnDef="name">
       <th mat-header-cell *matHeaderCellDef>Name</th>
       <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+    </ng-container>
+    <ng-container matColumnDef="email">
+      <th mat-header-cell *matHeaderCellDef>Email</th>
+      <td mat-cell *matCellDef="let row">{{ row.email }}</td>
     </ng-container>
 
     <ng-template #cardRow let-row>

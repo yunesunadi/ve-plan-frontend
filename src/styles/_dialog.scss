@@ -1,0 +1,13 @@
+.meeting-dialog {
+  .mat-mdc-dialog-surface {
+    overflow: hidden;
+  }
+
+  .mat-mdc-dialog-content {
+    margin: 0;
+    padding: 0;
+    max-height: none;
+    height: 100%;
+    overflow: hidden;
+  }
+}

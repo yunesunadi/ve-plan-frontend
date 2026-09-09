@@ -16,6 +16,12 @@
   }
 }
 
+.page-header__row--inline {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .page-header__heading-group {
   align-items: flex-start;
 

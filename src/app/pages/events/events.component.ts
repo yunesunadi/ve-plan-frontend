@@ -1,7 +1,6 @@
 import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { EventCategoryType, EventQuery, EventTimeType } from '../../models/Event';
 import { DashboardCacheService } from '../../caches/dashboard-cache.service';
-import { MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
 import { Router } from '@angular/router';
 import { EventCacheService } from '../../caches/event-cache.service';
 import { OutletInnerComponent } from '../../shared/outlet-inner/outlet-inner.component';
@@ -29,13 +28,6 @@ interface FilterChip {
     templateUrl: './events.component.html',
     styleUrl: './events.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [
-        provideNativeDateAdapter(),
-        {
-            provide: MAT_DATE_LOCALE,
-            useValue: "en-GB"
-        },
-    ],
     imports: [OutletInnerComponent, PageHeaderComponent, MatButton, MatIcon, MatFormField, MatInput, FormsModule, MatPrefix, MatIconButton, MatSuffix, MatMenu, MatMenuItem, MatMenuTrigger, MatDatepicker, MatDatepickerInput, MatPaginator, AsyncPipe, EventCardComponent, SkeletonComponent, EmptyStateComponent, ErrorStateComponent]
 })
 export class EventsComponent {

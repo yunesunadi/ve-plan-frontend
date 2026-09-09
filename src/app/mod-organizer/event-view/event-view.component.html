@@ -23,13 +23,15 @@
        #agenda="routerLinkActive" [attr.aria-current]="agenda.isActive ? 'page' : null">
       Agenda
     </a>
-    <a class="tab-nav__link" routerLink="people" routerLinkActive="tab-nav__link--active"
-       #people="routerLinkActive" [attr.aria-current]="people.isActive ? 'page' : null">
-      People
-    </a>
-    <a class="tab-nav__link" [routerLink]="['/organizer/dashboard/events', event._id, 'meeting']">
-      Meeting
-    </a>
+    @if (store.canManage()) {
+      <a class="tab-nav__link" routerLink="people" routerLinkActive="tab-nav__link--active"
+         #people="routerLinkActive" [attr.aria-current]="people.isActive ? 'page' : null">
+        People
+      </a>
+      <a class="tab-nav__link" [routerLink]="['/organizer/dashboard/events', event._id, 'meeting']">
+        Meeting
+      </a>
+    }
   </nav>
 
   <div class="event-tabs__body">

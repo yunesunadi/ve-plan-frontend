@@ -2,7 +2,7 @@ import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/cor
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogTitle, MatDialogContent, MatDialogActions, MatDialogClose } from '@angular/material/dialog';
 import { CdkScrollable } from '@angular/cdk/scrolling';
 import { MatButton } from '@angular/material/button';
-import { combineLatest } from 'rxjs';
+import { forkJoin, Observable } from 'rxjs';
 import { CommonService } from '../../services/common.service';
 import { EventRegisterService } from '../../services/event-register.service';
 import { EventInviteService } from '../../services/event-invite.service';
@@ -25,24 +25,34 @@ export class MeetingStartedDialogComponent {
   protected readonly sending = signal(false);
 
   send(): void {
-    this.sending.set(true);
+    const eventId = this.dialog_data[0]?.event_id;
+    if (!eventId) return;
+
     const registeredIds = this.dialog_data.filter((i) => i.type === 'register_approved').map((i) => i.user_id);
     const invitedIds = this.dialog_data.filter((i) => i.type === 'invitation_approved').map((i) => i.user_id);
 
-    combineLatest([
-      this.eventRegisterService.startMeeting(registeredIds, this.dialog_data[0].event_id),
-      this.eventInviteService.startMeeting(invitedIds, this.dialog_data[0].event_id),
-    ]).subscribe({
-      error: () => {
-        this.sending.set(false);
-        this.dialog.close();
-        this.commonService.error('Failed to send meeting email.');
-      },
-      complete: () => {
+    const calls: Observable<unknown>[] = [];
+    if (registeredIds.length) calls.push(this.eventRegisterService.startMeeting(registeredIds, eventId));
+    if (invitedIds.length) calls.push(this.eventInviteService.startMeeting(invitedIds, eventId));
+
+    if (!calls.length) {
+      this.dialog.close();
+      return;
+    }
+
+    this.sending.set(true);
+
+    forkJoin(calls).subscribe({
+      next: () => {
         this.dialog.close(true);
         this.commonService.success(
           `Meeting email sent to ${this.dialog_data.length} attendee${this.dialog_data.length === 1 ? '' : 's'}.`,
         );
+      },
+      error: () => {
+        this.sending.set(false);
+        this.dialog.close();
+        this.commonService.error('Failed to send meeting email.');
       },
     });
   }

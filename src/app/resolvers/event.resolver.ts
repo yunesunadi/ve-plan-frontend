@@ -26,13 +26,21 @@ export const eventResolver: ResolveFn<Event> = (route) => {
   const router = inject(Router);
   const id = findEventId(route);
 
+  const token = localStorage.getItem('token') || '';
+  const payload = jwtDecode(token) as UserPayload;
+  const notFound = () => new RedirectCommand(router.parseUrl(`${payload.role}/dashboard/not-found`));
+
   return eventService.getOneById(id).pipe(
-    map((res) => res.data),
+    map((res) => {
+      const event = res.data;
+      if (route.data['requireOwner'] && event.user?._id !== payload._id) {
+        return notFound();
+      }
+      return event;
+    }),
     catchError((err: unknown) => {
       if (err instanceof ApiError && err.kind === 'notFound') {
-        const token = localStorage.getItem('token') || '';
-        const role = (jwtDecode(token) as UserPayload).role;
-        return of(new RedirectCommand(router.parseUrl(`${role}/dashboard/not-found`)));
+        return of(notFound());
       }
 
       return throwError(() => err);

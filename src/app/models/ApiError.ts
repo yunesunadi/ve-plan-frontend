@@ -2,10 +2,12 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 export type ApiErrorKind =
   | 'network' | 'validation' | 'auth' | 'forbidden'
-  | 'notFound' | 'conflict' | 'gone' | 'rateLimited' | 'server' | 'unknown';
+  | 'notFound' | 'conflict' | 'gone' | 'rateLimited' | 'payloadTooLarge'
+  | 'server' | 'unknown';
 
 const GENERIC_MESSAGES: Partial<Record<ApiErrorKind, string>> = {
   network: 'You appear to be offline.',
+  payloadTooLarge: 'That file is too large. Please choose a smaller one (max 5 MB).',
   server: 'Something went wrong.',
 };
 
@@ -35,6 +37,7 @@ function kindFromStatus(status: number): ApiErrorKind {
   if (status === 404) return 'notFound';
   if (status === 409) return 'conflict';
   if (status === 410) return 'gone';
+  if (status === 413) return 'payloadTooLarge';
   if (status === 429) return 'rateLimited';
   if (status >= 500) return 'server';
   return 'unknown';
@@ -54,8 +57,6 @@ export class ApiError extends Error {
     const kind = kindFromStatus(status);
     const fieldErrors = parseFieldErrors(raw.error);
 
-    // Prefer the specific field-level reason(s) over the generic
-    // "Validation error" envelope message the backend sends alongside them.
     const fieldMessage = [...new Set(fieldErrors.map((e) => e.message))].join(' ');
     const serverMessage = raw.error?.message;
     const hasFieldMessage = fieldMessage.length > 0;
@@ -73,7 +74,9 @@ export class ApiError extends Error {
     this.requestId = raw.error?.data?.requestId;
     this.data = raw.error?.data;
     this.fieldErrors = fieldErrors;
-    this.userActionable = status >= 400 && status < 500 && (hasFieldMessage || hasServerMessage);
+    this.userActionable =
+      status >= 400 && status < 500 &&
+      (hasFieldMessage || hasServerMessage || kind === 'payloadTooLarge');
     this.raw = raw;
     this.name = 'ApiError';
   }

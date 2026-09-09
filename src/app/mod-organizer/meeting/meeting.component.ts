@@ -207,12 +207,12 @@ export class MeetingComponent {
     shareReplay(1),
   );
 
-  joined_participants_page$ = this.query$.pipe(
+  joined_participants_page$ = combineLatest([this.refresh$, this.query$]).pipe(
     tap(() => {
       this.tableLoading.set(true);
       this.tableError.set(null);
     }),
-    switchMap((query) => this.aroute.params.pipe(
+    switchMap(([, query]) => this.aroute.params.pipe(
       switchMap((params: any) => this.participantService.getAllByEventId(params.id, query)),
       tap((res) => this.joined_participants_total.set(res.meta?.total ?? 0)),
       map((res): JoinedParticipantRow[] => res.data.map((data, index) => ({
@@ -433,6 +433,7 @@ export class MeetingComponent {
       maxWidth: '100%',
       height: 'calc(100% - 10px)',
       maxHeight: '100%',
+      panelClass: 'meeting-dialog',
       disableClose: true,
       data: { event_id, event_title: this.event().title },
     }).afterClosed().subscribe(() => this.refresh$.next(true));

@@ -6,7 +6,7 @@ export const VALIDATION_MESSAGES: Record<string, (label: string, err: any) => st
   passwordMismatch: () => 'Passwords do not match.',
   emailMismatch: () => 'The email does not match your account email.',
   commonPassword: () => 'This password is too common. Choose a stronger one.',
-  invalidTime: () => "End time mustn't be ahead of start time.",
+  invalidTime: () => 'End time must be after start time.',
   eventEnded: () => 'This event has already ended.',
   pastDate: () => "You can't create an event on a past day.",
 };

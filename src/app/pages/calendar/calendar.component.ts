@@ -53,6 +53,15 @@ export class CalendarComponent {
   );
   protected readonly canCreate = computed(() => this.role() === 'organizer');
 
+  protected readonly subtitle = computed(() => {
+    if (this.canCreate()) {
+      return this.view() === 'dayGridMonth'
+        ? 'Click a day to create an event.'
+        : 'Every event on VE-Plan, at a glance.';
+    }
+    return 'Every public event on VE-Plan, at a glance.';
+  });
+
   private readonly userView = signal<CalendarView>('dayGridMonth');
   protected readonly view = computed<CalendarView>(() =>
     this.layout.isCompact() ? 'listMonth' : this.userView(),

@@ -10,30 +10,10 @@ import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { FormErrorComponent } from '../../shared/ui/form-error/form-error.component';
 import { SubmitButtonComponent } from '../../shared/ui/submit-button/submit-button.component';
+import { PasswordStrengthComponent } from '../../shared/ui/password-strength/password-strength.component';
 import { ParentErrorStateMatcher } from '../../shared/parent-error-state-matcher';
 
 const MIN_LENGTH = 8;
-
-interface PasswordStrength {
-  score: 0 | 1 | 2 | 3 | 4;
-  label: string;
-}
-
-const STRENGTH_LABELS = ['', 'Weak', 'Fair', 'Good', 'Strong'];
-
-function scorePassword(pw: string): PasswordStrength {
-  if (!pw) return { score: 0, label: '' };
-
-  let score = 0;
-  if (pw.length >= 8) score++;
-  if (pw.length >= 12) score++;
-  if (/[a-z]/.test(pw) && /[A-Z]/.test(pw)) score++;
-  if (/\d/.test(pw)) score++;
-  if (/[^A-Za-z0-9]/.test(pw)) score++;
-
-  const clamped = Math.min(4, score) as PasswordStrength['score'];
-  return { score: clamped, label: STRENGTH_LABELS[clamped] };
-}
 
 @Component({
     selector: 'app-signup',
@@ -53,6 +33,7 @@ function scorePassword(pw: string): PasswordStrength {
         RouterLink,
         FormErrorComponent,
         SubmitButtonComponent,
+        PasswordStrengthComponent,
     ],
 })
 export class SignupComponent {
@@ -61,7 +42,7 @@ export class SignupComponent {
   isConfirmPassword = signal(true);
   submitting = signal(false);
   formError = signal<string | null>(null);
-  passwordStrength = signal<PasswordStrength>({ score: 0, label: '' });
+  passwordValue = signal('');
   confirmPasswordMatcher = new ParentErrorStateMatcher();
   signup_form: FormGroup;
 
@@ -85,7 +66,7 @@ export class SignupComponent {
 
     this.passwordControl.valueChanges
       .pipe(takeUntilDestroyed())
-      .subscribe((value: string) => this.passwordStrength.set(scorePassword(value ?? '')));
+      .subscribe((value: string) => this.passwordValue.set(value ?? ''));
   }
 
   checkPasswordsValidator(): ValidatorFn {

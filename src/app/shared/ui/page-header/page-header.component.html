@@ -3,7 +3,10 @@
     <app-breadcrumbs [crumbs]="effectiveCrumbs()" class="page-header__crumbs" />
   }
 
-  <div class="stack stack--row-md cluster--between-md page-header__row">
+  <div
+    class="stack stack--row-md cluster--between-md page-header__row"
+    [class.page-header__row--inline]="inlineActions()"
+  >
     <div class="cluster page-header__heading-group">
       @if (backTo()) {
         <a

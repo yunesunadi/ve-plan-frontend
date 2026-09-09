@@ -8,7 +8,7 @@
     [backTo]="['/organizer/dashboard/events', event._id, 'view']"
   ></app-page-header>
 
-  <app-email-delivery-status [eventId]="event._id"></app-email-delivery-status>
+  <app-email-delivery-status [eventId]="event._id" action="register_approved"></app-email-delivery-status>
 
   <app-data-table
     [dataSource]="rows"
@@ -18,6 +18,7 @@
     searchLabel="Search Users"
     searchPlaceholder="Enter name"
     [searchValue]="query.search ?? ''"
+    serverSearch
     (searchValueChange)="handleSearchChange($event, query, event._id)"
     [selectable]="true"
     [isRowSelectable]="isRowSelectable"

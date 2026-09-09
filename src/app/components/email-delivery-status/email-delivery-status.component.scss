@@ -1,6 +1,13 @@
 .email-delivery-status {
   border-color: var(--mat-sys-primary-container);
 
+  &__heading {
+    font: var(--mat-sys-title-small);
+    color: var(--mat-sys-on-surface);
+    white-space: nowrap;
+    margin-right: var(--app-space-1);
+  }
+
   &__stat {
     display: inline-flex;
     align-items: center;

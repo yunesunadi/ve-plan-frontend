@@ -104,6 +104,7 @@ export class DataTableComponent<T> implements AfterContentInit, AfterViewChecked
   searchLabel = input<string>('Search');
   searchPlaceholder = input<string>('');
   searchValue = model<string>('');
+  serverSearch = input<boolean, unknown>(false, { transform: booleanAttribute });
 
   // selection
   selectable = input<boolean, unknown>(false, { transform: booleanAttribute });
@@ -151,8 +152,10 @@ export class DataTableComponent<T> implements AfterContentInit, AfterViewChecked
   });
 
   protected readonly rows = computed<T[]>(() => {
-    const term = this.searchValue().trim().toLowerCase();
     const base = this.baseRows();
+    if (this.serverSearch()) return base;
+
+    const term = this.searchValue().trim().toLowerCase();
     if (!term) return base;
     return base.filter((row) => JSON.stringify(row).toLowerCase().includes(term));
   });
@@ -217,6 +220,7 @@ export class DataTableComponent<T> implements AfterContentInit, AfterViewChecked
     if (table !== this.lastSyncedTable) {
       this.registeredColumnDefs.clear();
       this.lastSyncedTable = table;
+      this.columnDefsRegistered.set(false);
     }
 
     if (!table) return;

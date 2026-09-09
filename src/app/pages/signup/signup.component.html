@@ -69,17 +69,7 @@
         <mat-error appFormError [control]="passwordControl" labelFor="Password" />
       </mat-form-field>
 
-      @if (passwordControl.value) {
-        <div class="pw-strength">
-          <div class="pw-strength__bars" [attr.data-score]="passwordStrength().score" aria-hidden="true">
-            @for (i of [1, 2, 3, 4]; track i) {
-              <span class="pw-strength__bar" [class.is-on]="i <= passwordStrength().score"></span>
-            }
-          </div>
-          <span class="pw-strength__label">{{ passwordStrength().label }}</span>
-        </div>
-        <span class="visually-hidden" aria-live="polite">Password strength: {{ passwordStrength().label }}</span>
-      }
+      <app-password-strength [password]="passwordValue()" />
 
       <mat-form-field appearance="outline">
         <mat-label>Confirm password</mat-label>

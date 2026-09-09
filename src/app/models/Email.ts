@@ -1,5 +1,7 @@
 import { GeneralResponse, Response } from "./Utils";
 
+export type EventEmailAction = "invitation_sent" | "register_approved" | "meeting_started";
+
 export interface EmailStatus {
   sent: number;
   pending: number;

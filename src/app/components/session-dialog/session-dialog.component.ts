@@ -1,26 +1,36 @@
-import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, computed, inject, signal, Signal, ChangeDetectionStrategy } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonService } from '../../services/common.service';
 import { MatDialogRef, MatDialogTitle, MatDialogContent, MatDialogActions, MatDialogClose } from '@angular/material/dialog';
 import { DIALOG_DATA } from '@angular/cdk/dialog';
 import { SessionService } from '../../services/session.service';
-import { concatMap, iif, map, of, shareReplay } from 'rxjs';
+import { concatMap, iif, map, of } from 'rxjs';
 import { EventService } from '../../services/event.service';
+import { ApiError } from '../../models/ApiError';
 import { CdkScrollable } from '@angular/cdk/scrolling';
 import { MatFormField, MatLabel, MatInput, MatError, MatSuffix } from '@angular/material/input';
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { MatTimepickerInput, MatTimepicker, MatTimepickerToggle } from '@angular/material/timepicker';
 import { MatButton } from '@angular/material/button';
-import { AsyncPipe, DatePipe } from '@angular/common';
 import { FormErrorComponent } from '../../shared/ui/form-error/form-error.component';
 import { SubmitButtonComponent } from '../../shared/ui/submit-button/submit-button.component';
+
+function toDate(value: unknown): Date | null {
+  if (value instanceof Date) return isNaN(value.getTime()) ? null : value;
+  if (typeof value === 'string' && value) {
+    const d = new Date(value);
+    return isNaN(d.getTime()) ? null : d;
+  }
+  return null;
+}
 
 @Component({
     selector: 'app-session-dialog',
     templateUrl: './session-dialog.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrl: './session-dialog.component.scss',
-    imports: [MatDialogTitle, CdkScrollable, MatDialogContent, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, CdkTextareaAutosize, MatTimepickerInput, MatTimepicker, MatTimepickerToggle, MatSuffix, MatDialogActions, MatButton, MatDialogClose, AsyncPipe, DatePipe, FormErrorComponent, SubmitButtonComponent]
+    imports: [MatDialogTitle, CdkScrollable, MatDialogContent, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, CdkTextareaAutosize, MatTimepickerInput, MatTimepicker, MatTimepickerToggle, MatSuffix, MatDialogActions, MatButton, MatDialogClose, FormErrorComponent, SubmitButtonComponent]
 })
 export class SessionDialogComponent {
   create_form: FormGroup;
@@ -33,33 +43,47 @@ export class SessionDialogComponent {
   dialog_data = inject(DIALOG_DATA);
   private dialog = inject(MatDialogRef<this>);
 
-  event$ = this.eventService.getOneById(this.dialog_data.event_id).pipe(
-    map(res => res.data),
-    shareReplay(1)
+  private event = toSignal(
+    this.eventService.getOneById(this.dialog_data.event_id).pipe(map((res) => res.data)),
+    { initialValue: null },
   );
+
+  private startValue: Signal<Date | null>;
+  private endValue: Signal<Date | null>;
+
+  readonly startMin = computed(() => toDate(this.event()?.start_time));
+  readonly startMax = computed(() => this.endValue() ?? toDate(this.event()?.end_time));
+  readonly endMin = computed(() => this.startValue() ?? toDate(this.event()?.start_time));
+  readonly endMax = computed(() => toDate(this.event()?.end_time));
 
   constructor() {
     this.create_form = this.form_builder.group({
       title: [this.dialog_data.title || '', Validators.required],
       description: [this.dialog_data.description || ''],
       speaker_info: [this.dialog_data.speaker_info || ''],
-      start_time: [this.dialog_data.start_time || '', Validators.required],
-      end_time: [this.dialog_data.end_time || '', Validators.required],
+      start_time: [toDate(this.dialog_data.start_time), Validators.required],
+      end_time: [toDate(this.dialog_data.end_time), Validators.required],
       event: [this.dialog_data.event_id, Validators.required]
     },
     {
       validators: this.checkTimeValidator()
     });
+
+    this.startValue = toSignal(this.startTimeControl.valueChanges.pipe(map(toDate)), {
+      initialValue: toDate(this.dialog_data.start_time),
+    });
+    this.endValue = toSignal(this.endTimeControl.valueChanges.pipe(map(toDate)), {
+      initialValue: toDate(this.dialog_data.end_time),
+    });
   }
 
   checkTimeValidator(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
-      const start_time = new Date(control.value['start_time']).getTime();
-      const end_time = new Date(control.value['end_time']).getTime();
+      const start = toDate(control.value['start_time']);
+      const end = toDate(control.value['end_time']);
+      if (!start || !end) return null;
 
-      if (start_time > end_time) return { invalidTime: true };
-
-      return null;
+      return end.getTime() <= start.getTime() ? { invalidTime: true } : null;
     };
   }
 
@@ -102,10 +126,16 @@ export class SessionDialogComponent {
         this.commonService.success(res.message);
         this.dialog.close();
       },
-      error: (_err) => {
+      error: (err: unknown) => {
         this.submitting.set(false);
-        this.commonService.error("Error creating event.");
-        this.dialog.close();
+        const isApiError = err instanceof ApiError;
+        this.commonService.error(
+          isApiError ? err.message : `Error ${this.dialog_data._id ? 'updating' : 'creating'} session.`,
+        );
+
+        if (!isApiError || err.status >= 500) {
+          this.dialog.close();
+        }
       }
     });
   }

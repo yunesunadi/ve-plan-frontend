@@ -59,20 +59,28 @@
 
     @case ('people') {
       <h2 class="people-head">People</h2>
-      <div class="people-links">
-        <a class="people-link" [routerLink]="['/organizer/dashboard/events', event._id, 'registered_users']">
-          <mat-icon>people_outline</mat-icon>
-          <span class="people-link__label">Registered users</span>
-          <span class="people-link__hint">Review and approve registrations</span>
-          <mat-icon class="people-link__chevron">chevron_right</mat-icon>
-        </a>
-        <a class="people-link" [routerLink]="['/organizer/dashboard/events', event._id, 'invite']">
-          <mat-icon>person_add</mat-icon>
-          <span class="people-link__label">Invite users</span>
-          <span class="people-link__hint">Send invitations to attendees</span>
-          <mat-icon class="people-link__chevron">chevron_right</mat-icon>
-        </a>
-      </div>
+      @if (store.canManage()) {
+        <div class="people-links">
+          <a class="people-link" [routerLink]="['/organizer/dashboard/events', event._id, 'registered_users']">
+            <mat-icon>people_outline</mat-icon>
+            <span class="people-link__label">Registered users</span>
+            <span class="people-link__hint">Review and approve registrations</span>
+            <mat-icon class="people-link__chevron">chevron_right</mat-icon>
+          </a>
+          <a class="people-link" [routerLink]="['/organizer/dashboard/events', event._id, 'invite']">
+            <mat-icon>person_add</mat-icon>
+            <span class="people-link__label">Invite users</span>
+            <span class="people-link__hint">Send invitations to attendees</span>
+            <mat-icon class="people-link__chevron">chevron_right</mat-icon>
+          </a>
+        </div>
+      } @else {
+        <app-empty-state
+          icon="lock"
+          headline="Only the event owner can manage people"
+          supporting="Registrations and invitations are managed by the organizer who created this event."
+        />
+      }
     }
   }
 }

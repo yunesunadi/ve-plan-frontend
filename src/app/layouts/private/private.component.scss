@@ -79,9 +79,14 @@
   min-width: 0;
   padding-inline: var(--app-space-2);
 
-  .mdc-button__label {
+  ::ng-deep .mdc-button__label {
     display: inline-flex;
     align-items: center;
+    gap: var(--app-space-2);
+  }
+
+  ::ng-deep .mat-icon {
+    margin: 0;
   }
 }
 
@@ -98,9 +103,10 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  line-height: 1;
 
   @media (min-width: 768px) {
-    display: inline-block;
+    display: block;
   }
 }
 

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import { booleanAttribute, ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MatIcon } from '@angular/material/icon';
 import { Breadcrumb } from '../../../models/Breadcrumb';
@@ -21,6 +21,7 @@ export class PageHeaderComponent {
   backLabel = input<string>('Back');
   crumbs = input<Breadcrumb[] | undefined>(undefined);
   headingLevel = input<1 | 2>(1);
+  inlineActions = input(false, { transform: booleanAttribute });
 
   protected readonly effectiveCrumbs = computed(() => {
     const crumbs = this.crumbs() ?? this.breadcrumbService.crumbs();

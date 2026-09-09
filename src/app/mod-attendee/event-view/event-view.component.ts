@@ -104,6 +104,7 @@ export class EventViewComponent {
       maxWidth: '100%',
       height: 'calc(100% - 10px)',
       maxHeight: '100%',
+      panelClass: 'meeting-dialog',
       disableClose: true,
       data: { event_id: eventId, event_title: this.displayEvent().title },
     });
